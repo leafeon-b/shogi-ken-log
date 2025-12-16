@@ -1,24 +1,136 @@
-generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+enum CircleRole {
+  ADMIN
+  MEMBER
 }
 
-datasource db {
-  provider = "sqlite"
+enum MatchOutcome {
+  P1_WIN
+  P2_WIN
+  DRAW
+  UNKNOWN
+}
+
+enum MatchHistoryAction {
+  CREATE
+  UPDATE
+  DELETE
 }
 
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-  posts Post[]
+  id        String   @id @default(cuid())
+  name      String?
+  createdAt DateTime @default(now())
+
+  circleMemberships     CircleMembership[]
+  sessionParticipations SessionParticipation[]
+
+  matchesAsPlayer1 Match[] @relation("MatchPlayer1")
+  matchesAsPlayer2 Match[] @relation("MatchPlayer2")
+
+  matchHistories MatchHistory[]
 }
 
-model Post {
-  id        Int     @id @default(autoincrement())
-  title     String
-  content   String?
-  published Boolean @default(false)
-  author    User    @relation(fields: [authorId], references: [id])
-  authorId  Int
+model Circle {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+
+  sessions          Session[]
+  circleMemberships CircleMembership[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  circleId  String
+  createdAt DateTime @default(now())
+
+  /// 研究会内の「第N回」
+  sequence Int
+
+  /// 複数日開催も許容
+  startsAt DateTime
+  endsAt   DateTime
+  location String?
+
+  circle Circle @relation(fields: [circleId], references: [id], onDelete: Cascade)
+
+  participants SessionParticipation[]
+  matches      Match[]
+
+  @@unique([circleId, sequence])
+}
+
+model CircleMembership {
+  id       String     @id @default(cuid())
+  userId   String
+  circleId String
+  role     CircleRole
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
+  circle Circle @relation(fields: [circleId], references: [id], onDelete: Cascade)
+
+  /// 研究会参加（継続的所属）。1行=1ロール。
+  @@unique([userId, circleId, role])
+  @@index([circleId, role])
+}
+
+model SessionParticipation {
+  id        String @id @default(cuid())
+  userId    String
+  sessionId String
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Restrict)
+  session Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  /// 開催回参加（単発参加）。研究会参加とは独立。
+  @@unique([userId, sessionId])
+  @@index([sessionId])
+}
+
+model Match {
+  id        String @id @default(cuid())
+  sessionId String
+  order     Int
+
+  player1Id String
+  player2Id String
+  outcome   MatchOutcome
+
+  /// 論理削除（DELETEはこれをセットし、履歴にDELETEを積む）
+  deletedAt DateTime?
+
+  session Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  player1 User @relation("MatchPlayer1", fields: [player1Id], references: [id], onDelete: Restrict)
+  player2 User @relation("MatchPlayer2", fields: [player2Id], references: [id], onDelete: Restrict)
+
+  histories MatchHistory[]
+
+  /// NOTE:
+  /// - player1Id != player2Id はDB CHECK制約で担保（migrationにSQL追加）
+  /// - 対局者が開催回参加者であることはアプリ層で検証
+  @@unique([sessionId, order])
+  @@index([player1Id])
+  @@index([player2Id])
+}
+
+model MatchHistory {
+  id        String             @id @default(cuid())
+  matchId   String
+  editorId  String
+  action    MatchHistoryAction
+  createdAt DateTime           @default(now())
+
+  // スナップショット（編集時点）
+  order     Int
+  player1Id String
+  player2Id String
+  outcome   MatchOutcome
+
+  match  Match @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  editor User  @relation(fields: [editorId], references: [id], onDelete: Restrict)
+
+  /// 1つのMatchの履歴を実行順で取得しやすくする
+  @@index([matchId, createdAt, id])
+  @@index([editorId, createdAt])
 }
