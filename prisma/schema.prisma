@@ -35,11 +35,11 @@ model Circle {
   name      String
   createdAt DateTime @default(now())
 
-  sessions          Session[]
+  sessions          CircleSession[]
   circleMemberships CircleMembership[]
 }
 
-model Session {
+model CircleSession {
   id        String   @id @default(cuid())
   circleId  String
   createdAt DateTime @default(now())
@@ -58,6 +58,7 @@ model Session {
   matches      Match[]
 
   @@unique([circleId, sequence])
+  @@map("CircleSession")
 }
 
 model CircleMembership {
@@ -79,8 +80,8 @@ model SessionParticipation {
   userId    String
   sessionId String
 
-  user    User    @relation(fields: [userId], references: [id], onDelete: Restrict)
-  session Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  user    User          @relation(fields: [userId], references: [id], onDelete: Restrict)
+  session CircleSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 
   /// 開催回参加（単発参加）。研究会参加とは独立。
   @@unique([userId, sessionId])
@@ -99,7 +100,7 @@ model Match {
   /// 論理削除（DELETEはこれをセットし、履歴にDELETEを積む）
   deletedAt DateTime?
 
-  session Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  session CircleSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 
   player1 User @relation("MatchPlayer1", fields: [player1Id], references: [id], onDelete: Restrict)
   player2 User @relation("MatchPlayer2", fields: [player2Id], references: [id], onDelete: Restrict)
