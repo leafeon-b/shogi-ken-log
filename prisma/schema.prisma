@@ -12,8 +12,15 @@ generator client {
 }
 
 enum CircleRole {
-  ADMIN
-  MEMBER
+  CircleOwner
+  CircleManager
+  CircleMember
+}
+
+enum CircleSessionRole {
+  CircleSessionOwner
+  CircleSessionManager
+  CircleSessionMember
 }
 
 enum MatchOutcome {
@@ -90,8 +97,8 @@ model CircleMembership {
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
   circle Circle @relation(fields: [circleId], references: [id], onDelete: Cascade)
 
-  /// 研究会参加（継続的所属）。1行=1ロール。
-  @@unique([userId, circleId, role])
+  /// 研究会参加（継続的所属）。1行=1ロール、userId+circleIdで一意。
+  @@unique([userId, circleId])
   @@index([circleId, role])
 }
 
@@ -99,6 +106,7 @@ model CircleSessionMembership {
   id              String @id @default(cuid())
   userId          String
   circleSessionId String
+  role            CircleSessionRole
 
   user    User          @relation(fields: [userId], references: [id], onDelete: Restrict)
   session CircleSession @relation(fields: [circleSessionId], references: [id], onDelete: Cascade)
@@ -106,6 +114,7 @@ model CircleSessionMembership {
   /// 開催回参加（単発参加）。研究会参加とは独立。
   @@unique([userId, circleSessionId])
   @@index([circleSessionId])
+  @@index([circleSessionId, role])
   @@map("CircleSessionMembership")
 }
 
