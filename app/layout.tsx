@@ -5,6 +5,23 @@ import "./globals.css";
 
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Metadata } from "next";
+import { Shippori_Mincho_B1, Zen_Maru_Gothic } from "next/font/google";
+
+const zenMaru = Zen_Maru_Gothic({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  variable: "--font-body",
+  display: "swap",
+  fallback: ["Hiragino Kaku Gothic ProN", "Yu Gothic", "sans-serif"],
+});
+
+const shippori = Shippori_Mincho_B1({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-display",
+  display: "swap",
+  fallback: ["Hiragino Mincho ProN", "Yu Mincho", "serif"],
+});
 
 export const metadata: Metadata = {
   title: "将研ログ",
@@ -18,7 +35,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ja">
-      <body className="h-screen bg-background">
+      <body
+        className={`${zenMaru.variable} ${shippori.variable} h-screen bg-background`}
+      >
         <SidebarProvider>
           <div className="flex h-screen">
             <AppSidebar />
