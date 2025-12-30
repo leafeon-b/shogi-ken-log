@@ -1,20 +1,5 @@
-import type {
-  CircleMembership,
-  CircleSessionMembership,
-} from "@/server/domain/authz/memberships";
-import * as policies from "@/server/domain/authz/policies";
-
-export type AuthzRepository = {
-  isRegisteredUser(userId: string): Promise<boolean>;
-  findCircleMembership(
-    userId: string,
-    circleId: string,
-  ): Promise<CircleMembership>;
-  findCircleSessionMembership(
-    userId: string,
-    circleSessionId: string,
-  ): Promise<CircleSessionMembership>;
-};
+import * as policies from "@/server/domain/services/authz/policies";
+import type { AuthzRepository } from "@/server/domain/services/authz/authz-repository";
 
 export function createAccessService(repository: AuthzRepository) {
   const findCircleMembership = (userId: string, circleId: string) =>

@@ -1,0 +1,211 @@
+import { beforeEach, describe, expect, test, vi } from "vitest";
+import { createMatchService } from "@/server/application/match/match-service";
+import { createAccessService } from "@/server/application/authz/access-service";
+import type { MatchRepository } from "@/server/domain/models/match/match-repository";
+import type { MatchHistoryRepository } from "@/server/domain/models/match-history/match-history-repository";
+import type { CircleSessionParticipationRepository } from "@/server/domain/models/circle-session/circle-session-participation-repository";
+import type { CircleSessionRepository } from "@/server/domain/models/circle-session/circle-session-repository";
+import {
+  circleId,
+  circleSessionId,
+  matchHistoryId,
+  matchId,
+  userId,
+} from "@/server/domain/common/ids";
+import { createMatch } from "@/server/domain/models/match/match";
+
+const matchRepository = {
+  findById: vi.fn(),
+  listByCircleSessionId: vi.fn(),
+  save: vi.fn(),
+} satisfies MatchRepository;
+
+const matchHistoryRepository = {
+  listByMatchId: vi.fn(),
+  add: vi.fn(),
+} satisfies MatchHistoryRepository;
+
+const circleSessionParticipationRepository = {
+  listParticipants: vi.fn(),
+  addParticipant: vi.fn(),
+  updateParticipantRole: vi.fn(),
+  areParticipants: vi.fn(),
+  removeParticipant: vi.fn(),
+} satisfies CircleSessionParticipationRepository;
+
+const circleSessionRepository = {
+  findById: vi.fn(),
+  listByCircleId: vi.fn(),
+  save: vi.fn(),
+  delete: vi.fn(),
+} satisfies CircleSessionRepository;
+
+const accessService = {
+  canRecordMatch: vi.fn(),
+  canViewMatch: vi.fn(),
+  canEditMatch: vi.fn(),
+  canDeleteMatch: vi.fn(),
+} as ReturnType<typeof createAccessService>;
+
+const service = createMatchService({
+  matchRepository,
+  matchHistoryRepository,
+  circleSessionParticipationRepository,
+  circleSessionRepository,
+  accessService,
+  generateMatchHistoryId: () => matchHistoryId("history-1"),
+});
+
+const baseMatchParams = {
+  id: matchId("match-1"),
+  circleSessionId: circleSessionId("session-1"),
+  order: 1,
+  player1Id: userId("user-1"),
+  player2Id: userId("user-2"),
+  outcome: "P1_WIN" as const,
+};
+
+const baseSession = () => ({
+  id: circleSessionId("session-1"),
+  circleId: circleId("circle-1"),
+  sequence: 1,
+  startsAt: new Date("2024-01-01T00:00:00Z"),
+  endsAt: new Date("2024-01-02T00:00:00Z"),
+  location: null,
+  createdAt: new Date("2024-01-01T00:00:00Z"),
+});
+
+beforeEach(() => {
+  vi.clearAllMocks();
+  vi.mocked(circleSessionRepository.findById).mockResolvedValue(baseSession());
+  vi.mocked(accessService.canRecordMatch).mockResolvedValue(true);
+  vi.mocked(accessService.canViewMatch).mockResolvedValue(true);
+  vi.mocked(accessService.canEditMatch).mockResolvedValue(true);
+  vi.mocked(accessService.canDeleteMatch).mockResolvedValue(true);
+});
+
+describe("Match サービス", () => {
+  test("recordMatch は参加者でない場合にエラー", async () => {
+    vi.mocked(circleSessionParticipationRepository.areParticipants).mockResolvedValue(
+      false,
+    );
+
+    await expect(
+      service.recordMatch({
+        actorId: userId("user-3"),
+        ...baseMatchParams,
+      }),
+    ).rejects.toThrow("Players must belong to the circle session");
+
+    expect(matchRepository.save).not.toHaveBeenCalled();
+    expect(matchHistoryRepository.add).not.toHaveBeenCalled();
+  });
+
+  test("recordMatch は対局を保存し履歴を追加する", async () => {
+    vi.mocked(circleSessionParticipationRepository.areParticipants).mockResolvedValue(
+      true,
+    );
+
+    const result = await service.recordMatch({
+      actorId: userId("user-3"),
+      ...baseMatchParams,
+    });
+
+    expect(matchRepository.save).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: baseMatchParams.id,
+        circleSessionId: baseMatchParams.circleSessionId,
+        player1Id: baseMatchParams.player1Id,
+        player2Id: baseMatchParams.player2Id,
+        outcome: "P1_WIN",
+      }),
+    );
+    expect(matchHistoryRepository.add).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: "CREATE",
+        matchId: baseMatchParams.id,
+        editorId: userId("user-3"),
+        outcome: "P1_WIN",
+      }),
+    );
+    expect(result.outcome).toBe("P1_WIN");
+  });
+
+  test("updateMatch は片方だけの指定でエラー", async () => {
+    const existing = createMatch(baseMatchParams);
+    vi.mocked(matchRepository.findById).mockResolvedValue(existing);
+
+    await expect(
+      service.updateMatch({
+        actorId: userId("user-3"),
+        id: baseMatchParams.id,
+        player1Id: userId("user-4"),
+      }),
+    ).rejects.toThrow("player1Id and player2Id must both be provided");
+
+    expect(matchRepository.save).not.toHaveBeenCalled();
+    expect(matchHistoryRepository.add).not.toHaveBeenCalled();
+  });
+
+  test("updateMatch は参加者でない場合にエラー", async () => {
+    const existing = createMatch(baseMatchParams);
+    vi.mocked(matchRepository.findById).mockResolvedValue(existing);
+    vi.mocked(circleSessionParticipationRepository.areParticipants).mockResolvedValue(
+      false,
+    );
+
+    await expect(
+      service.updateMatch({
+        actorId: userId("user-3"),
+        id: baseMatchParams.id,
+        player1Id: userId("user-4"),
+        player2Id: userId("user-5"),
+      }),
+    ).rejects.toThrow("Players must belong to the circle session");
+
+    expect(matchRepository.save).not.toHaveBeenCalled();
+    expect(matchHistoryRepository.add).not.toHaveBeenCalled();
+  });
+
+  test("updateMatch は結果を更新して履歴を追加する", async () => {
+    const existing = createMatch(baseMatchParams);
+    vi.mocked(matchRepository.findById).mockResolvedValue(existing);
+
+    const updated = await service.updateMatch({
+      actorId: userId("user-3"),
+      id: baseMatchParams.id,
+      outcome: "DRAW",
+    });
+
+    expect(matchRepository.save).toHaveBeenCalledWith(
+      expect.objectContaining({ outcome: "DRAW" }),
+    );
+    expect(matchHistoryRepository.add).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: "UPDATE",
+        matchId: baseMatchParams.id,
+        editorId: userId("user-3"),
+        outcome: "DRAW",
+      }),
+    );
+    expect(updated.outcome).toBe("DRAW");
+  });
+
+  test("deleteMatch は削除済みならエラー", async () => {
+    const existing = {
+      ...createMatch(baseMatchParams),
+      deletedAt: new Date("2024-01-01T00:00:00Z"),
+    };
+    vi.mocked(matchRepository.findById).mockResolvedValue(existing);
+
+    await expect(
+      service.deleteMatch({
+        actorId: userId("user-3"),
+        id: baseMatchParams.id,
+      }),
+    ).rejects.toThrow("Match is deleted");
+
+    expect(matchRepository.save).not.toHaveBeenCalled();
+    expect(matchHistoryRepository.add).not.toHaveBeenCalled();
+  });
+});

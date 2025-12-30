@@ -13,6 +13,68 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  {
+    files: ["server/domain/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            "@/server/application/**",
+            "@/server/infrastructure/**",
+            "@/app/**",
+            "app/**",
+          ],
+        },
+      ],
+    },
+  },
+  {
+    files: ["server/application/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: ["@/server/infrastructure/**"],
+        },
+      ],
+    },
+  },
+  {
+    files: ["server/application/**/*.test.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": "off",
+    },
+  },
+  {
+    files: ["server/application/service-container.ts"],
+    rules: {
+      "no-restricted-imports": "off",
+    },
+  },
+  {
+    files: ["server/application/auth/auth-handler.ts"],
+    rules: {
+      "no-restricted-imports": "off",
+    },
+  },
+  {
+    files: ["server/application/auth/session.ts"],
+    rules: {
+      "no-restricted-imports": "off",
+    },
+  },
+  {
+    files: ["app/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: ["@/server/infrastructure/**"],
+        },
+      ],
+    },
+  },
 ]);
 
 export default eslintConfig;

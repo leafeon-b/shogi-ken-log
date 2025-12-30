@@ -1,0 +1,84 @@
+import { describe, expect, test, vi } from "vitest";
+import { createServiceContainer } from "@/server/application/service-container";
+import { matchHistoryId } from "@/server/domain/common/ids";
+
+const createStub = () => ({
+  findById: vi.fn(),
+  save: vi.fn(),
+  delete: vi.fn(),
+});
+
+const createParticipationStub = () => ({
+  listParticipants: vi.fn(),
+  addParticipant: vi.fn(),
+  updateParticipantRole: vi.fn(),
+  removeParticipant: vi.fn(),
+});
+
+const createSessionStub = () => ({
+  findById: vi.fn(),
+  listByCircleId: vi.fn(),
+  save: vi.fn(),
+  delete: vi.fn(),
+});
+
+const createMatchStub = () => ({
+  findById: vi.fn(),
+  listByCircleSessionId: vi.fn(),
+  save: vi.fn(),
+});
+
+const createMatchHistoryStub = () => ({
+  listByMatchId: vi.fn(),
+  add: vi.fn(),
+});
+
+const createSessionParticipationStub = () => ({
+  listParticipants: vi.fn(),
+  addParticipant: vi.fn(),
+  updateParticipantRole: vi.fn(),
+  areParticipants: vi.fn(),
+  removeParticipant: vi.fn(),
+});
+
+const createAuthzStub = () => ({
+  isRegisteredUser: vi.fn(),
+  findCircleMembership: vi.fn(),
+  findCircleSessionMembership: vi.fn(),
+});
+
+describe("Service container", () => {
+  test("依存を注入してサービスを作成できる", async () => {
+    const circleRepository = createStub();
+    const circleParticipationRepository = createParticipationStub();
+    const circleSessionRepository = createSessionStub();
+    const matchRepository = createMatchStub();
+    const matchHistoryRepository = createMatchHistoryStub();
+    const circleSessionParticipationRepository = createSessionParticipationStub();
+    const authzRepository = createAuthzStub();
+
+    const container = createServiceContainer({
+      circleRepository,
+      circleParticipationRepository,
+      circleSessionRepository,
+      matchRepository,
+      matchHistoryRepository,
+      circleSessionParticipationRepository,
+      authzRepository,
+      generateMatchHistoryId: () => matchHistoryId("history-1"),
+    });
+
+    expect(container.circleService).toBeDefined();
+    expect(container.circleParticipationService).toBeDefined();
+    expect(container.circleSessionService).toBeDefined();
+    expect(container.circleSessionParticipationService).toBeDefined();
+    expect(container.accessService).toBeDefined();
+    expect(container.matchService).toBeDefined();
+    expect(container.matchHistoryService).toBeDefined();
+
+    circleRepository.findById.mockResolvedValueOnce(null);
+    await expect(
+      container.circleService.getCircle("user-1", "circle-1" as never),
+    ).resolves.toBeNull();
+  });
+});

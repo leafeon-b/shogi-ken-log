@@ -1,19 +1,20 @@
-import type { CircleRole, CircleSessionRole } from "@/generated/prisma/enums";
+import type {
+  CircleRole,
+  CircleSessionRole,
+} from "@/server/domain/services/authz/roles";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import {
-  createAccessService,
-  type AuthzRepository,
-} from "@/server/application/authz/access-service";
+import { createAccessService } from "@/server/application/authz/access-service";
+import type { AuthzRepository } from "@/server/domain/services/authz/authz-repository";
 import type {
   CircleMembership,
   CircleSessionMembership,
-} from "@/server/domain/authz/memberships";
+} from "@/server/domain/services/authz/memberships";
 import {
   circleMembership,
   circleSessionMembership,
   noCircleMembership,
   noCircleSessionMembership,
-} from "@/server/domain/authz/memberships";
+} from "@/server/domain/services/authz/memberships";
 
 const userId = "user-1";
 const targetUserId = "user-2";
@@ -50,7 +51,7 @@ const setCircleMemberships = (
   targetMembership: CircleMembership,
 ) => {
   mockedFindCircleMembership.mockImplementation(
-    async (requestedUserId: string, _circleId: string) =>
+    async (requestedUserId: string) =>
       requestedUserId === userId ? actorMembership : targetMembership,
   );
 };
@@ -64,7 +65,7 @@ const setCircleSessionMemberships = (
   targetMembership: CircleSessionMembership,
 ) => {
   mockedFindCircleSessionMembership.mockImplementation(
-    async (requestedUserId: string, _circleSessionId: string) =>
+    async (requestedUserId: string) =>
       requestedUserId === userId ? actorMembership : targetMembership,
   );
 };

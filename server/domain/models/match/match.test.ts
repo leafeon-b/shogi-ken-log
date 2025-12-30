@@ -1,0 +1,107 @@
+import { describe, expect, test } from "vitest";
+import {
+  circleSessionId,
+  matchId,
+  userId,
+} from "@/server/domain/common/ids";
+import {
+  createMatch,
+  deleteMatch,
+  updateMatchOutcome,
+  updateMatchPlayers,
+  restoreMatch,
+} from "@/server/domain/models/match/match";
+
+describe("Match ドメイン", () => {
+  test("createMatch は対局者の違いと順序の正数を検証する", () => {
+    const match = createMatch({
+      id: matchId("match-1"),
+      circleSessionId: circleSessionId("session-1"),
+      order: 1,
+      player1Id: userId("user-1"),
+      player2Id: userId("user-2"),
+    });
+
+    expect(match.outcome).toBe("UNKNOWN");
+  });
+
+  test("createMatch は同一対局者を拒否する", () => {
+    expect(() =>
+      createMatch({
+        id: matchId("match-1"),
+        circleSessionId: circleSessionId("session-1"),
+        order: 1,
+        player1Id: userId("user-1"),
+        player2Id: userId("user-1"),
+      }),
+    ).toThrow("players must be different");
+  });
+
+  test("createMatch は順序が正の整数でない場合に拒否する", () => {
+    expect(() =>
+      createMatch({
+        id: matchId("match-1"),
+        circleSessionId: circleSessionId("session-1"),
+        order: 0,
+        player1Id: userId("user-1"),
+        player2Id: userId("user-2"),
+      }),
+    ).toThrow("order must be a positive integer");
+  });
+
+  test("updateMatchPlayers は対局者の違いを検証する", () => {
+    const match = createMatch({
+      id: matchId("match-1"),
+      circleSessionId: circleSessionId("session-1"),
+      order: 1,
+      player1Id: userId("user-1"),
+      player2Id: userId("user-2"),
+    });
+
+    expect(() =>
+      updateMatchPlayers(match, userId("user-1"), userId("user-1")),
+    ).toThrow("players must be different");
+  });
+
+  test("updateMatchOutcome は結果を更新する", () => {
+    const match = createMatch({
+      id: matchId("match-1"),
+      circleSessionId: circleSessionId("session-1"),
+      order: 1,
+      player1Id: userId("user-1"),
+      player2Id: userId("user-2"),
+    });
+
+    const updated = updateMatchOutcome(match, "P1_WIN");
+    expect(updated.outcome).toBe("P1_WIN");
+  });
+
+  test("deleteMatch は deletedAt を設定する", () => {
+    const match = createMatch({
+      id: matchId("match-1"),
+      circleSessionId: circleSessionId("session-1"),
+      order: 1,
+      player1Id: userId("user-1"),
+      player2Id: userId("user-2"),
+    });
+
+    const deletedAt = new Date("2024-01-01T00:00:00Z");
+    const deleted = deleteMatch(match, deletedAt);
+    expect(deleted.deletedAt?.toISOString()).toBe("2024-01-01T00:00:00.000Z");
+  });
+
+  test("restoreMatch は deletedAt を含めて復元する", () => {
+    const restored = restoreMatch({
+      id: matchId("match-1"),
+      circleSessionId: circleSessionId("session-1"),
+      order: 1,
+      player1Id: userId("user-1"),
+      player2Id: userId("user-2"),
+      outcome: "P2_WIN",
+      deletedAt: new Date("2024-01-02T00:00:00Z"),
+    });
+
+    expect(restored.deletedAt?.toISOString()).toBe("2024-01-02T00:00:00.000Z");
+    expect(restored.outcome).toBe("P2_WIN");
+  });
+});

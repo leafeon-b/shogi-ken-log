@@ -1,0 +1,100 @@
+import type { UserId } from "@/server/domain/common/ids";
+import { assertDifferentIds } from "@/server/domain/common/validation";
+import { CircleRole, CircleSessionRole } from "@/server/domain/services/authz/roles";
+
+export type CircleMember = {
+  userId: UserId;
+  role: CircleRole;
+};
+
+export type CircleSessionMember = {
+  userId: UserId;
+  role: CircleSessionRole;
+};
+
+const assertSingleOwner = (
+  ownerCount: number,
+  label: string,
+): void => {
+  if (ownerCount !== 1) {
+    throw new Error(`${label} must have exactly one owner`);
+  }
+};
+
+export const assertSingleCircleOwner = (members: CircleMember[]): void => {
+  const owners = members.filter((member) => member.role === CircleRole.CircleOwner);
+  assertSingleOwner(owners.length, "Circle");
+};
+
+export const assertSingleCircleSessionOwner = (
+  members: CircleSessionMember[],
+): void => {
+  const owners = members.filter(
+    (member) => member.role === CircleSessionRole.CircleSessionOwner,
+  );
+  assertSingleOwner(owners.length, "CircleSession");
+};
+
+export const transferCircleOwnership = (
+  members: CircleMember[],
+  fromUserId: UserId,
+  toUserId: UserId,
+): CircleMember[] => {
+  assertDifferentIds(fromUserId, toUserId, "owner transfer");
+  assertSingleCircleOwner(members);
+
+  const currentOwner = members.find((member) => member.userId === fromUserId);
+  if (!currentOwner || currentOwner.role !== CircleRole.CircleOwner) {
+    throw new Error("Current owner must be CircleOwner");
+  }
+
+  const target = members.find((member) => member.userId === toUserId);
+  if (!target) {
+    throw new Error("Target member not found");
+  }
+
+  const updated = members.map((member) => {
+    if (member.userId === fromUserId) {
+      return { ...member, role: CircleRole.CircleManager };
+    }
+    if (member.userId === toUserId) {
+      return { ...member, role: CircleRole.CircleOwner };
+    }
+    return member;
+  });
+
+  assertSingleCircleOwner(updated);
+  return updated;
+};
+
+export const transferCircleSessionOwnership = (
+  members: CircleSessionMember[],
+  fromUserId: UserId,
+  toUserId: UserId,
+): CircleSessionMember[] => {
+  assertDifferentIds(fromUserId, toUserId, "owner transfer");
+  assertSingleCircleSessionOwner(members);
+
+  const currentOwner = members.find((member) => member.userId === fromUserId);
+  if (!currentOwner || currentOwner.role !== CircleSessionRole.CircleSessionOwner) {
+    throw new Error("Current owner must be CircleSessionOwner");
+  }
+
+  const target = members.find((member) => member.userId === toUserId);
+  if (!target) {
+    throw new Error("Target member not found");
+  }
+
+  const updated = members.map((member) => {
+    if (member.userId === fromUserId) {
+      return { ...member, role: CircleSessionRole.CircleSessionManager };
+    }
+    if (member.userId === toUserId) {
+      return { ...member, role: CircleSessionRole.CircleSessionOwner };
+    }
+    return member;
+  });
+
+  assertSingleCircleSessionOwner(updated);
+  return updated;
+};
