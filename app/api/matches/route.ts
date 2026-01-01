@@ -1,9 +1,5 @@
 import { randomUUID } from "crypto";
-import {
-  circleSessionId,
-  matchId,
-  userId,
-} from "@/server/domain/common/ids";
+import { circleSessionId, matchId, userId } from "@/server/domain/common/ids";
 import { getServiceContainer } from "@/server/application/service-container";
 import { getSessionUserId } from "@/server/application/auth/session";
 import {
@@ -24,12 +20,10 @@ export async function GET(request: Request) {
     }
 
     const { matchService } = getServiceContainer();
-    const matches = await matchService.listByCircleSessionId(
-      {
-        actorId: userId(actorId),
-        circleSessionId: circleSessionId(circleSessionIdParam),
-      },
-    );
+    const matches = await matchService.listByCircleSessionId({
+      actorId: userId(actorId),
+      circleSessionId: circleSessionId(circleSessionIdParam),
+    });
 
     return json(matches);
   } catch (error) {

@@ -7,8 +7,7 @@ export const hasMatchParticipation = (
 ): boolean =>
   matches.some(
     (match) =>
-      match.player1Id === participantId ||
-      match.player2Id === participantId,
+      match.player1Id === participantId || match.player2Id === participantId,
   );
 
 export const assertCanRemoveCircleSessionParticipant = (

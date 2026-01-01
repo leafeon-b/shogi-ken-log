@@ -1,5 +1,8 @@
 import type { Circle } from "@/server/domain/models/circle/circle";
-import { createCircle, renameCircle } from "@/server/domain/models/circle/circle";
+import {
+  createCircle,
+  renameCircle,
+} from "@/server/domain/models/circle/circle";
 import { userId } from "@/server/domain/common/ids";
 import type { CircleId } from "@/server/domain/common/ids";
 import type { CircleRepository } from "@/server/domain/models/circle/circle-repository";

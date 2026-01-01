@@ -50,9 +50,11 @@ beforeEach(() => {
 
 describe("Circle 参加者サービス", () => {
   test("listParticipants は一覧を返す", async () => {
-    vi.mocked(circleParticipationRepository.listParticipants).mockResolvedValueOnce(
-      [{ userId: userId("user-1"), role: "CircleOwner" }],
-    );
+    vi.mocked(
+      circleParticipationRepository.listParticipants,
+    ).mockResolvedValueOnce([
+      { userId: userId("user-1"), role: "CircleOwner" },
+    ]);
 
     const result = await service.listParticipants({
       actorId: "user-actor",
@@ -62,15 +64,13 @@ describe("Circle 参加者サービス", () => {
     expect(circleParticipationRepository.listParticipants).toHaveBeenCalledWith(
       circleId("circle-1"),
     );
-    expect(result).toEqual([
-      { userId: userId("user-1"), role: "CircleOwner" },
-    ]);
+    expect(result).toEqual([{ userId: userId("user-1"), role: "CircleOwner" }]);
   });
 
   test("addParticipant は Owner がいない状態で Member を拒否する", async () => {
-    vi.mocked(circleParticipationRepository.listParticipants).mockResolvedValueOnce(
-      [],
-    );
+    vi.mocked(
+      circleParticipationRepository.listParticipants,
+    ).mockResolvedValueOnce([]);
 
     await expect(
       service.addParticipant({
@@ -96,12 +96,12 @@ describe("Circle 参加者サービス", () => {
   });
 
   test("transferOwnership は Owner を移譲する", async () => {
-    vi.mocked(circleParticipationRepository.listParticipants).mockResolvedValueOnce(
-      [
-        { userId: userId("user-1"), role: "CircleOwner" },
-        { userId: userId("user-2"), role: "CircleMember" },
-      ],
-    );
+    vi.mocked(
+      circleParticipationRepository.listParticipants,
+    ).mockResolvedValueOnce([
+      { userId: userId("user-1"), role: "CircleOwner" },
+      { userId: userId("user-2"), role: "CircleMember" },
+    ]);
 
     await service.transferOwnership({
       actorId: "user-actor",
@@ -127,9 +127,11 @@ describe("Circle 参加者サービス", () => {
   });
 
   test("removeParticipant は Owner の削除を拒否する", async () => {
-    vi.mocked(circleParticipationRepository.listParticipants).mockResolvedValueOnce(
-      [{ userId: userId("user-1"), role: "CircleOwner" }],
-    );
+    vi.mocked(
+      circleParticipationRepository.listParticipants,
+    ).mockResolvedValueOnce([
+      { userId: userId("user-1"), role: "CircleOwner" },
+    ]);
 
     await expect(
       service.removeParticipant({
@@ -139,6 +141,8 @@ describe("Circle 参加者サービス", () => {
       }),
     ).rejects.toThrow("Use transferOwnership to remove owner");
 
-    expect(circleParticipationRepository.removeParticipant).not.toHaveBeenCalled();
+    expect(
+      circleParticipationRepository.removeParticipant,
+    ).not.toHaveBeenCalled();
   });
 });

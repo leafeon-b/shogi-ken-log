@@ -1,7 +1,9 @@
 import { describe, expect, test, vi } from "vitest";
 
 const getServerSessionMock = vi.hoisted(() => vi.fn());
-const createAuthOptionsMock = vi.hoisted(() => vi.fn(() => ({ kind: "options" })));
+const createAuthOptionsMock = vi.hoisted(() =>
+  vi.fn(() => ({ kind: "options" })),
+);
 
 vi.mock("next-auth", () => ({
   getServerSession: getServerSessionMock,

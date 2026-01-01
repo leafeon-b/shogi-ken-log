@@ -1,4 +1,7 @@
-import { CircleRole, CircleSessionRole } from "@/server/domain/services/authz/roles";
+import {
+  CircleRole,
+  CircleSessionRole,
+} from "@/server/domain/services/authz/roles";
 import { describe, expect, test } from "vitest";
 import {
   isSameOrHigherCircleRole,
@@ -22,7 +25,7 @@ describe("ロール", () => {
       "isSameOrHigherCircleRole（%s と %s）",
       (actorRole, targetRole, expected) => {
         expect(isSameOrHigherCircleRole(actorRole, targetRole)).toBe(expected);
-      }
+      },
     );
   });
 
@@ -38,9 +41,9 @@ describe("ロール", () => {
       "isSameOrHigherCircleSessionRole（%s と %s）",
       (actorRole, targetRole, expected) => {
         expect(isSameOrHigherCircleSessionRole(actorRole, targetRole)).toBe(
-          expected
+          expected,
         );
-      }
+      },
     );
   });
 });

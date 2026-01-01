@@ -250,9 +250,7 @@ export const createMatchService = (deps: MatchServiceDeps) => {
       if (!allowed) {
         throw new Error("Forbidden");
       }
-      return deps.matchRepository.listByCircleSessionId(
-        params.circleSessionId,
-      );
+      return deps.matchRepository.listByCircleSessionId(params.circleSessionId);
     },
   };
 };

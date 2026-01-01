@@ -11,12 +11,10 @@ export async function GET(
     const actorId = await getSessionUserId();
     const { matchHistoryService } = getServiceContainer();
     const params = await context.params;
-    const histories = await matchHistoryService.listByMatchId(
-      {
-        actorId,
-        matchId: matchId(params.matchId),
-      },
-    );
+    const histories = await matchHistoryService.listByMatchId({
+      actorId,
+      matchId: matchId(params.matchId),
+    });
 
     return json(histories);
   } catch (error) {

@@ -5,11 +5,7 @@ import type {
   MatchHistoryAction,
 } from "@/server/domain/models/match-history/match-history";
 import type { MatchOutcome } from "@/server/domain/models/match/match";
-import {
-  matchHistoryId,
-  matchId,
-  userId,
-} from "@/server/domain/common/ids";
+import { matchHistoryId, matchId, userId } from "@/server/domain/common/ids";
 
 export const mapMatchHistoryToDomain = (
   history: PrismaMatchHistory,

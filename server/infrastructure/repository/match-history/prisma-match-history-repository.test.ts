@@ -39,7 +39,7 @@ describe("Prisma MatchHistory リポジトリ", () => {
     mockedPrisma.matchHistory.findMany.mockResolvedValueOnce([prismaHistory]);
 
     const histories = await prismaMatchHistoryRepository.listByMatchId(
-      matchId("match-1")
+      matchId("match-1"),
     );
 
     expect(mockedPrisma.matchHistory.findMany).toHaveBeenCalledWith({

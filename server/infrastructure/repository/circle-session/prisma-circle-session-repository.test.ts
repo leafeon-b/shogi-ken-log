@@ -13,10 +13,7 @@ vi.mock("@/server/infrastructure/db", () => ({
 
 import type { CircleSession as PrismaCircleSession } from "@/generated/prisma/client";
 import { prisma } from "@/server/infrastructure/db";
-import {
-  circleId,
-  circleSessionId,
-} from "@/server/domain/common/ids";
+import { circleId, circleSessionId } from "@/server/domain/common/ids";
 import { createCircleSession } from "@/server/domain/models/circle-session/circle-session";
 import { prismaCircleSessionRepository } from "@/server/infrastructure/repository/circle-session/prisma-circle-session-repository";
 import { mapCircleSessionToPersistence } from "@/server/infrastructure/mappers/circle-session-mapper";

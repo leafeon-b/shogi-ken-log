@@ -34,12 +34,9 @@ describe("Authz マッパー", () => {
     });
   });
 
-  test(
-    "CircleSessionRole が null のとき CircleSessionMembership は none",
-    () => {
-      const membership = mapCircleSessionMembershipFromPersistence(null);
+  test("CircleSessionRole が null のとき CircleSessionMembership は none", () => {
+    const membership = mapCircleSessionMembershipFromPersistence(null);
 
-      expect(membership).toEqual({ kind: "none" });
-    },
-  );
+    expect(membership).toEqual({ kind: "none" });
+  });
 });

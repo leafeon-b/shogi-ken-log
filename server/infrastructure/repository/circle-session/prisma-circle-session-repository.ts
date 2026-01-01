@@ -5,10 +5,7 @@ import {
   mapCircleSessionToPersistence,
 } from "@/server/infrastructure/mappers/circle-session-mapper";
 import type { CircleSession } from "@/server/domain/models/circle-session/circle-session";
-import type {
-  CircleId,
-  CircleSessionId,
-} from "@/server/domain/common/ids";
+import type { CircleId, CircleSessionId } from "@/server/domain/common/ids";
 
 export const prismaCircleSessionRepository: CircleSessionRepository = {
   async findById(id: CircleSessionId): Promise<CircleSession | null> {

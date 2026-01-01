@@ -1,9 +1,5 @@
 import { describe, expect, test } from "vitest";
-import {
-  circleSessionId,
-  matchId,
-  userId,
-} from "@/server/domain/common/ids";
+import { circleSessionId, matchId, userId } from "@/server/domain/common/ids";
 import {
   createMatch,
   deleteMatch,

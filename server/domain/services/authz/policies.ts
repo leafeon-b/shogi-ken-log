@@ -2,7 +2,10 @@ import {
   isSameOrHigherCircleRole,
   isSameOrHigherCircleSessionRole,
 } from "@/server/domain/services/authz/roles";
-import { CircleRole, CircleSessionRole } from "@/server/domain/services/authz/roles";
+import {
+  CircleRole,
+  CircleSessionRole,
+} from "@/server/domain/services/authz/roles";
 import type {
   CircleMembership,
   CircleSessionMembership,
@@ -60,13 +63,12 @@ export function canChangeCircleMemberRole(
   if (actorMembership.role === CircleMember) {
     return false;
   }
-  return isSameOrHigherCircleRole(
-    actorMembership.role,
-    targetMembership.role,
-  );
+  return isSameOrHigherCircleRole(actorMembership.role, targetMembership.role);
 }
 
-export function canTransferCircleOwnership(membership: CircleMembership): boolean {
+export function canTransferCircleOwnership(
+  membership: CircleMembership,
+): boolean {
   return isCircleMember(membership) && membership.role === CircleOwner;
 }
 
@@ -81,7 +83,9 @@ export function canViewCircleSession(
   circleMembership: CircleMembership,
   sessionMembership: CircleSessionMembership,
 ): boolean {
-  return isCircleMember(circleMembership) || isCircleSessionMember(sessionMembership);
+  return (
+    isCircleMember(circleMembership) || isCircleSessionMember(sessionMembership)
+  );
 }
 
 export function canEditCircleSession(
@@ -97,7 +101,9 @@ export function canEditCircleSession(
 export function canDeleteCircleSession(
   membership: CircleSessionMembership,
 ): boolean {
-  return isCircleSessionMember(membership) && membership.role === CircleSessionOwner;
+  return (
+    isCircleSessionMember(membership) && membership.role === CircleSessionOwner
+  );
 }
 
 export function canAddCircleSessionMember(
@@ -138,41 +144,52 @@ export function canChangeCircleSessionMemberRole(
 export function canTransferCircleSessionOwnership(
   membership: CircleSessionMembership,
 ): boolean {
-  return isCircleSessionMember(membership) &&
-    membership.role === CircleSessionOwner;
+  return (
+    isCircleSessionMember(membership) && membership.role === CircleSessionOwner
+  );
 }
 
 export function canRecordMatch(
   circleMembership: CircleMembership,
   sessionMembership: CircleSessionMembership,
 ): boolean {
-  return isCircleMember(circleMembership) || isCircleSessionMember(sessionMembership);
+  return (
+    isCircleMember(circleMembership) || isCircleSessionMember(sessionMembership)
+  );
 }
 
 export function canViewMatch(
   circleMembership: CircleMembership,
   sessionMembership: CircleSessionMembership,
 ): boolean {
-  return isCircleMember(circleMembership) || isCircleSessionMember(sessionMembership);
+  return (
+    isCircleMember(circleMembership) || isCircleSessionMember(sessionMembership)
+  );
 }
 
 export function canEditMatch(
   circleMembership: CircleMembership,
   sessionMembership: CircleSessionMembership,
 ): boolean {
-  return isCircleMember(circleMembership) || isCircleSessionMember(sessionMembership);
+  return (
+    isCircleMember(circleMembership) || isCircleSessionMember(sessionMembership)
+  );
 }
 
 export function canDeleteMatch(
   circleMembership: CircleMembership,
   sessionMembership: CircleSessionMembership,
 ): boolean {
-  return isCircleMember(circleMembership) || isCircleSessionMember(sessionMembership);
+  return (
+    isCircleMember(circleMembership) || isCircleSessionMember(sessionMembership)
+  );
 }
 
 export function canViewMatchHistory(
   circleMembership: CircleMembership,
   sessionMembership: CircleSessionMembership,
 ): boolean {
-  return isCircleMember(circleMembership) || isCircleSessionMember(sessionMembership);
+  return (
+    isCircleMember(circleMembership) || isCircleSessionMember(sessionMembership)
+  );
 }

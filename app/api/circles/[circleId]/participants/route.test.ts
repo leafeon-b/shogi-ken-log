@@ -33,12 +33,10 @@ describe("/api/circles/[circleId]/participants", () => {
       params: { circleId: "circle-1" },
     });
 
-    expect(circleParticipationService.listParticipants).toHaveBeenCalledWith(
-      {
-        actorId: "user-1",
-        circleId: circleId("circle-1"),
-      },
-    );
+    expect(circleParticipationService.listParticipants).toHaveBeenCalledWith({
+      actorId: "user-1",
+      circleId: circleId("circle-1"),
+    });
     expect(response.status).toBe(200);
   });
 

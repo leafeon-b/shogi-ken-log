@@ -12,11 +12,7 @@ vi.mock("@/server/infrastructure/db", () => ({
 
 import type { Match as PrismaMatch } from "@/generated/prisma/client";
 import { prisma } from "@/server/infrastructure/db";
-import {
-  circleSessionId,
-  matchId,
-  userId,
-} from "@/server/domain/common/ids";
+import { circleSessionId, matchId, userId } from "@/server/domain/common/ids";
 import { createMatch } from "@/server/domain/models/match/match";
 import { prismaMatchRepository } from "@/server/infrastructure/repository/match/prisma-match-repository";
 import { mapMatchToPersistence } from "@/server/infrastructure/mappers/match-mapper";

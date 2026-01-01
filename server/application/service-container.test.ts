@@ -54,7 +54,8 @@ describe("Service container", () => {
     const circleSessionRepository = createSessionStub();
     const matchRepository = createMatchStub();
     const matchHistoryRepository = createMatchHistoryStub();
-    const circleSessionParticipationRepository = createSessionParticipationStub();
+    const circleSessionParticipationRepository =
+      createSessionParticipationStub();
     const authzRepository = createAuthzStub();
 
     const container = createServiceContainer({

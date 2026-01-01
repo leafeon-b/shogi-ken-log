@@ -4,11 +4,7 @@ import {
   mapMatchToDomain,
   mapMatchToPersistence,
 } from "@/server/infrastructure/mappers/match-mapper";
-import {
-  circleSessionId,
-  matchId,
-  userId,
-} from "@/server/domain/common/ids";
+import { circleSessionId, matchId, userId } from "@/server/domain/common/ids";
 import { createMatch } from "@/server/domain/models/match/match";
 
 describe("Match マッパー", () => {
@@ -53,5 +49,4 @@ describe("Match マッパー", () => {
       deletedAt: null,
     });
   });
-
 });

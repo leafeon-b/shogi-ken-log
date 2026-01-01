@@ -84,29 +84,29 @@ beforeEach(() => {
 
 describe("CircleSession 参加者サービス", () => {
   test("listParticipants は一覧を返す", async () => {
-    vi.mocked(circleSessionParticipationRepository.listParticipants).mockResolvedValueOnce(
-      [
-        { userId: userId("user-1"), role: "CircleSessionOwner" },
-      ],
-    );
+    vi.mocked(
+      circleSessionParticipationRepository.listParticipants,
+    ).mockResolvedValueOnce([
+      { userId: userId("user-1"), role: "CircleSessionOwner" },
+    ]);
 
     const result = await service.listParticipants({
       actorId: "user-actor",
       circleSessionId: circleSessionId("session-1"),
     });
 
-    expect(circleSessionParticipationRepository.listParticipants).toHaveBeenCalledWith(
-      circleSessionId("session-1"),
-    );
+    expect(
+      circleSessionParticipationRepository.listParticipants,
+    ).toHaveBeenCalledWith(circleSessionId("session-1"));
     expect(result).toEqual([
       { userId: userId("user-1"), role: "CircleSessionOwner" },
     ]);
   });
 
   test("addParticipant は Owner がいない状態で Member を拒否する", async () => {
-    vi.mocked(circleSessionParticipationRepository.listParticipants).mockResolvedValueOnce(
-      [],
-    );
+    vi.mocked(
+      circleSessionParticipationRepository.listParticipants,
+    ).mockResolvedValueOnce([]);
 
     await expect(
       service.addParticipant({
@@ -123,9 +123,11 @@ describe("CircleSession 参加者サービス", () => {
   });
 
   test("addParticipant は Owner がいる場合に Member を追加できる", async () => {
-    vi.mocked(circleSessionParticipationRepository.listParticipants).mockResolvedValueOnce(
-      [{ userId: userId("user-1"), role: "CircleSessionOwner" }],
-    );
+    vi.mocked(
+      circleSessionParticipationRepository.listParticipants,
+    ).mockResolvedValueOnce([
+      { userId: userId("user-1"), role: "CircleSessionOwner" },
+    ]);
 
     await service.addParticipant({
       actorId: "user-actor",
@@ -155,12 +157,12 @@ describe("CircleSession 参加者サービス", () => {
   });
 
   test("transferOwnership は Owner を移譲する", async () => {
-    vi.mocked(circleSessionParticipationRepository.listParticipants).mockResolvedValueOnce(
-      [
-        { userId: userId("user-1"), role: "CircleSessionOwner" },
-        { userId: userId("user-2"), role: "CircleSessionMember" },
-      ],
-    );
+    vi.mocked(
+      circleSessionParticipationRepository.listParticipants,
+    ).mockResolvedValueOnce([
+      { userId: userId("user-1"), role: "CircleSessionOwner" },
+      { userId: userId("user-2"), role: "CircleSessionMember" },
+    ]);
 
     await service.transferOwnership({
       actorId: "user-actor",

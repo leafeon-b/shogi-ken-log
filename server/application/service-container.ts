@@ -25,7 +25,9 @@ import { prismaAuthzRepository } from "@/server/infrastructure/repository/authz/
 
 export type ServiceContainer = {
   circleService: ReturnType<typeof createCircleService>;
-  circleParticipationService: ReturnType<typeof createCircleParticipationService>;
+  circleParticipationService: ReturnType<
+    typeof createCircleParticipationService
+  >;
   circleSessionService: ReturnType<typeof createCircleSessionService>;
   circleSessionParticipationService: ReturnType<
     typeof createCircleSessionParticipationService

@@ -3,10 +3,7 @@ import {
   createCircleSession,
   rescheduleCircleSession,
 } from "@/server/domain/models/circle-session/circle-session";
-import type {
-  CircleId,
-  CircleSessionId,
-} from "@/server/domain/common/ids";
+import type { CircleId, CircleSessionId } from "@/server/domain/common/ids";
 import { assertPositiveInteger } from "@/server/domain/common/validation";
 import type { CircleRepository } from "@/server/domain/models/circle/circle-repository";
 import type { CircleSessionRepository } from "@/server/domain/models/circle-session/circle-session-repository";
@@ -107,7 +104,11 @@ export const createCircleSessionService = (deps: CircleSessionServiceDeps) => ({
       if (!params.startsAt || !params.endsAt) {
         throw new Error("startsAt and endsAt must both be provided");
       }
-      updated = rescheduleCircleSession(updated, params.startsAt, params.endsAt);
+      updated = rescheduleCircleSession(
+        updated,
+        params.startsAt,
+        params.endsAt,
+      );
     }
 
     if (params.sequence != null) {
@@ -165,7 +166,10 @@ export const createCircleSessionService = (deps: CircleSessionServiceDeps) => ({
     return deps.circleSessionRepository.listByCircleId(circleId);
   },
 
-  async deleteCircleSession(actorId: string, id: CircleSessionId): Promise<void> {
+  async deleteCircleSession(
+    actorId: string,
+    id: CircleSessionId,
+  ): Promise<void> {
     const session = await deps.circleSessionRepository.findById(id);
     if (!session) {
       throw new Error("CircleSession not found");

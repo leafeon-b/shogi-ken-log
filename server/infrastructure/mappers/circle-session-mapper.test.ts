@@ -4,10 +4,7 @@ import {
   mapCircleSessionToDomain,
   mapCircleSessionToPersistence,
 } from "@/server/infrastructure/mappers/circle-session-mapper";
-import {
-  circleId,
-  circleSessionId,
-} from "@/server/domain/common/ids";
+import { circleId, circleSessionId } from "@/server/domain/common/ids";
 import { createCircleSession } from "@/server/domain/models/circle-session/circle-session";
 
 describe("CircleSession マッパー", () => {

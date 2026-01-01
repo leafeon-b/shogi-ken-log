@@ -1,8 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import {
-  circleSessionId,
-  userId,
-} from "@/server/domain/common/ids";
+import { circleSessionId, userId } from "@/server/domain/common/ids";
 
 const circleSessionParticipationService = {
   transferOwnership: vi.fn(),

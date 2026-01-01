@@ -1,4 +1,7 @@
-import { createCircle, renameCircle } from "@/server/domain/models/circle/circle";
+import {
+  createCircle,
+  renameCircle,
+} from "@/server/domain/models/circle/circle";
 import { circleId } from "@/server/domain/common/ids";
 import { describe, expect, test } from "vitest";
 
@@ -11,7 +14,7 @@ describe("Circle ドメイン", () => {
 
   test("createCircle は空名を拒否する", () => {
     expect(() =>
-      createCircle({ id: circleId("circle-1"), name: "  " })
+      createCircle({ id: circleId("circle-1"), name: "  " }),
     ).toThrow("Circle name is required");
   });
 

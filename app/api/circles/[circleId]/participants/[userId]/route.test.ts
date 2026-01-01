@@ -43,14 +43,14 @@ describe("/api/circles/[circleId]/participants/[userId]", () => {
       { params: { circleId: "circle-1", userId: "user-1" } },
     );
 
-    expect(circleParticipationService.changeParticipantRole).toHaveBeenCalledWith(
-      {
-        actorId: "user-1",
-        circleId: circleId("circle-1"),
-        userId: userId("user-1"),
-        role: "CircleManager",
-      },
-    );
+    expect(
+      circleParticipationService.changeParticipantRole,
+    ).toHaveBeenCalledWith({
+      actorId: "user-1",
+      circleId: circleId("circle-1"),
+      userId: userId("user-1"),
+      role: "CircleManager",
+    });
     expect(response.status).toBe(200);
   });
 
@@ -68,7 +68,9 @@ describe("/api/circles/[circleId]/participants/[userId]", () => {
       { params: { circleId: "circle-1", userId: "user-1" } },
     );
 
-    expect(circleParticipationService.changeParticipantRole).not.toHaveBeenCalled();
+    expect(
+      circleParticipationService.changeParticipantRole,
+    ).not.toHaveBeenCalled();
     expect(response.status).toBe(401);
   });
 

@@ -1,7 +1,4 @@
-import {
-  circleSessionId,
-  userId,
-} from "@/server/domain/common/ids";
+import { circleSessionId, userId } from "@/server/domain/common/ids";
 import { CircleSessionRole } from "@/server/domain/services/authz/roles";
 import { getServiceContainer } from "@/server/application/service-container";
 import { getSessionUserId } from "@/server/application/auth/session";
@@ -28,12 +25,11 @@ export async function GET(
     const actorId = await getSessionUserId();
     const params = await context.params;
     const { circleSessionParticipationService } = getServiceContainer();
-    const participants = await circleSessionParticipationService.listParticipants(
-      {
+    const participants =
+      await circleSessionParticipationService.listParticipants({
         actorId,
         circleSessionId: circleSessionId(params.circleSessionId),
-      },
-    );
+      });
 
     return json(participants);
   } catch (error) {

@@ -86,4 +86,5 @@ graph LR
   - `server/infrastructure/db.ts`
 
 ## 補足
+
 - リポジトリはマッパー経由で Prisma と接続する方針（Authz 含む）

@@ -82,10 +82,12 @@ describe("Prisma Authz リポジトリ", () => {
       "session-1",
     );
 
-    expect(mockedPrisma.circleSessionMembership.findFirst).toHaveBeenCalledWith({
-      where: { userId: "user-1", circleSessionId: "session-1" },
-      select: { role: true },
-    });
+    expect(mockedPrisma.circleSessionMembership.findFirst).toHaveBeenCalledWith(
+      {
+        where: { userId: "user-1", circleSessionId: "session-1" },
+        select: { role: true },
+      },
+    );
     expect(membership).toEqual({ kind: "member", role: "CircleSessionMember" });
   });
 

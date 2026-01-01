@@ -19,10 +19,7 @@ import {
   DELETE,
   PATCH,
 } from "@/app/api/circle-sessions/[circleSessionId]/participants/[userId]/route";
-import {
-  circleSessionId,
-  userId,
-} from "@/server/domain/common/ids";
+import { circleSessionId, userId } from "@/server/domain/common/ids";
 
 describe("/api/circle-sessions/[circleSessionId]/participants/[userId]", () => {
   beforeEach(() => {

@@ -1,7 +1,4 @@
-import {
-  circleSessionId,
-  userId,
-} from "@/server/domain/common/ids";
+import { circleSessionId, userId } from "@/server/domain/common/ids";
 import { CircleSessionRole } from "@/server/domain/services/authz/roles";
 import { getServiceContainer } from "@/server/application/service-container";
 import { getSessionUserId } from "@/server/application/auth/session";

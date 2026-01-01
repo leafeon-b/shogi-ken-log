@@ -3,10 +3,7 @@ import { createCircleSessionService } from "@/server/application/circle-session/
 import { createAccessService } from "@/server/application/authz/access-service";
 import type { CircleRepository } from "@/server/domain/models/circle/circle-repository";
 import type { CircleSessionRepository } from "@/server/domain/models/circle-session/circle-session-repository";
-import {
-  circleId,
-  circleSessionId,
-} from "@/server/domain/common/ids";
+import { circleId, circleSessionId } from "@/server/domain/common/ids";
 import { createCircle } from "@/server/domain/models/circle/circle";
 import { createCircleSession } from "@/server/domain/models/circle-session/circle-session";
 

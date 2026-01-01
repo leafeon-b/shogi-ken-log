@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { CirclePlus } from "lucide-react";
 import Link from "next/link";
@@ -25,9 +24,7 @@ export default function Home() {
           style={{ animationDelay: "80ms" }}
         >
           <div className="flex items-center justify-between">
-            <p className="text-sm font-semibold text-(--brand-ink)">
-              次回日程
-            </p>
+            <p className="text-sm font-semibold text-(--brand-ink)">次回日程</p>
             <span className="rounded-full bg-(--brand-gold)/20 px-3 py-1 text-xs text-(--brand-ink)">
               2026/03/12
             </span>
@@ -87,7 +84,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
     </div>
   );
 }

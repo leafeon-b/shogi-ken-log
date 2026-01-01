@@ -3,11 +3,7 @@ import {
   assertCanRemoveCircleSessionParticipant,
   hasMatchParticipation,
 } from "@/server/domain/services/circle-session/participation";
-import {
-  circleSessionId,
-  matchId,
-  userId,
-} from "@/server/domain/common/ids";
+import { circleSessionId, matchId, userId } from "@/server/domain/common/ids";
 import { createMatch } from "@/server/domain/models/match/match";
 
 const baseMatch = () =>

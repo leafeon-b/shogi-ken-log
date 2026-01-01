@@ -1,8 +1,5 @@
 import { describe, expect, test } from "vitest";
-import {
-  circleSessionId,
-  userId,
-} from "@/server/domain/common/ids";
+import { circleSessionId, userId } from "@/server/domain/common/ids";
 import {
   mapCircleSessionIdToPersistence,
   mapCircleSessionParticipantFromPersistence,

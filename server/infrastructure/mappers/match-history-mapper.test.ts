@@ -4,11 +4,7 @@ import {
   mapMatchHistoryToDomain,
   mapMatchHistoryToPersistence,
 } from "@/server/infrastructure/mappers/match-history-mapper";
-import {
-  matchHistoryId,
-  matchId,
-  userId,
-} from "@/server/domain/common/ids";
+import { matchHistoryId, matchId, userId } from "@/server/domain/common/ids";
 import { createMatchHistory } from "@/server/domain/models/match-history/match-history";
 
 describe("MatchHistory マッパー", () => {

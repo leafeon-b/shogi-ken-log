@@ -1,4 +1,7 @@
-import type { CircleRole, CircleSessionRole } from "@/server/domain/services/authz/roles";
+import type {
+  CircleRole,
+  CircleSessionRole,
+} from "@/server/domain/services/authz/roles";
 
 export type CircleMembership =
   | { kind: "none" }

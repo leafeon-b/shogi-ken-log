@@ -29,11 +29,15 @@ import {
   noCircleMembership,
   noCircleSessionMembership,
 } from "@/server/domain/services/authz/memberships";
-import { CircleRole, CircleSessionRole } from "@/server/domain/services/authz/roles";
+import {
+  CircleRole,
+  CircleSessionRole,
+} from "@/server/domain/services/authz/roles";
 
 const member = (role: CircleRole) => circleMembership(role);
 const noMember = () => noCircleMembership();
-const sessionMember = (role: CircleSessionRole) => circleSessionMembership(role);
+const sessionMember = (role: CircleSessionRole) =>
+  circleSessionMembership(role);
 const noSessionMember = () => noCircleSessionMembership();
 
 const { CircleOwner, CircleManager, CircleMember } = CircleRole;
@@ -226,23 +230,17 @@ describe("認可ポリシー", () => {
         target: sessionMember(CircleSessionManager),
         expected: true,
       },
-    ])(
-      "開催回参加者ロール変更: $expected",
-      ({ actor, target, expected }) => {
-        expect(canChangeCircleSessionMemberRole(actor, target)).toBe(expected);
-      },
-    );
+    ])("開催回参加者ロール変更: $expected", ({ actor, target, expected }) => {
+      expect(canChangeCircleSessionMemberRole(actor, target)).toBe(expected);
+    });
 
     test.each([
       { membership: sessionMember(CircleSessionOwner), expected: true },
       { membership: sessionMember(CircleSessionManager), expected: false },
       { membership: noSessionMember(), expected: false },
-    ])(
-      "開催回オーナー移譲: $expected",
-      ({ membership, expected }) => {
-        expect(canTransferCircleSessionOwnership(membership)).toBe(expected);
-      },
-    );
+    ])("開催回オーナー移譲: $expected", ({ membership, expected }) => {
+      expect(canTransferCircleSessionOwnership(membership)).toBe(expected);
+    });
   });
 
   describe("対局", () => {

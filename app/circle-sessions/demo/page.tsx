@@ -43,9 +43,7 @@ export default function CircleSessionDemoPage() {
 
       <section className="grid gap-6 lg:grid-cols-1">
         <div className="rounded-2xl border border-border/60 bg-white/90 p-6 shadow-sm">
-          <p className="text-sm font-semibold text-(--brand-ink)">
-            参加者
-          </p>
+          <p className="text-sm font-semibold text-(--brand-ink)">参加者</p>
           <div className="mt-4 space-y-3">
             {attendees.map((attendee) => (
               <Link

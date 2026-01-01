@@ -1,8 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import {
-  circleSessionId,
-  userId,
-} from "@/server/domain/common/ids";
+import { circleSessionId, userId } from "@/server/domain/common/ids";
 
 const circleSessionParticipationService = {
   listParticipants: vi.fn(),
@@ -19,7 +16,10 @@ vi.mock("@/server/application/auth/session", () => ({
   getSessionUserId: () => getSessionUserId(),
 }));
 
-import { GET, POST } from "@/app/api/circle-sessions/[circleSessionId]/participants/route";
+import {
+  GET,
+  POST,
+} from "@/app/api/circle-sessions/[circleSessionId]/participants/route";
 
 describe("/api/circle-sessions/[circleSessionId]/participants", () => {
   beforeEach(() => {
@@ -36,12 +36,12 @@ describe("/api/circle-sessions/[circleSessionId]/participants", () => {
       params: { circleSessionId: "session-1" },
     });
 
-    expect(circleSessionParticipationService.listParticipants).toHaveBeenCalledWith(
-      {
-        actorId: "user-1",
-        circleSessionId: circleSessionId("session-1"),
-      },
-    );
+    expect(
+      circleSessionParticipationService.listParticipants,
+    ).toHaveBeenCalledWith({
+      actorId: "user-1",
+      circleSessionId: circleSessionId("session-1"),
+    });
     expect(response.status).toBe(200);
   });
 
@@ -89,14 +89,14 @@ describe("/api/circle-sessions/[circleSessionId]/participants", () => {
       { params: { circleSessionId: "session-1" } },
     );
 
-    expect(circleSessionParticipationService.addParticipant).toHaveBeenCalledWith(
-      {
-        actorId: "user-1",
-        circleSessionId: circleSessionId("session-1"),
-        userId: userId("user-2"),
-        role: "CircleSessionMember",
-      },
-    );
+    expect(
+      circleSessionParticipationService.addParticipant,
+    ).toHaveBeenCalledWith({
+      actorId: "user-1",
+      circleSessionId: circleSessionId("session-1"),
+      userId: userId("user-2"),
+      role: "CircleSessionMember",
+    });
     expect(response.status).toBe(201);
   });
 

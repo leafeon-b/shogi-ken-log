@@ -9,7 +9,10 @@ import {
   noCircleMembership,
   noCircleSessionMembership,
 } from "@/server/domain/services/authz/memberships";
-import { CircleRole, CircleSessionRole } from "@/server/domain/services/authz/roles";
+import {
+  CircleRole,
+  CircleSessionRole,
+} from "@/server/domain/services/authz/roles";
 
 describe("メンバーシップ", () => {
   test("circleMembership は member を返す", () => {
@@ -35,7 +38,9 @@ describe("メンバーシップ", () => {
   });
 
   test("isCircleMember は member で true", () => {
-    expect(isCircleMember(circleMembership(CircleRole.CircleManager))).toBe(true);
+    expect(isCircleMember(circleMembership(CircleRole.CircleManager))).toBe(
+      true,
+    );
   });
 
   test("isCircleMember は none で false", () => {
@@ -43,7 +48,9 @@ describe("メンバーシップ", () => {
   });
 
   test("circleSessionMembership は member を返す", () => {
-    expect(circleSessionMembership(CircleSessionRole.CircleSessionOwner)).toEqual({
+    expect(
+      circleSessionMembership(CircleSessionRole.CircleSessionOwner),
+    ).toEqual({
       kind: "member",
       role: CircleSessionRole.CircleSessionOwner,
     });

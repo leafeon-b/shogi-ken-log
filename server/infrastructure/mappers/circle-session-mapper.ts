@@ -1,10 +1,7 @@
 import type { CircleSession as PrismaCircleSession } from "@/generated/prisma/client";
 import { createCircleSession } from "@/server/domain/models/circle-session/circle-session";
 import type { CircleSession } from "@/server/domain/models/circle-session/circle-session";
-import {
-  circleId,
-  circleSessionId,
-} from "@/server/domain/common/ids";
+import { circleId, circleSessionId } from "@/server/domain/common/ids";
 
 export const mapCircleSessionToDomain = (
   session: PrismaCircleSession,

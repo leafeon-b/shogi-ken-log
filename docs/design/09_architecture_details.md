@@ -1,12 +1,14 @@
 # アーキテクチャ詳細
 
 ## 目的
+
 アーキテクチャ概要図を前提に、各レイヤの構成要素を具体名で整理する。
 詳細設計に進む際の参照点とする。
 
 ## Domain
 
 ### Domain Diagram
+
 ```mermaid
 graph TD
   subgraph Domain["Domain"]
@@ -40,15 +42,18 @@ graph TD
 ### models/
 
 #### Aggregates (Roots)
+
 - Circle: `server/domain/models/circle/circle.ts`
 - CircleSession: `server/domain/models/circle-session/circle-session.ts`
 - Match: `server/domain/models/match/match.ts`
 - MatchHistory: `server/domain/models/match-history/match-history.ts`
 
 #### Entities (集約内部)
+
 - CircleParticipant: `server/domain/models/circle/circle-participant.ts`
 
 #### Factories
+
 - Circle: `server/domain/models/circle/circle.ts`
   - createCircle
 - CircleSession: `server/domain/models/circle-session/circle-session.ts`
@@ -59,6 +64,7 @@ graph TD
   - createMatchHistory
 
 #### Repository Interfaces (Models)
+
 - CircleRepository: `server/domain/models/circle/circle-repository.ts`
 - CircleParticipationRepository: `server/domain/models/circle/circle-participation-repository.ts`
 - CircleSessionRepository: `server/domain/models/circle-session/circle-session-repository.ts`
@@ -69,12 +75,14 @@ graph TD
 ### services/
 
 #### Authz Value Objects
+
 - Roles: `server/domain/services/authz/roles.ts`
   - CircleRole / CircleSessionRole
 - Memberships: `server/domain/services/authz/memberships.ts`
   - CircleMembership / CircleSessionMembership
 
 #### Policies / Domain Services
+
 - Authz policies: `server/domain/services/authz/policies.ts`
   - 認可判定のポリシー群
 - Role comparison: `server/domain/services/authz/roles.ts`
@@ -85,21 +93,25 @@ graph TD
   - 対局結果に登場した参加者は取消不可
 
 #### Repository Interfaces (Services)
+
 - AuthzRepository: `server/domain/services/authz/authz-repository.ts`
 
 ### common/
 
 #### Value Objects (Shared)
+
 - IDs: `server/domain/common/ids.ts`
   - UserId / CircleId / CircleSessionId / MatchId / MatchHistoryId
 
 #### Validation
+
 - Common validation helpers: `server/domain/common/validation.ts`
   - assertNonEmpty / assertPositiveInteger / assertValidDate / assertStartBeforeEnd / assertDifferentIds
 
 ## Application
 
 ### Application Diagram
+
 ```mermaid
 graph TD
   subgraph Application["Application"]
@@ -121,6 +133,7 @@ graph TD
 ```
 
 ### Application Services
+
 - Circle: `server/application/circle/circle-service.ts`
 - Circle Participation: `server/application/circle/circle-participation-service.ts`
 - CircleSession: `server/application/circle-session/circle-session-service.ts`
@@ -131,11 +144,13 @@ graph TD
 - Auth handler (facade): `server/application/auth/auth-handler.ts`
 
 ### Composition Root
+
 - Service container: `server/application/service-container.ts`
 
 ## Infrastructure
 
 ### Infrastructure Diagram
+
 ```mermaid
 graph TD
   subgraph Infrastructure["Infrastructure"]
@@ -168,6 +183,7 @@ graph TD
 ```
 
 ### Repositories
+
 - Circle: `server/infrastructure/repository/circle/prisma-circle-repository.ts`
 - Circle Participation: `server/infrastructure/repository/circle/prisma-circle-participation-repository.ts`
 - CircleSession: `server/infrastructure/repository/circle-session/prisma-circle-session-repository.ts`
@@ -177,6 +193,7 @@ graph TD
 - Authz: `server/infrastructure/repository/authz/prisma-authz-repository.ts`
 
 ### Mappers
+
 - Circle: `server/infrastructure/mappers/circle-mapper.ts`
 - Circle Participation: `server/infrastructure/mappers/circle-participation-mapper.ts`
 - CircleSession: `server/infrastructure/mappers/circle-session-mapper.ts`
@@ -186,7 +203,9 @@ graph TD
 - Authz: `server/infrastructure/mappers/authz-mapper.ts`
 
 ### Auth Integration
+
 - NextAuth handler: `server/infrastructure/auth/nextauth-handler.ts`
 
 ### DB Client
+
 - Prisma client: `server/infrastructure/db.ts`

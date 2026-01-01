@@ -1,9 +1,5 @@
 import { describe, expect, test } from "vitest";
-import {
-  matchHistoryId,
-  matchId,
-  userId,
-} from "@/server/domain/common/ids";
+import { matchHistoryId, matchId, userId } from "@/server/domain/common/ids";
 import { createMatchHistory } from "@/server/domain/models/match-history/match-history";
 
 describe("MatchHistory ドメイン", () => {

@@ -7,7 +7,11 @@ const memberships = [
 ];
 
 const recentSessions = [
-  { name: "第42回 週末研究会", date: "2025/03/12", href: "/circle-sessions/demo" },
+  {
+    name: "第42回 週末研究会",
+    date: "2025/03/12",
+    href: "/circle-sessions/demo",
+  },
   { name: "冬季対局会", date: "2025/02/11", href: "/circle-sessions/demo" },
 ];
 

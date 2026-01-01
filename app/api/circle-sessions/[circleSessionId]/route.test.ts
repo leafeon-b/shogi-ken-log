@@ -14,7 +14,11 @@ vi.mock("@/server/application/auth/session", () => ({
   getSessionUserId: () => getSessionUserId(),
 }));
 
-import { DELETE, GET, PATCH } from "@/app/api/circle-sessions/[circleSessionId]/route";
+import {
+  DELETE,
+  GET,
+  PATCH,
+} from "@/app/api/circle-sessions/[circleSessionId]/route";
 
 describe("/api/circle-sessions/[circleSessionId]", () => {
   beforeEach(() => {
@@ -94,11 +98,9 @@ describe("/api/circle-sessions/[circleSessionId]", () => {
       { params: { circleSessionId: "session-1" } },
     );
 
-    expect(circleSessionService.updateCircleSessionDetails).toHaveBeenCalledWith(
-      "user-1",
-      expect.anything(),
-      expect.anything(),
-    );
+    expect(
+      circleSessionService.updateCircleSessionDetails,
+    ).toHaveBeenCalledWith("user-1", expect.anything(), expect.anything());
     expect(response.status).toBe(200);
   });
 
@@ -119,7 +121,9 @@ describe("/api/circle-sessions/[circleSessionId]", () => {
       { params: { circleSessionId: "session-1" } },
     );
 
-    expect(circleSessionService.updateCircleSessionDetails).not.toHaveBeenCalled();
+    expect(
+      circleSessionService.updateCircleSessionDetails,
+    ).not.toHaveBeenCalled();
     expect(response.status).toBe(401);
   });
 

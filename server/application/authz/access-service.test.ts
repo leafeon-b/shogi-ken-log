@@ -74,7 +74,9 @@ beforeEach(() => {
   vi.clearAllMocks();
   mockedIsRegisteredUser.mockResolvedValue(false);
   mockedFindCircleMembership.mockResolvedValue(noCircleMembership());
-  mockedFindCircleSessionMembership.mockResolvedValue(noCircleSessionMembership());
+  mockedFindCircleSessionMembership.mockResolvedValue(
+    noCircleSessionMembership(),
+  );
 });
 
 describe("認可ポリシー", () => {
@@ -85,7 +87,9 @@ describe("認可ポリシー", () => {
         { isRegisteredUser: false, expected: false },
       ])("登録済み=$isRegisteredUser", async (item) => {
         mockedIsRegisteredUser.mockResolvedValueOnce(item.isRegisteredUser);
-        await expect(access.canCreateCircle(userId)).resolves.toBe(item.expected);
+        await expect(access.canCreateCircle(userId)).resolves.toBe(
+          item.expected,
+        );
       });
     });
 
@@ -177,9 +181,9 @@ describe("認可ポリシー", () => {
 
       test.each(cases)("メンバー=$expected", async (item) => {
         setCircleMembership(item.membership);
-        await expect(access.canRemoveCircleMember(userId, circleId)).resolves.toBe(
-          item.expected,
-        );
+        await expect(
+          access.canRemoveCircleMember(userId, circleId),
+        ).resolves.toBe(item.expected);
       });
     });
 
@@ -207,14 +211,26 @@ describe("認可ポリシー", () => {
         targetRole: CircleRole;
         expected: boolean;
       }> = [
-        { actorRole: "CircleOwner", targetRole: "CircleManager", expected: true },
+        {
+          actorRole: "CircleOwner",
+          targetRole: "CircleManager",
+          expected: true,
+        },
         {
           actorRole: "CircleManager",
           targetRole: "CircleOwner",
           expected: false,
         },
-        { actorRole: "CircleManager", targetRole: "CircleMember", expected: true },
-        { actorRole: "CircleMember", targetRole: "CircleMember", expected: false },
+        {
+          actorRole: "CircleManager",
+          targetRole: "CircleMember",
+          expected: true,
+        },
+        {
+          actorRole: "CircleMember",
+          targetRole: "CircleMember",
+          expected: false,
+        },
         { actorRole: "CircleOwner", targetRole: "CircleOwner", expected: true },
         {
           actorRole: "CircleManager",
@@ -246,9 +262,9 @@ describe("認可ポリシー", () => {
 
       test.each(cases)("メンバー=$expected", async (item) => {
         setCircleMembership(item.membership);
-        await expect(access.canCreateCircleSession(userId, circleId)).resolves.toBe(
-          item.expected,
-        );
+        await expect(
+          access.canCreateCircleSession(userId, circleId),
+        ).resolves.toBe(item.expected);
       });
     });
 
@@ -275,16 +291,13 @@ describe("認可ポリシー", () => {
         },
       ];
 
-      test.each(cases)(
-        "研究会メンバー=$expected",
-        async (item) => {
-          setCircleMembership(item.circleMembership);
-          setCircleSessionMembership(item.sessionMembership);
-          await expect(
-            access.canViewCircleSession(userId, circleId, circleSessionId),
-          ).resolves.toBe(item.expected);
-        },
-      );
+      test.each(cases)("研究会メンバー=$expected", async (item) => {
+        setCircleMembership(item.circleMembership);
+        setCircleSessionMembership(item.sessionMembership);
+        await expect(
+          access.canViewCircleSession(userId, circleId, circleSessionId),
+        ).resolves.toBe(item.expected);
+      });
     });
 
     describe("canAddCircleSessionMember（開催回参加者追加）", () => {
@@ -411,22 +424,19 @@ describe("認可ポリシー", () => {
         },
       ];
 
-      test.each(cases)(
-        "操作側=$actorRole 対象側=$targetRole",
-        async (item) => {
-          setCircleSessionMemberships(
-            sessionMember(item.actorRole),
-            sessionMember(item.targetRole),
-          );
-          await expect(
-            access.canChangeCircleSessionMemberRole(
-              userId,
-              targetUserId,
-              circleSessionId,
-            ),
-          ).resolves.toBe(item.expected);
-        },
-      );
+      test.each(cases)("操作側=$actorRole 対象側=$targetRole", async (item) => {
+        setCircleSessionMemberships(
+          sessionMember(item.actorRole),
+          sessionMember(item.targetRole),
+        );
+        await expect(
+          access.canChangeCircleSessionMemberRole(
+            userId,
+            targetUserId,
+            circleSessionId,
+          ),
+        ).resolves.toBe(item.expected);
+      });
     });
   });
 
@@ -454,68 +464,53 @@ describe("認可ポリシー", () => {
     ];
 
     describe("canRecordMatch（対局結果記録）", () => {
-      test.each(membershipCases)(
-        "研究会メンバー=$expected",
-        async (item) => {
-          setCircleMembership(item.circleMembership);
-          setCircleSessionMembership(item.sessionMembership);
-          await expect(
-            access.canRecordMatch(userId, circleId, circleSessionId),
-          ).resolves.toBe(item.expected);
-        },
-      );
+      test.each(membershipCases)("研究会メンバー=$expected", async (item) => {
+        setCircleMembership(item.circleMembership);
+        setCircleSessionMembership(item.sessionMembership);
+        await expect(
+          access.canRecordMatch(userId, circleId, circleSessionId),
+        ).resolves.toBe(item.expected);
+      });
     });
 
     describe("canViewMatch（対局結果閲覧）", () => {
-      test.each(membershipCases)(
-        "研究会メンバー=$expected",
-        async (item) => {
-          setCircleMembership(item.circleMembership);
-          setCircleSessionMembership(item.sessionMembership);
-          await expect(
-            access.canViewMatch(userId, circleId, circleSessionId),
-          ).resolves.toBe(item.expected);
-        },
-      );
+      test.each(membershipCases)("研究会メンバー=$expected", async (item) => {
+        setCircleMembership(item.circleMembership);
+        setCircleSessionMembership(item.sessionMembership);
+        await expect(
+          access.canViewMatch(userId, circleId, circleSessionId),
+        ).resolves.toBe(item.expected);
+      });
     });
 
     describe("canEditMatch（対局結果修正）", () => {
-      test.each(membershipCases)(
-        "研究会メンバー=$expected",
-        async (item) => {
-          setCircleMembership(item.circleMembership);
-          setCircleSessionMembership(item.sessionMembership);
-          await expect(
-            access.canEditMatch(userId, circleId, circleSessionId),
-          ).resolves.toBe(item.expected);
-        },
-      );
+      test.each(membershipCases)("研究会メンバー=$expected", async (item) => {
+        setCircleMembership(item.circleMembership);
+        setCircleSessionMembership(item.sessionMembership);
+        await expect(
+          access.canEditMatch(userId, circleId, circleSessionId),
+        ).resolves.toBe(item.expected);
+      });
     });
 
     describe("canDeleteMatch（対局結果削除）", () => {
-      test.each(membershipCases)(
-        "研究会メンバー=$expected",
-        async (item) => {
-          setCircleMembership(item.circleMembership);
-          setCircleSessionMembership(item.sessionMembership);
-          await expect(
-            access.canDeleteMatch(userId, circleId, circleSessionId),
-          ).resolves.toBe(item.expected);
-        },
-      );
+      test.each(membershipCases)("研究会メンバー=$expected", async (item) => {
+        setCircleMembership(item.circleMembership);
+        setCircleSessionMembership(item.sessionMembership);
+        await expect(
+          access.canDeleteMatch(userId, circleId, circleSessionId),
+        ).resolves.toBe(item.expected);
+      });
     });
 
     describe("canViewMatchHistory（対局結果編集履歴閲覧）", () => {
-      test.each(membershipCases)(
-        "研究会メンバー=$expected",
-        async (item) => {
-          setCircleMembership(item.circleMembership);
-          setCircleSessionMembership(item.sessionMembership);
-          await expect(
-            access.canViewMatchHistory(userId, circleId, circleSessionId),
-          ).resolves.toBe(item.expected);
-        },
-      );
+      test.each(membershipCases)("研究会メンバー=$expected", async (item) => {
+        setCircleMembership(item.circleMembership);
+        setCircleSessionMembership(item.sessionMembership);
+        await expect(
+          access.canViewMatchHistory(userId, circleId, circleSessionId),
+        ).resolves.toBe(item.expected);
+      });
     });
   });
 });

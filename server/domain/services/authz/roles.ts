@@ -27,7 +27,10 @@ const CIRCLE_SESSION_ROLE_ORDER: readonly CircleSessionRole[] = [
   CircleSessionRole.CircleSessionMember,
 ] as const;
 
-function roleRank<T extends readonly string[]>(role: T[number], order: T): number {
+function roleRank<T extends readonly string[]>(
+  role: T[number],
+  order: T,
+): number {
   return order.indexOf(role);
 }
 

@@ -1,8 +1,5 @@
 import { randomUUID } from "crypto";
-import {
-  circleId,
-  circleSessionId,
-} from "@/server/domain/common/ids";
+import { circleId, circleSessionId } from "@/server/domain/common/ids";
 import { getServiceContainer } from "@/server/application/service-container";
 import { getSessionUserId } from "@/server/application/auth/session";
 import {

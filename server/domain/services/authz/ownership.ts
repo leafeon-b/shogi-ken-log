@@ -1,6 +1,9 @@
 import type { UserId } from "@/server/domain/common/ids";
 import { assertDifferentIds } from "@/server/domain/common/validation";
-import { CircleRole, CircleSessionRole } from "@/server/domain/services/authz/roles";
+import {
+  CircleRole,
+  CircleSessionRole,
+} from "@/server/domain/services/authz/roles";
 
 export type CircleMember = {
   userId: UserId;
@@ -12,17 +15,16 @@ export type CircleSessionMember = {
   role: CircleSessionRole;
 };
 
-const assertSingleOwner = (
-  ownerCount: number,
-  label: string,
-): void => {
+const assertSingleOwner = (ownerCount: number, label: string): void => {
   if (ownerCount !== 1) {
     throw new Error(`${label} must have exactly one owner`);
   }
 };
 
 export const assertSingleCircleOwner = (members: CircleMember[]): void => {
-  const owners = members.filter((member) => member.role === CircleRole.CircleOwner);
+  const owners = members.filter(
+    (member) => member.role === CircleRole.CircleOwner,
+  );
   assertSingleOwner(owners.length, "Circle");
 };
 
@@ -76,7 +78,10 @@ export const transferCircleSessionOwnership = (
   assertSingleCircleSessionOwner(members);
 
   const currentOwner = members.find((member) => member.userId === fromUserId);
-  if (!currentOwner || currentOwner.role !== CircleSessionRole.CircleSessionOwner) {
+  if (
+    !currentOwner ||
+    currentOwner.role !== CircleSessionRole.CircleSessionOwner
+  ) {
     throw new Error("Current owner must be CircleSessionOwner");
   }
 

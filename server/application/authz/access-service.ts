@@ -92,10 +92,7 @@ export function createAccessService(repository: AuthzRepository) {
         findCircleMembership(userId, circleId),
         findCircleSessionMembership(userId, circleSessionId),
       ]);
-      return policies.canViewCircleSession(
-        circleMembership,
-        sessionMembership,
-      );
+      return policies.canViewCircleSession(circleMembership, sessionMembership);
     },
 
     async canEditCircleSession(

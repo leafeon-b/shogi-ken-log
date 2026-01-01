@@ -1,8 +1,5 @@
 import { describe, expect, test } from "vitest";
-import {
-  circleId,
-  circleSessionId,
-} from "@/server/domain/common/ids";
+import { circleId, circleSessionId } from "@/server/domain/common/ids";
 import {
   createCircleSession,
   rescheduleCircleSession,

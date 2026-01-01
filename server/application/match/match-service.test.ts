@@ -86,9 +86,9 @@ beforeEach(() => {
 
 describe("Match サービス", () => {
   test("recordMatch は参加者でない場合にエラー", async () => {
-    vi.mocked(circleSessionParticipationRepository.areParticipants).mockResolvedValue(
-      false,
-    );
+    vi.mocked(
+      circleSessionParticipationRepository.areParticipants,
+    ).mockResolvedValue(false);
 
     await expect(
       service.recordMatch({
@@ -102,9 +102,9 @@ describe("Match サービス", () => {
   });
 
   test("recordMatch は対局を保存し履歴を追加する", async () => {
-    vi.mocked(circleSessionParticipationRepository.areParticipants).mockResolvedValue(
-      true,
-    );
+    vi.mocked(
+      circleSessionParticipationRepository.areParticipants,
+    ).mockResolvedValue(true);
 
     const result = await service.recordMatch({
       actorId: userId("user-3"),
@@ -150,9 +150,9 @@ describe("Match サービス", () => {
   test("updateMatch は参加者でない場合にエラー", async () => {
     const existing = createMatch(baseMatchParams);
     vi.mocked(matchRepository.findById).mockResolvedValue(existing);
-    vi.mocked(circleSessionParticipationRepository.areParticipants).mockResolvedValue(
-      false,
-    );
+    vi.mocked(
+      circleSessionParticipationRepository.areParticipants,
+    ).mockResolvedValue(false);
 
     await expect(
       service.updateMatch({

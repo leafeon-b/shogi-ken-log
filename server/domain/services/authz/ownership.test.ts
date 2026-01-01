@@ -6,7 +6,10 @@ import {
   transferCircleSessionOwnership,
 } from "@/server/domain/services/authz/ownership";
 import { userId } from "@/server/domain/common/ids";
-import { CircleRole, CircleSessionRole } from "@/server/domain/services/authz/roles";
+import {
+  CircleRole,
+  CircleSessionRole,
+} from "@/server/domain/services/authz/roles";
 
 describe("Owner の不変条件", () => {
   test("assertSingleCircleOwner は Owner がいない場合に失敗する", () => {

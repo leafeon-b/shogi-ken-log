@@ -1,7 +1,4 @@
-import type {
-  CircleId,
-  CircleSessionId,
-} from "@/server/domain/common/ids";
+import type { CircleId, CircleSessionId } from "@/server/domain/common/ids";
 import {
   assertPositiveInteger,
   assertStartBeforeEnd,

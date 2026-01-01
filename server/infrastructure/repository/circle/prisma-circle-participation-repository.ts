@@ -9,64 +9,65 @@ import {
   mapCircleRoleToPersistence,
 } from "@/server/infrastructure/mappers/circle-participation-mapper";
 
-export const prismaCircleParticipationRepository: CircleParticipationRepository = {
-  async listParticipants(circleId: CircleId): Promise<CircleParticipant[]> {
-    const persistedCircleId = mapCircleIdToPersistence(circleId);
+export const prismaCircleParticipationRepository: CircleParticipationRepository =
+  {
+    async listParticipants(circleId: CircleId): Promise<CircleParticipant[]> {
+      const persistedCircleId = mapCircleIdToPersistence(circleId);
 
-    const participants = await prisma.circleMembership.findMany({
-      where: { circleId: persistedCircleId },
-      select: { userId: true, role: true },
-    });
+      const participants = await prisma.circleMembership.findMany({
+        where: { circleId: persistedCircleId },
+        select: { userId: true, role: true },
+      });
 
-    return participants.map(mapCircleParticipantFromPersistence);
-  },
+      return participants.map(mapCircleParticipantFromPersistence);
+    },
 
-  async addParticipant(
-    circleId: CircleId,
-    userId: UserId,
-    role: CircleRole,
-  ): Promise<void> {
-    const persistedCircleId = mapCircleIdToPersistence(circleId);
-    const persistedRole = mapCircleRoleToPersistence(role);
+    async addParticipant(
+      circleId: CircleId,
+      userId: UserId,
+      role: CircleRole,
+    ): Promise<void> {
+      const persistedCircleId = mapCircleIdToPersistence(circleId);
+      const persistedRole = mapCircleRoleToPersistence(role);
 
-    await prisma.circleMembership.create({
-      data: {
-        circleId: persistedCircleId,
-        userId: userId as string,
-        role: persistedRole,
-      },
-    });
-  },
-
-  async updateParticipantRole(
-    circleId: CircleId,
-    userId: UserId,
-    role: CircleRole,
-  ): Promise<void> {
-    const persistedCircleId = mapCircleIdToPersistence(circleId);
-    const persistedRole = mapCircleRoleToPersistence(role);
-
-    await prisma.circleMembership.update({
-      where: {
-        userId_circleId: {
-          userId: userId as string,
+      await prisma.circleMembership.create({
+        data: {
           circleId: persistedCircleId,
+          userId: userId as string,
+          role: persistedRole,
         },
-      },
-      data: {
-        role: persistedRole,
-      },
-    });
-  },
+      });
+    },
 
-  async removeParticipant(circleId: CircleId, userId: UserId): Promise<void> {
-    const persistedCircleId = mapCircleIdToPersistence(circleId);
+    async updateParticipantRole(
+      circleId: CircleId,
+      userId: UserId,
+      role: CircleRole,
+    ): Promise<void> {
+      const persistedCircleId = mapCircleIdToPersistence(circleId);
+      const persistedRole = mapCircleRoleToPersistence(role);
 
-    await prisma.circleMembership.deleteMany({
-      where: {
-        circleId: persistedCircleId,
-        userId: userId as string,
-      },
-    });
-  },
-};
+      await prisma.circleMembership.update({
+        where: {
+          userId_circleId: {
+            userId: userId as string,
+            circleId: persistedCircleId,
+          },
+        },
+        data: {
+          role: persistedRole,
+        },
+      });
+    },
+
+    async removeParticipant(circleId: CircleId, userId: UserId): Promise<void> {
+      const persistedCircleId = mapCircleIdToPersistence(circleId);
+
+      await prisma.circleMembership.deleteMany({
+        where: {
+          circleId: persistedCircleId,
+          userId: userId as string,
+        },
+      });
+    },
+  };

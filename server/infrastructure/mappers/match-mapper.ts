@@ -1,11 +1,7 @@
 import type { Match as PrismaMatch } from "@/generated/prisma/client";
 import { restoreMatch } from "@/server/domain/models/match/match";
 import type { Match, MatchOutcome } from "@/server/domain/models/match/match";
-import {
-  circleSessionId,
-  matchId,
-  userId,
-} from "@/server/domain/common/ids";
+import { circleSessionId, matchId, userId } from "@/server/domain/common/ids";
 
 export const mapMatchToDomain = (match: PrismaMatch): Match =>
   restoreMatch({
