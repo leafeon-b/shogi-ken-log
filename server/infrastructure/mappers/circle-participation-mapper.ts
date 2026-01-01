@@ -1,5 +1,5 @@
-import type { CircleId, UserId } from "@/server/domain/common/ids";
-import { circleId, userId } from "@/server/domain/common/ids";
+import type { CircleId } from "@/server/domain/common/ids";
+import { userId } from "@/server/domain/common/ids";
 import type { CircleParticipant } from "@/server/domain/models/circle/circle-participant";
 import type { CircleRole } from "@/server/domain/services/authz/roles";
 
