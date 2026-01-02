@@ -24,7 +24,7 @@ describe("/api/matches/[matchId]/history", () => {
     matchHistoryService.listByMatchId.mockResolvedValueOnce([]);
 
     const response = await GET(new Request("http://localhost"), {
-      params: { matchId: "match-1" },
+      params: Promise.resolve({ matchId: "match-1" }),
     });
 
     expect(matchHistoryService.listByMatchId).toHaveBeenCalledWith(
@@ -37,7 +37,7 @@ describe("/api/matches/[matchId]/history", () => {
     getSessionUserId.mockRejectedValueOnce(new Error("Unauthorized"));
 
     const response = await GET(new Request("http://localhost"), {
-      params: { matchId: "match-1" },
+      params: Promise.resolve({ matchId: "match-1" }),
     });
 
     expect(matchHistoryService.listByMatchId).not.toHaveBeenCalled();
@@ -51,7 +51,7 @@ describe("/api/matches/[matchId]/history", () => {
     );
 
     const response = await GET(new Request("http://localhost"), {
-      params: { matchId: "match-1" },
+      params: Promise.resolve({ matchId: "match-1" }),
     });
 
     expect(response.status).toBe(403);

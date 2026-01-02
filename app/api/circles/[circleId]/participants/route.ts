@@ -19,7 +19,7 @@ const parseCircleRole = (value: unknown): CircleRole => {
 
 export async function GET(
   request: Request,
-  context: { params: { circleId: string } },
+  context: { params: Promise<{ circleId: string }> },
 ) {
   try {
     const actorId = await getSessionUserId();
@@ -38,7 +38,7 @@ export async function GET(
 
 export async function POST(
   request: Request,
-  context: { params: { circleId: string } },
+  context: { params: Promise<{ circleId: string }> },
 ) {
   try {
     const actorId = await getSessionUserId();

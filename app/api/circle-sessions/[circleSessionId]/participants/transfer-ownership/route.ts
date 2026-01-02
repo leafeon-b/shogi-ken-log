@@ -10,7 +10,7 @@ import {
 
 export async function POST(
   request: Request,
-  context: { params: { circleSessionId: string } },
+  context: { params: Promise<{ circleSessionId: string }> },
 ) {
   try {
     const actorId = await getSessionUserId();

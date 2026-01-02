@@ -37,7 +37,7 @@ describe("/api/circles/[circleId]/participants/transfer-ownership", () => {
           toUserId: "user-2",
         }),
       }),
-      { params: { circleId: "circle-1" } },
+      { params: Promise.resolve({ circleId: "circle-1" }) },
     );
 
     expect(circleParticipationService.transferOwnership).toHaveBeenCalledWith({
@@ -61,7 +61,7 @@ describe("/api/circles/[circleId]/participants/transfer-ownership", () => {
           toUserId: "user-2",
         }),
       }),
-      { params: { circleId: "circle-1" } },
+      { params: Promise.resolve({ circleId: "circle-1" }) },
     );
 
     expect(circleParticipationService.transferOwnership).not.toHaveBeenCalled();
@@ -83,7 +83,7 @@ describe("/api/circles/[circleId]/participants/transfer-ownership", () => {
           toUserId: "user-2",
         }),
       }),
-      { params: { circleId: "circle-1" } },
+      { params: Promise.resolve({ circleId: "circle-1" }) },
     );
 
     expect(response.status).toBe(403);

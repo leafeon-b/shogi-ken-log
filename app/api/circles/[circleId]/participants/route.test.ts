@@ -30,7 +30,7 @@ describe("/api/circles/[circleId]/participants", () => {
     ]);
 
     const response = await GET(new Request("http://localhost"), {
-      params: { circleId: "circle-1" },
+      params: Promise.resolve({ circleId: "circle-1" }),
     });
 
     expect(circleParticipationService.listParticipants).toHaveBeenCalledWith({
@@ -44,7 +44,7 @@ describe("/api/circles/[circleId]/participants", () => {
     getSessionUserId.mockRejectedValueOnce(new Error("Unauthorized"));
 
     const response = await GET(new Request("http://localhost"), {
-      params: { circleId: "circle-1" },
+      params: Promise.resolve({ circleId: "circle-1" }),
     });
 
     expect(circleParticipationService.listParticipants).not.toHaveBeenCalled();
@@ -58,7 +58,7 @@ describe("/api/circles/[circleId]/participants", () => {
     );
 
     const response = await GET(new Request("http://localhost"), {
-      params: { circleId: "circle-1" },
+      params: Promise.resolve({ circleId: "circle-1" }),
     });
 
     expect(response.status).toBe(403);
@@ -77,7 +77,7 @@ describe("/api/circles/[circleId]/participants", () => {
           role: "CircleMember",
         }),
       }),
-      { params: { circleId: "circle-1" } },
+      { params: Promise.resolve({ circleId: "circle-1" }) },
     );
 
     expect(circleParticipationService.addParticipant).toHaveBeenCalledWith({
@@ -101,7 +101,7 @@ describe("/api/circles/[circleId]/participants", () => {
           role: "CircleMember",
         }),
       }),
-      { params: { circleId: "circle-1" } },
+      { params: Promise.resolve({ circleId: "circle-1" }) },
     );
 
     expect(circleParticipationService.addParticipant).not.toHaveBeenCalled();
@@ -123,7 +123,7 @@ describe("/api/circles/[circleId]/participants", () => {
           role: "CircleMember",
         }),
       }),
-      { params: { circleId: "circle-1" } },
+      { params: Promise.resolve({ circleId: "circle-1" }) },
     );
 
     expect(response.status).toBe(403);

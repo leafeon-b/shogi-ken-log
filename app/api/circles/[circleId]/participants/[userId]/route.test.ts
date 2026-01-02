@@ -40,7 +40,7 @@ describe("/api/circles/[circleId]/participants/[userId]", () => {
           role: "CircleManager",
         }),
       }),
-      { params: { circleId: "circle-1", userId: "user-1" } },
+      { params: Promise.resolve({ circleId: "circle-1", userId: "user-1" }) },
     );
 
     expect(
@@ -65,7 +65,7 @@ describe("/api/circles/[circleId]/participants/[userId]", () => {
           role: "CircleManager",
         }),
       }),
-      { params: { circleId: "circle-1", userId: "user-1" } },
+      { params: Promise.resolve({ circleId: "circle-1", userId: "user-1" }) },
     );
 
     expect(
@@ -88,7 +88,7 @@ describe("/api/circles/[circleId]/participants/[userId]", () => {
           role: "CircleManager",
         }),
       }),
-      { params: { circleId: "circle-1", userId: "user-1" } },
+      { params: Promise.resolve({ circleId: "circle-1", userId: "user-1" }) },
     );
 
     expect(response.status).toBe(403);
@@ -101,7 +101,7 @@ describe("/api/circles/[circleId]/participants/[userId]", () => {
     );
 
     const response = await DELETE(new Request("http://localhost"), {
-      params: { circleId: "circle-1", userId: "user-1" },
+      params: Promise.resolve({ circleId: "circle-1", userId: "user-1" }),
     });
 
     expect(circleParticipationService.removeParticipant).toHaveBeenCalledWith({
@@ -116,7 +116,7 @@ describe("/api/circles/[circleId]/participants/[userId]", () => {
     getSessionUserId.mockRejectedValueOnce(new Error("Unauthorized"));
 
     const response = await DELETE(new Request("http://localhost"), {
-      params: { circleId: "circle-1", userId: "user-1" },
+      params: Promise.resolve({ circleId: "circle-1", userId: "user-1" }),
     });
 
     expect(circleParticipationService.removeParticipant).not.toHaveBeenCalled();
@@ -130,7 +130,7 @@ describe("/api/circles/[circleId]/participants/[userId]", () => {
     );
 
     const response = await DELETE(new Request("http://localhost"), {
-      params: { circleId: "circle-1", userId: "user-1" },
+      params: Promise.resolve({ circleId: "circle-1", userId: "user-1" }),
     });
 
     expect(response.status).toBe(403);

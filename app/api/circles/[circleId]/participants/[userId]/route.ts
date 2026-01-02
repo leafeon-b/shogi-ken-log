@@ -19,7 +19,7 @@ const parseCircleRole = (value: unknown): CircleRole => {
 
 export async function PATCH(
   request: Request,
-  context: { params: { circleId: string; userId: string } },
+  context: { params: Promise<{ circleId: string; userId: string }> },
 ) {
   try {
     const actorId = await getSessionUserId();
@@ -43,7 +43,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: Request,
-  context: { params: { circleId: string; userId: string } },
+  context: { params: Promise<{ circleId: string; userId: string }> },
 ) {
   try {
     const actorId = await getSessionUserId();

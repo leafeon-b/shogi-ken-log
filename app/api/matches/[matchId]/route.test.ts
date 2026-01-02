@@ -34,7 +34,7 @@ describe("/api/matches/[matchId]", () => {
     });
 
     const response = await GET(new Request("http://localhost"), {
-      params: { matchId: "match-1" },
+      params: Promise.resolve({ matchId: "match-1" }),
     });
 
     expect(matchService.getMatch).toHaveBeenCalledWith(
@@ -47,7 +47,7 @@ describe("/api/matches/[matchId]", () => {
     getSessionUserId.mockRejectedValueOnce(new Error("Unauthorized"));
 
     const response = await GET(new Request("http://localhost"), {
-      params: { matchId: "match-1" },
+      params: Promise.resolve({ matchId: "match-1" }),
     });
 
     expect(matchService.getMatch).not.toHaveBeenCalled();
@@ -59,7 +59,7 @@ describe("/api/matches/[matchId]", () => {
     matchService.getMatch.mockRejectedValueOnce(new Error("Forbidden"));
 
     const response = await GET(new Request("http://localhost"), {
-      params: { matchId: "match-1" },
+      params: Promise.resolve({ matchId: "match-1" }),
     });
 
     expect(response.status).toBe(403);
@@ -85,7 +85,7 @@ describe("/api/matches/[matchId]", () => {
           outcome: "P2_WIN",
         }),
       }),
-      { params: { matchId: "match-1" } },
+      { params: Promise.resolve({ matchId: "match-1" }) },
     );
 
     expect(matchService.updateMatch).toHaveBeenCalledWith(
@@ -105,7 +105,7 @@ describe("/api/matches/[matchId]", () => {
           outcome: "P2_WIN",
         }),
       }),
-      { params: { matchId: "match-1" } },
+      { params: Promise.resolve({ matchId: "match-1" }) },
     );
 
     expect(matchService.updateMatch).not.toHaveBeenCalled();
@@ -124,7 +124,7 @@ describe("/api/matches/[matchId]", () => {
           outcome: "P2_WIN",
         }),
       }),
-      { params: { matchId: "match-1" } },
+      { params: Promise.resolve({ matchId: "match-1" }) },
     );
 
     expect(response.status).toBe(403);
@@ -143,7 +143,7 @@ describe("/api/matches/[matchId]", () => {
     });
 
     const response = await DELETE(new Request("http://localhost"), {
-      params: { matchId: "match-1" },
+      params: Promise.resolve({ matchId: "match-1" }),
     });
 
     expect(matchService.deleteMatch).toHaveBeenCalledWith(
@@ -156,7 +156,7 @@ describe("/api/matches/[matchId]", () => {
     getSessionUserId.mockRejectedValueOnce(new Error("Unauthorized"));
 
     const response = await DELETE(new Request("http://localhost"), {
-      params: { matchId: "match-1" },
+      params: Promise.resolve({ matchId: "match-1" }),
     });
 
     expect(matchService.deleteMatch).not.toHaveBeenCalled();
@@ -168,7 +168,7 @@ describe("/api/matches/[matchId]", () => {
     matchService.deleteMatch.mockRejectedValueOnce(new Error("Forbidden"));
 
     const response = await DELETE(new Request("http://localhost"), {
-      params: { matchId: "match-1" },
+      params: Promise.resolve({ matchId: "match-1" }),
     });
 
     expect(response.status).toBe(403);

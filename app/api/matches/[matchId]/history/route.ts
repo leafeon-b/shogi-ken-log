@@ -5,7 +5,7 @@ import { handleError, json } from "@/app/api/_helpers";
 
 export async function GET(
   _request: Request,
-  context: { params: { matchId: string } },
+  context: { params: Promise<{ matchId: string }> },
 ) {
   try {
     const actorId = await getSessionUserId();

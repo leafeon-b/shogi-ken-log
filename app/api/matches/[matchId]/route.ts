@@ -10,7 +10,7 @@ import {
 
 export async function GET(
   _request: Request,
-  context: { params: { matchId: string } },
+  context: { params: Promise<{ matchId: string }> },
 ) {
   try {
     const actorId = await getSessionUserId();
@@ -33,7 +33,7 @@ export async function GET(
 
 export async function PATCH(
   request: Request,
-  context: { params: { matchId: string } },
+  context: { params: Promise<{ matchId: string }> },
 ) {
   try {
     const actorId = await getSessionUserId();
@@ -65,7 +65,7 @@ export async function PATCH(
 
 export async function DELETE(
   _request: Request,
-  context: { params: { matchId: string } },
+  context: { params: Promise<{ matchId: string }> },
 ) {
   try {
     const actorId = await getSessionUserId();

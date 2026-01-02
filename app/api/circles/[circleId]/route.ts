@@ -10,7 +10,7 @@ import {
 
 export async function GET(
   _request: Request,
-  context: { params: { circleId: string } },
+  context: { params: Promise<{ circleId: string }> },
 ) {
   try {
     const actorId = await getSessionUserId();
@@ -34,7 +34,7 @@ export async function GET(
 
 export async function PATCH(
   request: Request,
-  context: { params: { circleId: string } },
+  context: { params: Promise<{ circleId: string }> },
 ) {
   try {
     const actorId = await getSessionUserId();
@@ -57,7 +57,7 @@ export async function PATCH(
 
 export async function DELETE(
   _request: Request,
-  context: { params: { circleId: string } },
+  context: { params: Promise<{ circleId: string }> },
 ) {
   try {
     const actorId = await getSessionUserId();

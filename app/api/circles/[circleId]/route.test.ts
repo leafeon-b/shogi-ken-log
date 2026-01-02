@@ -30,7 +30,7 @@ describe("/api/circles/[circleId]", () => {
     });
 
     const response = await GET(new Request("http://localhost"), {
-      params: { circleId: "circle-1" },
+      params: Promise.resolve({ circleId: "circle-1" }),
     });
 
     expect(circleService.getCircle).toHaveBeenCalledWith(
@@ -45,7 +45,7 @@ describe("/api/circles/[circleId]", () => {
     circleService.getCircle.mockResolvedValueOnce(null);
 
     const response = await GET(new Request("http://localhost"), {
-      params: { circleId: "circle-1" },
+      params: Promise.resolve({ circleId: "circle-1" }),
     });
 
     expect(response.status).toBe(404);
@@ -56,7 +56,7 @@ describe("/api/circles/[circleId]", () => {
     circleService.getCircle.mockRejectedValueOnce(new Error("Forbidden"));
 
     const response = await GET(new Request("http://localhost"), {
-      params: { circleId: "circle-1" },
+      params: Promise.resolve({ circleId: "circle-1" }),
     });
 
     expect(response.status).toBe(403);
@@ -76,7 +76,7 @@ describe("/api/circles/[circleId]", () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: "Next" }),
       }),
-      { params: { circleId: "circle-1" } },
+      { params: Promise.resolve({ circleId: "circle-1" }) },
     );
 
     expect(circleService.renameCircle).toHaveBeenCalledWith(
@@ -96,7 +96,7 @@ describe("/api/circles/[circleId]", () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: "Next" }),
       }),
-      { params: { circleId: "circle-1" } },
+      { params: Promise.resolve({ circleId: "circle-1" }) },
     );
 
     expect(circleService.renameCircle).not.toHaveBeenCalled();
@@ -113,7 +113,7 @@ describe("/api/circles/[circleId]", () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: "Next" }),
       }),
-      { params: { circleId: "circle-1" } },
+      { params: Promise.resolve({ circleId: "circle-1" }) },
     );
 
     expect(response.status).toBe(403);
@@ -124,7 +124,7 @@ describe("/api/circles/[circleId]", () => {
     circleService.deleteCircle.mockResolvedValueOnce(undefined);
 
     const response = await DELETE(new Request("http://localhost"), {
-      params: { circleId: "circle-1" },
+      params: Promise.resolve({ circleId: "circle-1" }),
     });
 
     expect(circleService.deleteCircle).toHaveBeenCalledWith(
@@ -138,7 +138,7 @@ describe("/api/circles/[circleId]", () => {
     getSessionUserId.mockRejectedValueOnce(new Error("Unauthorized"));
 
     const response = await DELETE(new Request("http://localhost"), {
-      params: { circleId: "circle-1" },
+      params: Promise.resolve({ circleId: "circle-1" }),
     });
 
     expect(circleService.deleteCircle).not.toHaveBeenCalled();
@@ -150,7 +150,7 @@ describe("/api/circles/[circleId]", () => {
     circleService.deleteCircle.mockRejectedValueOnce(new Error("Forbidden"));
 
     const response = await DELETE(new Request("http://localhost"), {
-      params: { circleId: "circle-1" },
+      params: Promise.resolve({ circleId: "circle-1" }),
     });
 
     expect(response.status).toBe(403);

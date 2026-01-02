@@ -38,7 +38,7 @@ describe("/api/circle-sessions/[circleSessionId]", () => {
     });
 
     const response = await GET(new Request("http://localhost"), {
-      params: { circleSessionId: "session-1" },
+      params: Promise.resolve({ circleSessionId: "session-1" }),
     });
 
     expect(circleSessionService.getCircleSession).toHaveBeenCalledWith(
@@ -52,7 +52,7 @@ describe("/api/circle-sessions/[circleSessionId]", () => {
     getSessionUserId.mockRejectedValueOnce(new Error("Unauthorized"));
 
     const response = await GET(new Request("http://localhost"), {
-      params: { circleSessionId: "session-1" },
+      params: Promise.resolve({ circleSessionId: "session-1" }),
     });
 
     expect(circleSessionService.getCircleSession).not.toHaveBeenCalled();
@@ -66,7 +66,7 @@ describe("/api/circle-sessions/[circleSessionId]", () => {
     );
 
     const response = await GET(new Request("http://localhost"), {
-      params: { circleSessionId: "session-1" },
+      params: Promise.resolve({ circleSessionId: "session-1" }),
     });
 
     expect(response.status).toBe(403);
@@ -95,7 +95,7 @@ describe("/api/circle-sessions/[circleSessionId]", () => {
           location: "B",
         }),
       }),
-      { params: { circleSessionId: "session-1" } },
+      { params: Promise.resolve({ circleSessionId: "session-1" }) },
     );
 
     expect(
@@ -118,7 +118,7 @@ describe("/api/circle-sessions/[circleSessionId]", () => {
           location: "B",
         }),
       }),
-      { params: { circleSessionId: "session-1" } },
+      { params: Promise.resolve({ circleSessionId: "session-1" }) },
     );
 
     expect(
@@ -144,7 +144,7 @@ describe("/api/circle-sessions/[circleSessionId]", () => {
           location: "B",
         }),
       }),
-      { params: { circleSessionId: "session-1" } },
+      { params: Promise.resolve({ circleSessionId: "session-1" }) },
     );
 
     expect(response.status).toBe(403);
@@ -155,7 +155,7 @@ describe("/api/circle-sessions/[circleSessionId]", () => {
     circleSessionService.deleteCircleSession.mockResolvedValueOnce(undefined);
 
     const response = await DELETE(new Request("http://localhost"), {
-      params: { circleSessionId: "session-1" },
+      params: Promise.resolve({ circleSessionId: "session-1" }),
     });
 
     expect(circleSessionService.deleteCircleSession).toHaveBeenCalledWith(
@@ -169,7 +169,7 @@ describe("/api/circle-sessions/[circleSessionId]", () => {
     getSessionUserId.mockRejectedValueOnce(new Error("Unauthorized"));
 
     const response = await DELETE(new Request("http://localhost"), {
-      params: { circleSessionId: "session-1" },
+      params: Promise.resolve({ circleSessionId: "session-1" }),
     });
 
     expect(circleSessionService.deleteCircleSession).not.toHaveBeenCalled();
@@ -183,7 +183,7 @@ describe("/api/circle-sessions/[circleSessionId]", () => {
     );
 
     const response = await DELETE(new Request("http://localhost"), {
-      params: { circleSessionId: "session-1" },
+      params: Promise.resolve({ circleSessionId: "session-1" }),
     });
 
     expect(response.status).toBe(403);

@@ -37,7 +37,7 @@ describe("/api/circle-sessions/[circleSessionId]/participants/transfer-ownership
           toUserId: "user-2",
         }),
       }),
-      { params: { circleSessionId: "session-1" } },
+      { params: Promise.resolve({ circleSessionId: "session-1" }) },
     );
 
     expect(
@@ -63,7 +63,7 @@ describe("/api/circle-sessions/[circleSessionId]/participants/transfer-ownership
           toUserId: "user-2",
         }),
       }),
-      { params: { circleSessionId: "session-1" } },
+      { params: Promise.resolve({ circleSessionId: "session-1" }) },
     );
 
     expect(
@@ -87,7 +87,7 @@ describe("/api/circle-sessions/[circleSessionId]/participants/transfer-ownership
           toUserId: "user-2",
         }),
       }),
-      { params: { circleSessionId: "session-1" } },
+      { params: Promise.resolve({ circleSessionId: "session-1" }) },
     );
 
     expect(response.status).toBe(403);
