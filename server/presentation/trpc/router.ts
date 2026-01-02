@@ -1,4 +1,4 @@
-import { router } from "@/server/trpc/trpc";
+import { router } from "@/server/presentation/trpc/trpc";
 
 export const appRouter = router({});
 
