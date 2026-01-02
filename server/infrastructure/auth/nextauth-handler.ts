@@ -1,9 +1,9 @@
 import { prisma } from "@/server/infrastructure/db";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import NextAuth from "next-auth";
+import NextAuth, { type AuthOptions } from "next-auth";
 import Google from "next-auth/providers/google";
 
-export const createAuthOptions = () => ({
+export const createAuthOptions = (): AuthOptions => ({
   adapter: PrismaAdapter(prisma),
   providers: [
     Google({
@@ -13,13 +13,7 @@ export const createAuthOptions = () => ({
   ],
   session: { strategy: "database" },
   callbacks: {
-    session({
-      session,
-      user,
-    }: {
-      session: { user?: { id?: string } };
-      user: { id: string };
-    }) {
+    session({ session, user }) {
       if (session.user) {
         session.user.id = user.id;
       }
