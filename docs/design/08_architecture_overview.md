@@ -9,7 +9,10 @@ DDD ベースのレイヤ構成とコンテキスト関係を可視化する。�
 ```mermaid
 graph TD
   subgraph Presentation["Presentation"]
-    API["API Routes (app/api/*)"]
+    Handler["tRPC Handler (app/api/trpc/[trpc])"]
+    Routers["tRPC Routers (server/presentation/trpc)"]
+    DTO["DTO / Schemas (server/presentation/dto)"]
+    PMappers["DTO Mappers (server/presentation/mappers)"]
     SA["Server Actions"]
   end
 
@@ -34,8 +37,11 @@ graph TD
 
   DB[(Database)]
 
-  API --> Container
+  Handler --> Routers
+  Routers --> Container
   SA --> Container
+  Routers --> DTO
+  Routers --> PMappers
   Container --> Services
   Services --> Entities
   Services --> Policies
@@ -73,7 +79,9 @@ graph LR
 ## 実装上の配置（参考）
 
 - Presentation
-  - `app/api/*`
+  - `app/api/trpc/[trpc]/route.ts`
+  - `server/presentation/*`
+  - `app/api/auth/[...nextauth]/route.ts`
 - Application
   - `server/application/*`
 - Domain

@@ -6,6 +6,10 @@
 
 ## レイヤ構成
 
+- Presentation（プレゼンテーション）
+  - API の入出力設計（DTO / Zod スキーマ）
+  - ルーティング（tRPC Router）
+  - ドメインモデルとの変換（DTO マッパー）
 - Domain（ドメイン）
   - 不変条件・ポリシー・値オブジェクトなどの純粋ロジック
   - 外部依存を持たない
@@ -18,6 +22,7 @@
 
 ## 依存関係
 
+- Presentation は Application / Domain に依存する
 - Domain は他層に依存しない
 - Application は Domain に依存する
 - Infrastructure は Application のポートに依存する
@@ -26,6 +31,9 @@
 
 ```mermaid
 graph TD
+  Presentation[Presentation
+  - tRPC Routers
+  - DTO / Schemas]
   Domain[Domain
   - Policies
   - Roles
@@ -36,12 +44,19 @@ graph TD
   Infra[Infrastructure
   - Prisma Repositories]
 
+  Presentation --> App
+  Presentation --> Domain
   App --> Domain
   Infra --> App
 ```
 
 ## 現状の配置例
 
+- Presentation
+  - `server/presentation/dto/*`
+  - `server/presentation/mappers/*`
+  - `server/presentation/trpc/*`
+  - `app/api/trpc/[trpc]/route.ts`
 - Domain
   - `server/domain/services/authz/roles.ts`
   - `server/domain/services/authz/policies.ts`
@@ -62,6 +77,6 @@ graph TD
 - API 層は `getSessionUserId()` でアクターを取得し、アクター ID はリクエストボディで受け取らない
 - 認可判定は Application Service 内で行い、`accessService` を必ず経由する
 - 存在チェックは Application Service が担当し、見つからない場合は `"* not found"` を返す
-- 認可失敗は `"Forbidden"` を返し、API 層は `handleError` に委譲する
+- 認可失敗は `"Forbidden"` を返し、Presentation 層のエラーマッピング（`server/presentation/trpc/errors.ts`）で変換する
 - Repository / Mapper は認可判定を持たない
 - 具体的な許可/不許可の判断基準は `docs/design/04_access_policy.md` を唯一の参照とする

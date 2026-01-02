@@ -5,6 +5,44 @@
 アーキテクチャ概要図を前提に、各レイヤの構成要素を具体名で整理する。
 詳細設計に進む際の参照点とする。
 
+## Presentation
+
+### Presentation Diagram
+
+```mermaid
+graph TD
+  subgraph Presentation["Presentation"]
+    DTO["dto/ (Zod schemas)"]
+    PMappers["mappers/ (DTO mappers)"]
+    TRPC["trpc/ (routers / context / errors)"]
+    Handler["app/api/trpc/[trpc]"]
+  end
+
+  Handler --> TRPC
+  TRPC --> DTO
+  TRPC --> PMappers
+```
+
+### dto/
+
+- API 入出力スキーマ（Zod）
+  - `server/presentation/dto/*.ts`
+
+### mappers/
+
+- Domain -> DTO 変換
+  - `server/presentation/mappers/*.ts`
+
+### trpc/
+
+- Router / Context / Error mapping
+  - `server/presentation/trpc/*.ts`
+
+### API Handlers
+
+- tRPC handler: `app/api/trpc/[trpc]/route.ts`
+- Auth handler: `app/api/auth/[...nextauth]/route.ts`
+
 ## Domain
 
 ### Domain Diagram
