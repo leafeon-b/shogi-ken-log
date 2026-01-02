@@ -1,9 +1,5 @@
-import { AppSidebar } from "./components/app-sidebar";
-import Footer from "./components/footer";
-import Header from "./components/header";
 import "./globals.css";
 
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Metadata } from "next";
 import { Shippori_Mincho_B1, Zen_Maru_Gothic } from "next/font/google";
 
@@ -38,18 +34,7 @@ export default function RootLayout({
       <body
         className={`${zenMaru.variable} ${shippori.variable} min-h-svh w-screen bg-background overflow-x-hidden`}
       >
-        <SidebarProvider>
-          <div className="flex min-h-svh w-full">
-            <AppSidebar />
-            <SidebarInset className="flex min-w-0 w-full max-w-none flex-1 flex-col overflow-hidden">
-              <Header />
-              <main className="w-full flex-1 overflow-auto p-6">
-                {children}
-              </main>
-              <Footer />
-            </SidebarInset>
-          </div>
-        </SidebarProvider>
+        {children}
       </body>
     </html>
   );

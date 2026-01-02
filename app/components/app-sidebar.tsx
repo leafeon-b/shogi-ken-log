@@ -13,7 +13,7 @@ import { HelpCircle, Home } from "lucide-react";
 import Link from "next/link";
 
 const items = [
-  { title: "ホーム", href: "/", icon: Home },
+  { title: "ホーム", href: "/home", icon: Home },
   { title: "ヘルプ", href: "/help", icon: HelpCircle },
 ];
 

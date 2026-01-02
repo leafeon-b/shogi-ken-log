@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { signOut } from "next-auth/react";
 
 export default function Header() {
   return (
@@ -12,8 +13,9 @@ export default function Header() {
       </div>
 
       <div className="flex gap-2">
-        <Button variant="outline">ログイン</Button>
-        <Button>サインアップ</Button>
+        <Button variant="outline" onClick={() => signOut({ callbackUrl: "/" })}>
+          ログアウト
+        </Button>
       </div>
     </header>
   );
