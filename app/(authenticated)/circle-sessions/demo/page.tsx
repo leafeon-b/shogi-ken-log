@@ -25,39 +25,34 @@ const matches: Array<{
   outcome: MatchOutcome;
 }> = [
   { player1Id: "p1", player2Id: "p2", outcome: "P1_WIN" },
+  { player1Id: "p2", player2Id: "p1", outcome: "P1_WIN" },
   { player1Id: "p1", player2Id: "p3", outcome: "P2_WIN" },
   { player1Id: "p1", player2Id: "p4", outcome: "DRAW" },
   { player1Id: "p2", player2Id: "p3", outcome: "P1_WIN" },
+  { player1Id: "p2", player2Id: "p3", outcome: "P2_WIN" },
+  { player1Id: "p3", player2Id: "p2", outcome: "P1_WIN" },
   { player1Id: "p2", player2Id: "p5", outcome: "P2_WIN" },
   { player1Id: "p3", player2Id: "p4", outcome: "UNKNOWN" },
   { player1Id: "p3", player2Id: "p6", outcome: "P2_WIN" },
   { player1Id: "p4", player2Id: "p5", outcome: "P1_WIN" },
+  { player1Id: "p4", player2Id: "p5", outcome: "DRAW" },
+  { player1Id: "p5", player2Id: "p4", outcome: "P1_WIN" },
   { player1Id: "p5", player2Id: "p6", outcome: "DRAW" },
 ];
 
 const getNameInitial = (name: string) => Array.from(name.trim())[0] ?? name;
 
-const getCellOutcome = (rowId: string, columnId: string) => {
-  if (rowId === columnId) {
-    return {
-      label: "—",
-      className: "bg-(--brand-ink)/5 text-(--brand-ink-muted)",
-      title: "同一参加者",
-    };
-  }
-
-  const match = matches.find(
-    (entry) =>
-      (entry.player1Id === rowId && entry.player2Id === columnId) ||
-      (entry.player1Id === columnId && entry.player2Id === rowId)
-  );
-
-  if (!match || match.outcome === "UNKNOWN") {
+const getMatchOutcome = (
+  rowId: string,
+  match: { player1Id: string; player2Id: string; outcome: MatchOutcome }
+) => {
+  if (match.outcome === "UNKNOWN") {
     return {
       label: "未",
       className: "bg-white/70 text-(--brand-ink-muted)",
       title: "未記録",
-    };
+      kind: "unknown",
+    } as const;
   }
 
   if (match.outcome === "DRAW") {
@@ -65,7 +60,8 @@ const getCellOutcome = (rowId: string, columnId: string) => {
       label: "△",
       className: "bg-(--brand-gold)/20 text-(--brand-ink)",
       title: "引き分け",
-    };
+      kind: "draw",
+    } as const;
   }
 
   const rowIsPlayer1 = match.player1Id === rowId;
@@ -78,12 +74,82 @@ const getCellOutcome = (rowId: string, columnId: string) => {
         label: "○",
         className: "bg-(--brand-moss)/20 text-(--brand-ink)",
         title: "勝ち",
+        kind: "win",
       }
     : {
         label: "●",
         className: "bg-(--brand-ink)/10 text-(--brand-ink)",
         title: "負け",
+        kind: "loss",
       };
+};
+
+const getCellResults = (rowId: string, columnId: string) => {
+  if (rowId === columnId) {
+    return {
+      type: "series",
+      results: [
+        {
+          label: "—",
+          className: "bg-(--brand-ink)/5 text-(--brand-ink-muted)",
+          title: "同一参加者",
+          kind: "self",
+        },
+      ],
+    } as const;
+  }
+
+  const pairMatches = matches.filter(
+    (match) =>
+      (match.player1Id === rowId && match.player2Id === columnId) ||
+      (match.player1Id === columnId && match.player2Id === rowId)
+  );
+
+  if (pairMatches.length === 0) {
+    return {
+      type: "series",
+      results: [
+        {
+          label: "未",
+          className: "bg-white/70 text-(--brand-ink-muted)",
+          title: "未記録",
+          kind: "unknown",
+        },
+      ],
+    } as const;
+  }
+
+  const results = pairMatches.map((match) => getMatchOutcome(rowId, match));
+
+  if (results.length <= 2) {
+    return { type: "series", results } as const;
+  }
+
+  type ResultKind = "win" | "loss" | "draw" | "unknown" | "self";
+
+  const counts = results.reduce<Record<ResultKind, number>>(
+    (acc, result) => {
+      const k = result.kind as ResultKind;
+      acc[k] = (acc[k] ?? 0) + 1;
+      return acc;
+    },
+    { win: 0, loss: 0, draw: 0, unknown: 0, self: 0 }
+  );
+
+  const details = [
+    `勝ち${counts.win}`,
+    `負け${counts.loss}`,
+    counts.draw ? `引き分け${counts.draw}` : null,
+    counts.unknown ? `未記録${counts.unknown}` : null,
+  ].filter(Boolean);
+
+  return {
+    type: "aggregate",
+    label: counts.draw
+      ? `${counts.win}勝${counts.loss}敗${counts.draw}分`
+      : `${counts.win}勝${counts.loss}敗`,
+    title: details.join(" / "),
+  } as const;
 };
 
 const getRowTotals = (rowId: string) => {
@@ -209,22 +275,44 @@ export default function CircleSessionDemoPage() {
                         {rowParticipant.name}
                       </TableHead>
                       {participants.map((columnParticipant) => {
-                        const outcome = getCellOutcome(
-                          rowParticipant.id,
-                          columnParticipant.id
-                        );
                         return (
                           <TableCell
                             key={`${rowParticipant.id}-${columnParticipant.id}`}
                             className="px-3 py-3 text-center"
                           >
-                            <span
-                              className={`inline-flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold ${outcome.className}`}
-                              title={`${rowParticipant.name} vs ${columnParticipant.name}: ${outcome.title}`}
-                              aria-label={`${rowParticipant.name} vs ${columnParticipant.name}: ${outcome.title}`}
-                            >
-                              {outcome.label}
-                            </span>
+                            {(() => {
+                              const cell = getCellResults(
+                                rowParticipant.id,
+                                columnParticipant.id
+                              );
+
+                              if (cell.type === "aggregate") {
+                                return (
+                                  <span
+                                    className="inline-flex min-w-[2.5rem] items-center justify-center rounded-full bg-(--brand-ink)/10 px-2 py-1 text-xs font-semibold text-(--brand-ink)"
+                                    title={`${rowParticipant.name} vs ${columnParticipant.name}: ${cell.title}`}
+                                    aria-label={`${rowParticipant.name} vs ${columnParticipant.name}: ${cell.title}`}
+                                  >
+                                    {cell.label}
+                                  </span>
+                                );
+                              }
+
+                              return (
+                                <span className="inline-flex items-center justify-center gap-1">
+                                  {cell.results.map((result, index) => (
+                                    <span
+                                      key={`${rowParticipant.id}-${columnParticipant.id}-${index}`}
+                                      className={`inline-flex h-7 w-7 items-center justify-center rounded-full text-xs font-semibold ${result.className}`}
+                                      title={`${rowParticipant.name} vs ${columnParticipant.name}: ${result.title}`}
+                                      aria-label={`${rowParticipant.name} vs ${columnParticipant.name}: ${result.title}`}
+                                    >
+                                      {result.label}
+                                    </span>
+                                  ))}
+                                </span>
+                              );
+                            })()}
                           </TableCell>
                         );
                       })}
