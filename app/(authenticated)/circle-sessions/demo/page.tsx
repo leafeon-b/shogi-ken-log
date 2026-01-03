@@ -4,6 +4,12 @@ import { FormEvent, useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   Table,
   TableBody,
   TableCell,
@@ -67,8 +73,7 @@ const matchDatesByIndex = matches.map((_, index) =>
   formatDateForInput(addDays(sessionBaseDate, index))
 );
 
-const getParticipantName = (id: string) =>
-  participantsById[id]?.name ?? "不明";
+const getParticipantName = (id: string) => participantsById[id]?.name ?? "不明";
 
 const getPairMatches = (rowId: string, columnId: string) =>
   matches
@@ -173,9 +178,7 @@ const getCellResults = (rowId: string, columnId: string) => {
     } as const;
   }
 
-  const pairMatches = getPairMatches(rowId, columnId).map(
-    ({ match }) => match
-  );
+  const pairMatches = getPairMatches(rowId, columnId).map(({ match }) => match);
 
   if (pairMatches.length === 0) {
     return {
@@ -282,23 +285,23 @@ const getRowTotals = (rowId: string) => {
 };
 
 export default function CircleSessionDemoPage() {
-  const [openMenuKey, setOpenMenuKey] = useState<string | null>(null);
   const [activeDialog, setActiveDialog] = useState<ActiveDialog | null>(null);
   const [selectedMatchIndex, setSelectedMatchIndex] = useState<number | null>(
     null
   );
-  const [selectedOutcome, setSelectedOutcome] =
-    useState<RowOutcome>("UNKNOWN");
-  const [selectedDate, setSelectedDate] = useState<string>(
-    getTodayInputValue()
-  );
+  const [selectedOutcome, setSelectedOutcome] = useState<RowOutcome>("UNKNOWN");
+  const [selectedDate, setSelectedDate] =
+    useState<string>(getTodayInputValue());
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const applyMatchSelection = (rowId: string, entry?: {
-    match: Match;
-    index: number;
-  }) => {
+  const applyMatchSelection = (
+    rowId: string,
+    entry?: {
+      match: Match;
+      index: number;
+    }
+  ) => {
     if (!entry) {
       setSelectedMatchIndex(null);
       setSelectedOutcome("UNKNOWN");
@@ -330,7 +333,6 @@ export default function CircleSessionDemoPage() {
   const openDialog = (mode: DialogMode, rowId: string, columnId: string) => {
     initializeDialogState(mode, rowId, columnId);
     setActiveDialog({ mode, rowId, columnId });
-    setOpenMenuKey(null);
   };
 
   const closeDialog = () => setActiveDialog(null);
@@ -375,9 +377,7 @@ export default function CircleSessionDemoPage() {
     const actionLabel =
       activeDialog.mode === "add" ? "追加しました" : "保存しました";
     const outcomeLabel = getOutcomeLabel(selectedOutcome, rowName, columnName);
-    showToast(
-      `${actionLabel}: ${rowName} vs ${columnName} / ${outcomeLabel}`
-    );
+    showToast(`${actionLabel}: ${rowName} vs ${columnName} / ${outcomeLabel}`);
     setActiveDialog(null);
   };
 
@@ -394,8 +394,8 @@ export default function CircleSessionDemoPage() {
     const selected =
       selectedMatchIndex === null
         ? pairMatches[0]
-        : pairMatches.find((entry) => entry.index === selectedMatchIndex) ??
-          pairMatches[0];
+        : (pairMatches.find((entry) => entry.index === selectedMatchIndex) ??
+          pairMatches[0]);
     const outcomeLabel = selected
       ? getOutcomeLabel(
           getRowOutcomeValue(activeDialog.rowId, selected.match),
@@ -403,9 +403,7 @@ export default function CircleSessionDemoPage() {
           columnName
         )
       : "結果不明";
-    showToast(
-      `削除しました: ${rowName} vs ${columnName} / ${outcomeLabel}`
-    );
+    showToast(`削除しました: ${rowName} vs ${columnName} / ${outcomeLabel}`);
     setActiveDialog(null);
   };
 
@@ -448,8 +446,9 @@ export default function CircleSessionDemoPage() {
       : [];
   const selectedMatch =
     activeDialog && activePairMatches.length > 0
-      ? activePairMatches.find((entry) => entry.index === selectedMatchIndex) ??
-        activePairMatches[0]
+      ? (activePairMatches.find(
+          (entry) => entry.index === selectedMatchIndex
+        ) ?? activePairMatches[0])
       : null;
 
   return (
@@ -499,10 +498,7 @@ export default function CircleSessionDemoPage() {
               {participants.length}名参加
             </p>
           </div>
-          <div
-            className="relative mt-4 rounded-2xl border border-border/60 bg-white/70"
-            onClick={() => setOpenMenuKey(null)}
-          >
+          <div className="relative mt-4 rounded-2xl border border-border/60 bg-white/70">
             <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-6 rounded-l-2xl bg-linear-to-r from-(--brand-ink)/20 to-transparent sm:hidden" />
             <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-6 rounded-r-2xl bg-linear-to-l from-(--brand-ink)/20 to-transparent sm:hidden" />
             <Table className="min-w-130 border-collapse text-sm sm:min-w-160">
@@ -554,7 +550,6 @@ export default function CircleSessionDemoPage() {
                         const hasMatches = pairMatches.length > 0;
                         const isSelf =
                           rowParticipant.id === columnParticipant.id;
-                        const isMenuOpen = openMenuKey === cellKey;
                         const cellDisplay = getCellDisplay(
                           rowParticipant.id,
                           columnParticipant.id
@@ -590,82 +585,82 @@ export default function CircleSessionDemoPage() {
                             key={cellKey}
                             className="relative px-3 py-3 text-center"
                           >
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              className={`w-full rounded-lg text-xs font-semibold ${cellTextClassName}`}
-                              onClick={(event) => {
-                                event.stopPropagation();
-                                if (!hasMatches) {
+                            {hasMatches ? (
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    className={`w-full rounded-lg text-xs font-semibold ${cellTextClassName}`}
+                                    title={cellLabel}
+                                    aria-label={`${rowParticipant.name} vs ${columnParticipant.name} の操作を開く`}
+                                  >
+                                    {cellDisplay.text}
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent
+                                  align="center"
+                                  sideOffset={6}
+                                  className="w-36 rounded-xl border-border/60 p-1 text-xs shadow-lg"
+                                >
+                                  <DropdownMenuItem
+                                    className="rounded-lg px-3 py-2 text-left font-semibold text-(--brand-ink) focus:bg-(--brand-ink)/5"
+                                    onSelect={() =>
+                                      openDialog(
+                                        "add",
+                                        rowParticipant.id,
+                                        columnParticipant.id
+                                      )
+                                    }
+                                  >
+                                    追加
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    className="rounded-lg px-3 py-2 text-left font-semibold text-(--brand-ink) focus:bg-(--brand-ink)/5"
+                                    onSelect={() =>
+                                      openDialog(
+                                        "edit",
+                                        rowParticipant.id,
+                                        columnParticipant.id
+                                      )
+                                    }
+                                  >
+                                    編集
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    className="rounded-lg px-3 py-2 text-left font-semibold text-(--brand-ink) focus:bg-(--brand-ink)/5"
+                                    onSelect={() =>
+                                      openDialog(
+                                        "delete",
+                                        rowParticipant.id,
+                                        columnParticipant.id
+                                      )
+                                    }
+                                  >
+                                    削除
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            ) : (
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                className={`w-full rounded-lg text-xs font-semibold ${cellTextClassName}`}
+                                onClick={() =>
                                   openDialog(
                                     "add",
                                     rowParticipant.id,
                                     columnParticipant.id
-                                  );
-                                  return;
+                                  )
                                 }
-                                setOpenMenuKey((prev) =>
-                                  prev === cellKey ? null : cellKey
-                                );
-                              }}
-                              title={cellLabel}
-                              aria-label={
-                                hasMatches
-                                  ? `${rowParticipant.name} vs ${columnParticipant.name} の操作を開く`
-                                  : `${rowParticipant.name} vs ${columnParticipant.name} の結果を追加`
-                              }
-                              aria-haspopup={hasMatches ? "menu" : "dialog"}
-                              aria-expanded={hasMatches ? isMenuOpen : undefined}
-                            >
-                              {cellDisplay.text}
-                            </Button>
-                            {hasMatches && isMenuOpen ? (
-                              <div
-                                className="absolute left-1/2 top-full z-20 mt-2 w-36 -translate-x-1/2 rounded-xl border border-border/60 bg-white p-1 text-xs shadow-lg"
-                                onClick={(event) => event.stopPropagation()}
+                                title={cellLabel}
+                                aria-label={`${rowParticipant.name} vs ${columnParticipant.name} の結果を追加`}
                               >
-                                <button
-                                  type="button"
-                                  className="w-full rounded-lg px-3 py-2 text-left font-semibold text-(--brand-ink) hover:bg-(--brand-ink)/5"
-                                  onClick={() =>
-                                    openDialog(
-                                      "add",
-                                      rowParticipant.id,
-                                      columnParticipant.id
-                                    )
-                                  }
-                                >
-                                  追加
-                                </button>
-                                <button
-                                  type="button"
-                                  className="w-full rounded-lg px-3 py-2 text-left font-semibold text-(--brand-ink) hover:bg-(--brand-ink)/5"
-                                  onClick={() =>
-                                    openDialog(
-                                      "edit",
-                                      rowParticipant.id,
-                                      columnParticipant.id
-                                    )
-                                  }
-                                >
-                                  編集
-                                </button>
-                                <button
-                                  type="button"
-                                  className="w-full rounded-lg px-3 py-2 text-left font-semibold text-(--brand-ink) hover:bg-(--brand-ink)/5"
-                                  onClick={() =>
-                                    openDialog(
-                                      "delete",
-                                      rowParticipant.id,
-                                      columnParticipant.id
-                                    )
-                                  }
-                                >
-                                  削除
-                                </button>
-                              </div>
-                            ) : null}
+                                {cellDisplay.text}
+                              </Button>
+                            )}
                           </TableCell>
                         );
                       })}
@@ -765,7 +760,11 @@ export default function CircleSessionDemoPage() {
                   >
                     キャンセル
                   </Button>
-                  <Button type="button" variant="destructive" onClick={handleDelete}>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    onClick={handleDelete}
+                  >
                     削除
                   </Button>
                 </div>
