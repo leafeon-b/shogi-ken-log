@@ -1,4 +1,5 @@
 import { CircleRole } from "@/server/domain/services/authz/roles";
+import { userId } from "@/server/domain/common/ids";
 import { appRouter } from "@/server/presentation/trpc/router";
 import { createContext } from "@/server/presentation/trpc/context";
 import type {
@@ -148,6 +149,14 @@ export const trpcCircleOverviewProvider: CircleOverviewProvider = {
       caller.circleSessions.list({ circleId: input.circleId }),
     ]);
 
+    const users = await ctx.userService.listUsers(
+      ctx.actorId,
+      participants.map((participant) => userId(participant.userId)),
+    );
+    const userNameById = new Map(
+      users.map((user) => [user.id as string, user.name]),
+    );
+
     const viewerId = input.viewerId ?? ctx.actorId ?? null;
     const viewerRole =
       input.viewerRoleOverride ?? getViewerRole(participants, viewerId);
@@ -188,7 +197,7 @@ export const trpcCircleOverviewProvider: CircleOverviewProvider = {
       recentSessions,
       members: participants.map((participant) => ({
         userId: participant.userId,
-        name: participant.userId,
+        name: userNameById.get(participant.userId) ?? participant.userId,
         role: roleKeyByDto[participant.role] ?? "member",
       })),
     };

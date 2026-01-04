@@ -1,4 +1,5 @@
 import { CircleSessionRole } from "@/server/domain/services/authz/roles";
+import { userId } from "@/server/domain/common/ids";
 import { appRouter } from "@/server/presentation/trpc/router";
 import { createContext } from "@/server/presentation/trpc/context";
 import type {
@@ -45,16 +46,18 @@ const getViewerRole = (
 };
 
 const mapParticipants = (
-  participants: Array<{ userId: string }>
+  participants: Array<{ userId: string }>,
+  nameById: Map<string, string | null>
 ): CircleSessionParticipant[] =>
   participants.map((participant) => ({
     id: participant.userId,
-    name: participant.userId,
+    name: nameById.get(participant.userId) ?? participant.userId,
   }));
 
 const mergeParticipantIds = (
   participants: CircleSessionParticipant[],
-  matches: CircleSessionMatch[]
+  matches: CircleSessionMatch[],
+  nameById: Map<string, string | null>
 ) => {
   const ids = new Set(participants.map((participant) => participant.id));
   const extras: CircleSessionParticipant[] = [];
@@ -62,11 +65,17 @@ const mergeParticipantIds = (
   for (const match of matches) {
     if (!ids.has(match.player1Id)) {
       ids.add(match.player1Id);
-      extras.push({ id: match.player1Id, name: match.player1Id });
+      extras.push({
+        id: match.player1Id,
+        name: nameById.get(match.player1Id) ?? match.player1Id,
+      });
     }
     if (!ids.has(match.player2Id)) {
       ids.add(match.player2Id);
-      extras.push({ id: match.player2Id, name: match.player2Id });
+      extras.push({
+        id: match.player2Id,
+        name: nameById.get(match.player2Id) ?? match.player2Id,
+      });
     }
   }
 
@@ -89,6 +98,22 @@ export const trpcCircleSessionDetailProvider: CircleSessionDetailProvider = {
       circleSessionId: session.id,
     });
 
+    const userIds = new Set<string>();
+    for (const participant of participants) {
+      userIds.add(participant.userId);
+    }
+    for (const match of matches) {
+      userIds.add(match.player1Id);
+      userIds.add(match.player2Id);
+    }
+    const users = await ctx.userService.listUsers(
+      ctx.actorId,
+      Array.from(userIds).map((id) => userId(id)),
+    );
+    const userNameById = new Map(
+      users.map((user) => [user.id as string, user.name]),
+    );
+
     const viewerId = input.viewerId ?? ctx.actorId ?? null;
     const viewerRole = getViewerRole(participants, viewerId);
 
@@ -103,8 +128,9 @@ export const trpcCircleSessionDetailProvider: CircleSessionDetailProvider = {
       }));
 
     const participantViewModels = mergeParticipantIds(
-      mapParticipants(participants),
-      matchViewModels
+      mapParticipants(participants, userNameById),
+      matchViewModels,
+      userNameById
     );
 
     const detail: CircleSessionDetailViewModel = {
