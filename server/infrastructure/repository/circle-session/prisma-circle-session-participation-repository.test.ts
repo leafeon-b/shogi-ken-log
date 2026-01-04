@@ -84,8 +84,18 @@ describe("Prisma CircleSession 参加者リポジトリ", () => {
 
   test("listParticipants は参加者一覧を返す", async () => {
     mockedPrisma.circleSessionMembership.findMany.mockResolvedValueOnce([
-      { userId: "user-1", role: "CircleSessionOwner" },
-      { userId: "user-2", role: "CircleSessionMember" },
+      {
+        id: "membership-1",
+        userId: "user-1",
+        circleSessionId: "session-1",
+        role: "CircleSessionOwner",
+      },
+      {
+        id: "membership-2",
+        userId: "user-2",
+        circleSessionId: "session-1",
+        role: "CircleSessionMember",
+      },
     ]);
 
     const result =

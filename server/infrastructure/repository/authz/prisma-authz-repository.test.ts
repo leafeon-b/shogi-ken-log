@@ -25,7 +25,14 @@ describe("Prisma Authz リポジトリ", () => {
   });
 
   test("isRegisteredUser は存在時に true", async () => {
-    mockedPrisma.user.findUnique.mockResolvedValueOnce({ id: "user-1" });
+    mockedPrisma.user.findUnique.mockResolvedValueOnce({
+      id: "user-1",
+      name: null,
+      createdAt: new Date("2024-01-01T00:00:00Z"),
+      email: null,
+      emailVerified: null,
+      image: null,
+    });
 
     const result = await prismaAuthzRepository.isRegisteredUser("user-1");
 
@@ -46,6 +53,9 @@ describe("Prisma Authz リポジトリ", () => {
 
   test("findCircleMembership はロールを返す", async () => {
     mockedPrisma.circleMembership.findFirst.mockResolvedValueOnce({
+      id: "membership-1",
+      userId: "user-1",
+      circleId: "circle-1",
       role: "CircleOwner",
     });
 
@@ -74,6 +84,9 @@ describe("Prisma Authz リポジトリ", () => {
 
   test("findCircleSessionMembership はロールを返す", async () => {
     mockedPrisma.circleSessionMembership.findFirst.mockResolvedValueOnce({
+      id: "session-membership-1",
+      userId: "user-1",
+      circleSessionId: "session-1",
       role: "CircleSessionMember",
     });
 

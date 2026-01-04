@@ -24,8 +24,18 @@ describe("Prisma Circle 参加者リポジトリ", () => {
 
   test("listParticipants は参加者一覧を返す", async () => {
     mockedPrisma.circleMembership.findMany.mockResolvedValueOnce([
-      { userId: "user-1", role: "CircleOwner" },
-      { userId: "user-2", role: "CircleMember" },
+      {
+        id: "membership-1",
+        userId: "user-1",
+        circleId: "circle-1",
+        role: "CircleOwner",
+      },
+      {
+        id: "membership-2",
+        userId: "user-2",
+        circleId: "circle-1",
+        role: "CircleMember",
+      },
     ]);
 
     const result = await prismaCircleParticipationRepository.listParticipants(
