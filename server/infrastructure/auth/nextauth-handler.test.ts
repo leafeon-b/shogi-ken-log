@@ -30,8 +30,12 @@ describe("NextAuth ハンドラ", () => {
     process.env.GOOGLE_CLIENT_ID = "client-id";
     process.env.GOOGLE_CLIENT_SECRET = "client-secret";
 
-    const adapter = { kind: "adapter" };
-    const provider = { kind: "google-provider" };
+    const adapter = { kind: "adapter" } as unknown as ReturnType<
+      typeof PrismaAdapter
+    >;
+    const provider = { kind: "google-provider" } as unknown as ReturnType<
+      typeof Google
+    >;
     vi.mocked(PrismaAdapter).mockReturnValue(adapter);
     vi.mocked(Google).mockReturnValue(provider);
     vi.mocked(NextAuth).mockReturnValue("handler");
