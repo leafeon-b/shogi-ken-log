@@ -27,6 +27,7 @@
 - Domain は他層に依存しない
 - Application は Domain に依存する
 - Infrastructure は Application のポートに依存する
+- Composition Root（Presentation）は Infrastructure を参照して依存を組み立てる
 
 ## 構成図（概念）
 
@@ -66,7 +67,7 @@ graph TD
   - `server/domain/services/*/*-repository.ts`
 - Application
   - `server/application/authz/access-service.ts`
-  - `server/application/service-container.ts`（現状の Composition Root）
+  - `server/application/service-container.ts`（Service Container の factory）
 - Infrastructure
   - `server/infrastructure/repository/authz/prisma-authz-repository.ts`
 
@@ -75,7 +76,7 @@ graph TD
 - リポジトリは「ルールの判断」を行わない
 - ドメインロジックは I/O を持たない
 - ルールに依存する更新はアプリケーション層でトランザクションを張る
-- Composition Root は依存関係逆転の対応で Infrastructure へ移動予定
+- Composition Root は Presentation に配置し、Infrastructure を参照して配線する
 
 ## 認可の実装ルール
 

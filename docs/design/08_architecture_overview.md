@@ -81,10 +81,11 @@ graph LR
 - Presentation
   - `app/api/trpc/[trpc]/route.ts`
   - `server/presentation/*`
+  - `server/presentation/trpc/context.ts`（Composition Root）
   - `app/api/auth/[...nextauth]/route.ts`
 - Application
   - `server/application/*`
-  - `server/application/service-container.ts`（現状の Composition Root）
+  - `server/application/service-container.ts`（Service Container の factory）
 - Domain
   - `server/domain/models/*`
   - `server/domain/models/*/*-repository.ts`
@@ -99,4 +100,4 @@ graph LR
 ## 補足
 
 - リポジトリはマッパー経由で Prisma と接続する方針（Authz 含む）
-- Composition Root は依存関係逆転の対応で Infrastructure へ移動予定
+- Composition Root は Presentation に配置し、Infrastructure を参照して配線する

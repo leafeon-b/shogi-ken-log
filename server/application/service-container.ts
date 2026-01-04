@@ -15,13 +15,6 @@ import type { CircleSessionParticipationRepository } from "@/server/domain/model
 import type { TransactionRunner } from "@/server/application/match/match-service";
 import { matchHistoryId } from "@/server/domain/common/ids";
 import type { AuthzRepository } from "@/server/domain/services/authz/authz-repository";
-import { prismaCircleRepository } from "@/server/infrastructure/repository/circle/prisma-circle-repository";
-import { prismaCircleParticipationRepository } from "@/server/infrastructure/repository/circle/prisma-circle-participation-repository";
-import { prismaCircleSessionRepository } from "@/server/infrastructure/repository/circle-session/prisma-circle-session-repository";
-import { prismaMatchRepository } from "@/server/infrastructure/repository/match/prisma-match-repository";
-import { prismaMatchHistoryRepository } from "@/server/infrastructure/repository/match-history/prisma-match-history-repository";
-import { prismaCircleSessionParticipationRepository } from "@/server/infrastructure/repository/circle-session/prisma-circle-session-participation-repository";
-import { prismaAuthzRepository } from "@/server/infrastructure/repository/authz/prisma-authz-repository";
 
 export type ServiceContainer = {
   circleService: ReturnType<typeof createCircleService>;
@@ -38,75 +31,63 @@ export type ServiceContainer = {
 };
 
 export type ServiceContainerDeps = {
-  circleRepository?: CircleRepository;
-  circleParticipationRepository?: CircleParticipationRepository;
-  circleSessionRepository?: CircleSessionRepository;
-  matchRepository?: MatchRepository;
-  matchHistoryRepository?: MatchHistoryRepository;
-  circleSessionParticipationRepository?: CircleSessionParticipationRepository;
-  authzRepository?: AuthzRepository;
+  circleRepository: CircleRepository;
+  circleParticipationRepository: CircleParticipationRepository;
+  circleSessionRepository: CircleSessionRepository;
+  matchRepository: MatchRepository;
+  matchHistoryRepository: MatchHistoryRepository;
+  circleSessionParticipationRepository: CircleSessionParticipationRepository;
+  authzRepository: AuthzRepository;
   generateMatchHistoryId?: () => ReturnType<typeof matchHistoryId>;
   transactionRunner?: TransactionRunner;
 };
 
 export const createServiceContainer = (
-  deps: ServiceContainerDeps = {},
+  deps: ServiceContainerDeps,
 ): ServiceContainer => {
-  const circleRepository = deps.circleRepository ?? prismaCircleRepository;
-  const circleParticipationRepository =
-    deps.circleParticipationRepository ?? prismaCircleParticipationRepository;
-  const circleSessionRepository =
-    deps.circleSessionRepository ?? prismaCircleSessionRepository;
-  const matchRepository = deps.matchRepository ?? prismaMatchRepository;
-  const matchHistoryRepository =
-    deps.matchHistoryRepository ?? prismaMatchHistoryRepository;
-  const circleSessionParticipationRepository =
-    deps.circleSessionParticipationRepository ??
-    prismaCircleSessionParticipationRepository;
-  const authzRepository = deps.authzRepository ?? prismaAuthzRepository;
-  const accessService = createAccessService(authzRepository);
+  const accessService = createAccessService(deps.authzRepository);
   const generateMatchHistoryId =
     deps.generateMatchHistoryId ?? (() => matchHistoryId(randomUUID()));
 
   return {
     circleService: createCircleService({
-      circleRepository,
-      circleParticipationRepository,
+      circleRepository: deps.circleRepository,
+      circleParticipationRepository: deps.circleParticipationRepository,
       accessService,
     }),
     circleParticipationService: createCircleParticipationService({
-      circleParticipationRepository,
-      circleRepository,
+      circleParticipationRepository: deps.circleParticipationRepository,
+      circleRepository: deps.circleRepository,
       accessService,
     }),
     circleSessionService: createCircleSessionService({
-      circleRepository,
-      circleSessionRepository,
+      circleRepository: deps.circleRepository,
+      circleSessionRepository: deps.circleSessionRepository,
       accessService,
     }),
     circleSessionParticipationService: createCircleSessionParticipationService({
-      matchRepository,
-      circleSessionRepository,
-      circleSessionParticipationRepository,
+      matchRepository: deps.matchRepository,
+      circleSessionRepository: deps.circleSessionRepository,
+      circleSessionParticipationRepository:
+        deps.circleSessionParticipationRepository,
       accessService,
     }),
     matchService: createMatchService({
-      matchRepository,
-      matchHistoryRepository,
-      circleSessionParticipationRepository,
-      circleSessionRepository,
+      matchRepository: deps.matchRepository,
+      matchHistoryRepository: deps.matchHistoryRepository,
+      circleSessionParticipationRepository:
+        deps.circleSessionParticipationRepository,
+      circleSessionRepository: deps.circleSessionRepository,
       accessService,
       generateMatchHistoryId,
       transactionRunner: deps.transactionRunner,
     }),
     accessService,
     matchHistoryService: createMatchHistoryService({
-      matchHistoryRepository,
-      matchRepository,
-      circleSessionRepository,
+      matchHistoryRepository: deps.matchHistoryRepository,
+      matchRepository: deps.matchRepository,
+      circleSessionRepository: deps.circleSessionRepository,
       accessService,
     }),
   };
 };
-
-export const getServiceContainer = () => createServiceContainer();
