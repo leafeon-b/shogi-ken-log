@@ -24,9 +24,6 @@ type RolePanelItem = {
 
 type RoleConfig = {
   label: string;
-  description: string;
-  highlights: string[];
-  dotClassName: string;
   actions: RoleAction[];
   panelTitle: string;
   panelItems: RolePanelItem[];
@@ -78,27 +75,21 @@ const defaultActions: RoleAction[] = [
     className: "bg-(--brand-moss) text-white hover:bg-(--brand-moss)/90",
   },
   {
-    label: "メンバー管理",
+    label: "参加者を管理",
     variant: "outline",
     className:
       "border-(--brand-moss)/30 bg-white/70 text-(--brand-ink) hover:bg-white",
   },
 ];
 
-const ownerManagerBase = {
-  description: "研究会の運営と方針を統括",
-  highlights: [
-    "開催スケジュールの確定",
-    "参加申請と権限の管理",
-    "研究会の方針・概要更新",
-  ],
+const ownerManagerBase: Pick<RoleConfig, "actions" | "panelTitle" | "panelItems"> = {
   actions: [
     {
       label: "開催日程を追加",
       className: "bg-(--brand-gold) text-(--brand-ink) hover:bg-(--brand-gold)/90",
     },
     {
-      label: "メンバー管理",
+      label: "参加者を管理",
       variant: "outline",
       className:
         "border-(--brand-gold)/40 bg-white/70 text-(--brand-ink) hover:bg-white",
@@ -115,23 +106,24 @@ const ownerManagerBase = {
 const roleConfigs: Record<CircleDemoRole, RoleConfig> = {
   owner: {
     label: "オーナー",
-    dotClassName: "bg-(--brand-gold)",
     ...ownerManagerBase,
   },
   manager: {
     label: "マネージャー",
-    dotClassName: "bg-(--brand-gold)",
     ...ownerManagerBase,
   },
   member: {
     label: "メンバー",
-    description: "参加登録と対局準備を担当",
-    highlights: ["参加予定の登録", "対局テーマの確認", "連絡事項の対応"],
-    dotClassName: "bg-(--brand-moss)",
     actions: [
       {
         label: "参加予定を登録",
         className: "bg-(--brand-moss) text-white hover:bg-(--brand-moss)/90",
+      },
+      {
+        label: "参加者一覧",
+        variant: "outline",
+        className:
+          "border-(--brand-moss)/30 bg-white/70 text-(--brand-ink) hover:bg-white",
       },
     ],
     panelTitle: "メンバーの参加メモ",
@@ -171,7 +163,7 @@ export function CircleDemoPage({ heroContent, role }: CircleDemoPageProps) {
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-8">
       <section className="rounded-3xl border border-border/60 bg-white/90 p-8 shadow-sm">
         <div className="flex flex-wrap items-start justify-between gap-6">
-          <div className="min-w-[240px] flex-1">
+          <div className="min-w-60 flex-1">
             {heroContent ?? fallbackHero}
             <Link
               href="/circle-sessions/demo"
@@ -185,34 +177,7 @@ export function CircleDemoPage({ heroContent, role }: CircleDemoPageProps) {
               </p>
             </Link>
           </div>
-          <div className="flex w-full flex-col gap-4 sm:w-auto sm:min-w-[240px] sm:max-w-[320px]">
-            {roleConfig ? (
-              <div className="rounded-2xl border border-border/60 bg-white/80 p-4 shadow-sm">
-                <p className="text-xs font-semibold text-(--brand-ink)">
-                  あなたのロール
-                </p>
-                <div className="mt-2 flex flex-wrap items-center gap-2">
-                  <span
-                    className={`rounded-full px-2.5 py-1 text-xs ${roleBadgeClassName}`}
-                  >
-                    {roleConfig.label}
-                  </span>
-                  <span className="text-xs text-(--brand-ink-muted)">
-                    {roleConfig.description}
-                  </span>
-                </div>
-                <ul className="mt-3 space-y-2 text-xs text-(--brand-ink)">
-                  {roleConfig.highlights.map((highlight) => (
-                    <li key={highlight} className="flex items-start gap-2">
-                      <span
-                        className={`mt-1 h-1.5 w-1.5 rounded-full ${roleConfig.dotClassName}`}
-                      />
-                      <span>{highlight}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ) : null}
+          <div className="flex w-full flex-col gap-4 sm:w-auto sm:min-w-60 sm:max-w-[320px]">
             <div
               className={`flex gap-3 ${isSingleAction ? "flex-col" : "flex-wrap"}`}
             >
@@ -229,26 +194,36 @@ export function CircleDemoPage({ heroContent, role }: CircleDemoPageProps) {
           </div>
         </div>
         {roleConfig ? (
-          <div className="mt-6 flex flex-wrap items-center gap-2">
-            <p className="text-xs font-semibold text-(--brand-ink)">
-              ロール別デモ
-            </p>
-            {roleLinks.map((link) => {
-              const isActive = role === link.role;
-              return (
-                <Link
-                  key={link.role}
-                  href={link.href}
-                  className={`rounded-full border px-3 py-1 text-xs transition ${
-                    isActive
-                      ? "border-(--brand-ink)/30 bg-(--brand-ink)/10 text-(--brand-ink)"
-                      : "border-border/60 bg-white/70 text-(--brand-ink-muted) hover:border-border hover:text-(--brand-ink)"
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              );
-            })}
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2 rounded-full border border-border/60 bg-white/70 px-3 py-1 text-xs">
+              <span className="text-(--brand-ink-muted)">あなたのロール</span>
+              <span
+                className={`rounded-full px-2.5 py-1 text-xs ${roleBadgeClassName}`}
+              >
+                {roleConfig.label}
+              </span>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <p className="text-xs font-semibold text-(--brand-ink)">
+                ロール別デモ
+              </p>
+              {roleLinks.map((link) => {
+                const isActive = role === link.role;
+                return (
+                  <Link
+                    key={link.role}
+                    href={link.href}
+                    className={`rounded-full border px-3 py-1 text-xs transition ${
+                      isActive
+                        ? "border-(--brand-ink)/30 bg-(--brand-ink)/10 text-(--brand-ink)"
+                        : "border-border/60 bg-white/70 text-(--brand-ink-muted) hover:border-border hover:text-(--brand-ink)"
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
+            </div>
           </div>
         ) : null}
       </section>

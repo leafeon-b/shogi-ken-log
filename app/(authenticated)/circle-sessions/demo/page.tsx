@@ -17,6 +17,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import Link from "next/link";
+import { Pencil } from "lucide-react";
 
 type MatchOutcome = "P1_WIN" | "P2_WIN" | "DRAW" | "UNKNOWN";
 type Match = { player1Id: string; player2Id: string; outcome: MatchOutcome };
@@ -26,6 +28,71 @@ type ActiveDialog = {
   mode: DialogMode;
   rowId: string;
   columnId: string;
+};
+type CircleSessionRole = "owner" | "manager" | "member";
+
+type RoleAction = {
+  label: string;
+  variant?:
+    | "default"
+    | "outline"
+    | "ghost"
+    | "secondary"
+    | "destructive"
+    | "link";
+  className?: string;
+};
+
+type RoleConfig = {
+  label: string;
+  actions: RoleAction[];
+};
+
+const roleLinks: { role: CircleSessionRole; label: string; href: string }[] = [
+  { role: "owner", label: "オーナー", href: "/circle-sessions/demo/owner" },
+  {
+    role: "manager",
+    label: "マネージャー",
+    href: "/circle-sessions/demo/manager",
+  },
+  { role: "member", label: "メンバー", href: "/circle-sessions/demo/member" },
+];
+
+const roleClasses: Record<string, string> = {
+  オーナー: "bg-(--brand-gold)/25 text-(--brand-ink)",
+  マネージャー: "bg-(--brand-sky)/25 text-(--brand-ink)",
+  メンバー: "bg-(--brand-moss)/20 text-(--brand-ink)",
+};
+
+const ownerManagerBase: { actions: RoleAction[] } = {
+  actions: [
+    {
+      label: "参加者を管理",
+      className: "bg-(--brand-moss) text-white hover:bg-(--brand-moss)/90",
+    },
+  ],
+};
+
+const roleConfigs: Record<CircleSessionRole, RoleConfig> = {
+  owner: {
+    label: "オーナー",
+    ...ownerManagerBase,
+  },
+  manager: {
+    label: "マネージャー",
+    ...ownerManagerBase,
+  },
+  member: {
+    label: "メンバー",
+    actions: [
+      {
+        label: "参加者一覧",
+        variant: "outline",
+        className:
+          "border-(--brand-moss)/30 bg-white/70 text-(--brand-ink) hover:bg-white",
+      },
+    ],
+  },
 };
 
 const pad2 = (value: number) => String(value).padStart(2, "0");
@@ -284,7 +351,19 @@ const getRowTotals = (rowId: string) => {
   return { wins, losses, draws };
 };
 
-export default function CircleSessionDemoPage() {
+type CircleSessionDemoPageProps = {
+  role?: CircleSessionRole;
+};
+
+export function CircleSessionDemoPage({ role }: CircleSessionDemoPageProps) {
+  const roleConfig = role ? roleConfigs[role] : null;
+  const actions = roleConfig?.actions ?? ownerManagerBase.actions;
+  const roleBadgeClassName = roleConfig
+    ? roleClasses[roleConfig.label] ?? "bg-(--brand-ink)/10 text-(--brand-ink)"
+    : "bg-(--brand-ink)/10 text-(--brand-ink)";
+  const isSingleAction = actions.length === 1;
+  const showMemoEdit = role === "owner" || role === "manager";
+
   const [activeDialog, setActiveDialog] = useState<ActiveDialog | null>(null);
   const [selectedMatchIndex, setSelectedMatchIndex] = useState<number | null>(
     null
@@ -455,32 +534,77 @@ export default function CircleSessionDemoPage() {
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-8">
       <section className="rounded-3xl border border-border/60 bg-white/90 p-8 shadow-sm">
         <div className="flex flex-wrap items-start justify-between gap-6">
-          <div>
+          <div className="min-w-60 flex-1">
             <h1 className="mt-3 text-3xl font-(--font-display) text-(--brand-ink) sm:text-4xl">
               第42回 週末研究会
             </h1>
             <p className="mt-3 text-sm text-(--brand-ink-muted)">
               2025/03/12 18:00 - 21:00 / オンライン
             </p>
+            <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-(--brand-ink-muted)">
+              <p>連絡メモ: 進行表は開始10分前に共有</p>
+              {showMemoEdit ? (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-sm"
+                  className="text-(--brand-ink-muted) hover:text-(--brand-ink)"
+                  aria-label="メモを編集"
+                >
+                  <Pencil />
+                </Button>
+              ) : null}
+            </div>
           </div>
-          <div className="flex flex-wrap gap-3">
-            <Button className="bg-(--brand-moss) text-white hover:bg-(--brand-moss)/90">
-              参加者を追加
-            </Button>
-            <Button
-              variant="outline"
-              className="border-(--brand-moss)/30 bg-white/70 text-(--brand-ink) hover:bg-white"
+          <div className="flex w-full flex-col gap-4 sm:w-auto sm:min-w-60 sm:max-w-[320px]">
+            <div
+              className={`flex gap-3 ${isSingleAction ? "flex-col" : "flex-wrap"}`}
             >
-              参加者一覧
-            </Button>
-            <Button
-              variant="outline"
-              className="border-(--brand-moss)/30 bg-white/70 text-(--brand-ink) hover:bg-white"
-            >
-              メモを編集
-            </Button>
+              {actions.map((action) => (
+                <Button
+                  key={action.label}
+                  variant={action.variant}
+                  className={`${action.className ?? ""} ${isSingleAction ? "w-full" : ""}`.trim()}
+                >
+                  {action.label}
+                </Button>
+              ))}
+            </div>
           </div>
         </div>
+        {roleConfig ? (
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2 rounded-full border border-border/60 bg-white/70 px-3 py-1 text-xs">
+              <span className="text-(--brand-ink-muted)">あなたのロール</span>
+              <span
+                className={`rounded-full px-2.5 py-1 text-xs ${roleBadgeClassName}`}
+              >
+                {roleConfig.label}
+              </span>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <p className="text-xs font-semibold text-(--brand-ink)">
+                ロール別デモ
+              </p>
+              {roleLinks.map((link) => {
+                const isActive = role === link.role;
+                return (
+                  <Link
+                    key={link.role}
+                    href={link.href}
+                    className={`rounded-full border px-3 py-1 text-xs transition ${
+                      isActive
+                        ? "border-(--brand-ink)/30 bg-(--brand-ink)/10 text-(--brand-ink)"
+                        : "border-border/60 bg-white/70 text-(--brand-ink-muted) hover:border-border hover:text-(--brand-ink)"
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        ) : null}
       </section>
 
       <section className="grid gap-6 lg:grid-cols-1">
@@ -828,4 +952,8 @@ export default function CircleSessionDemoPage() {
       ) : null}
     </div>
   );
+}
+
+export default function CircleSessionDemoOwnerPage() {
+  return <CircleSessionDemoPage role="owner" />;
 }
