@@ -47,6 +47,12 @@ const createAuthzStub = () => ({
   findCircleSessionMembership: vi.fn(),
 });
 
+const createUserStub = () => ({
+  findById: vi.fn(),
+  findByIds: vi.fn(),
+  save: vi.fn(),
+});
+
 describe("Service container", () => {
   test("依存を注入してサービスを作成できる", async () => {
     const circleRepository = createStub();
@@ -56,6 +62,7 @@ describe("Service container", () => {
     const matchHistoryRepository = createMatchHistoryStub();
     const circleSessionParticipationRepository =
       createSessionParticipationStub();
+    const userRepository = createUserStub();
     const authzRepository = createAuthzStub();
 
     const container = createServiceContainer({
@@ -65,6 +72,7 @@ describe("Service container", () => {
       matchRepository,
       matchHistoryRepository,
       circleSessionParticipationRepository,
+      userRepository,
       authzRepository,
       generateMatchHistoryId: () => matchHistoryId("history-1"),
     });

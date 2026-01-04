@@ -1,0 +1,109 @@
+import { beforeEach, describe, expect, test, vi } from "vitest";
+
+vi.mock("@/server/infrastructure/db", () => ({
+  prisma: {
+    user: {
+      findUnique: vi.fn(),
+      findMany: vi.fn(),
+      upsert: vi.fn(),
+    },
+  },
+}));
+
+import type { User as PrismaUser } from "@/generated/prisma/client";
+import { prisma } from "@/server/infrastructure/db";
+import { userId } from "@/server/domain/common/ids";
+import { createUser } from "@/server/domain/models/user/user";
+import { prismaUserRepository } from "@/server/infrastructure/repository/user/prisma-user-repository";
+import { mapUserToPersistence } from "@/server/infrastructure/mappers/user-mapper";
+
+const mockedPrisma = vi.mocked(prisma, { deep: true });
+
+describe("Prisma User リポジトリ", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  test("findById は User を返す", async () => {
+    const prismaUser = {
+      id: "user-1",
+      name: null,
+      email: null,
+      image: null,
+      createdAt: new Date("2024-01-01T00:00:00Z"),
+    } as PrismaUser;
+
+    mockedPrisma.user.findUnique.mockResolvedValueOnce(prismaUser);
+
+    const user = await prismaUserRepository.findById(userId("user-1"));
+
+    expect(mockedPrisma.user.findUnique).toHaveBeenCalledWith({
+      where: { id: "user-1" },
+    });
+    expect(user?.id).toBe("user-1");
+  });
+
+  test("findById は未取得時に null を返す", async () => {
+    mockedPrisma.user.findUnique.mockResolvedValueOnce(null);
+
+    const user = await prismaUserRepository.findById(userId("user-1"));
+
+    expect(user).toBeNull();
+  });
+
+  test("findByIds は入力順に User を返す", async () => {
+    const prismaUsers = [
+      {
+        id: "user-3",
+        name: "C",
+        email: null,
+        image: null,
+        createdAt: new Date("2024-01-03T00:00:00Z"),
+      },
+      {
+        id: "user-1",
+        name: "A",
+        email: null,
+        image: null,
+        createdAt: new Date("2024-01-01T00:00:00Z"),
+      },
+    ] as PrismaUser[];
+
+    mockedPrisma.user.findMany.mockResolvedValueOnce(prismaUsers);
+
+    const users = await prismaUserRepository.findByIds([
+      userId("user-1"),
+      userId("user-2"),
+      userId("user-3"),
+    ]);
+
+    expect(mockedPrisma.user.findMany).toHaveBeenCalledWith({
+      where: { id: { in: ["user-1", "user-2", "user-3"] } },
+    });
+    expect(users.map((user) => user.id)).toEqual(["user-1", "user-3"]);
+  });
+
+  test("save は upsert を呼ぶ", async () => {
+    const user = createUser({
+      id: userId("user-1"),
+      name: "Alice",
+      email: "alice@example.com",
+      image: "https://example.com/icon.png",
+      createdAt: new Date("2024-01-01T00:00:00Z"),
+    });
+
+    const data = mapUserToPersistence(user);
+
+    await prismaUserRepository.save(user);
+
+    expect(mockedPrisma.user.upsert).toHaveBeenCalledWith({
+      where: { id: data.id },
+      update: {
+        name: data.name,
+        email: data.email,
+        image: data.image,
+      },
+      create: data,
+    });
+  });
+});

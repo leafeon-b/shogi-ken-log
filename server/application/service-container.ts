@@ -15,6 +15,7 @@ import type { CircleSessionParticipationRepository } from "@/server/domain/model
 import type { TransactionRunner } from "@/server/application/match/match-service";
 import { matchHistoryId } from "@/server/domain/common/ids";
 import type { AuthzRepository } from "@/server/domain/services/authz/authz-repository";
+import type { UserRepository } from "@/server/domain/models/user/user-repository";
 
 export type ServiceContainer = {
   circleService: ReturnType<typeof createCircleService>;
@@ -37,6 +38,7 @@ export type ServiceContainerDeps = {
   matchRepository: MatchRepository;
   matchHistoryRepository: MatchHistoryRepository;
   circleSessionParticipationRepository: CircleSessionParticipationRepository;
+  userRepository: UserRepository;
   authzRepository: AuthzRepository;
   generateMatchHistoryId?: () => ReturnType<typeof matchHistoryId>;
   transactionRunner?: TransactionRunner;

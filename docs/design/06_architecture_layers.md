@@ -14,6 +14,7 @@
   - 不変条件・ポリシー・値オブジェクトなどの純粋ロジック
   - 外部依存を持たない
   - Repository interface（ポート）を定義する
+  - User ドメインモデルを配置し、名前の取り扱いは任意とする
 - Application（アプリケーション）
   - ユースケース実行（トランザクション境界を含む）
   - ドメインロジックを組み合わせる
@@ -65,6 +66,7 @@ graph TD
   - `server/domain/services/authz/memberships.ts`
   - `server/domain/models/*/*-repository.ts`
   - `server/domain/services/*/*-repository.ts`
+  - `server/domain/models/user/*`（User ドメインモデル）
 - Application
   - `server/application/authz/access-service.ts`
   - `server/application/service-container.ts`（Service Container の factory）

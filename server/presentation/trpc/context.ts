@@ -7,6 +7,7 @@ import { prismaCircleSessionParticipationRepository } from "@/server/infrastruct
 import { prismaCircleSessionRepository } from "@/server/infrastructure/repository/circle-session/prisma-circle-session-repository";
 import { prismaMatchHistoryRepository } from "@/server/infrastructure/repository/match-history/prisma-match-history-repository";
 import { prismaMatchRepository } from "@/server/infrastructure/repository/match/prisma-match-repository";
+import { prismaUserRepository } from "@/server/infrastructure/repository/user/prisma-user-repository";
 
 export const createContext = async () => {
   const actorId = await getSessionUserId();
@@ -18,6 +19,7 @@ export const createContext = async () => {
     matchHistoryRepository: prismaMatchHistoryRepository,
     circleSessionParticipationRepository:
       prismaCircleSessionParticipationRepository,
+    userRepository: prismaUserRepository,
     authzRepository: prismaAuthzRepository,
   });
 

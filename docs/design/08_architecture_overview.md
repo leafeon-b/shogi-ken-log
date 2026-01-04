@@ -101,3 +101,4 @@ graph LR
 
 - リポジトリはマッパー経由で Prisma と接続する方針（Authz 含む）
 - Composition Root は Presentation に配置し、Infrastructure を参照して配線する
+- User は Domain 層のモデルとして扱い、`name` は任意のまま扱う
