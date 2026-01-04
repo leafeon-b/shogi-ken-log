@@ -1,6 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
 import { createMatchHistoryService } from "@/server/application/match-history/match-history-service";
-import { createAccessService } from "@/server/application/authz/access-service";
+import { createAccessServiceStub } from "@/server/application/test-helpers/access-service-stub";
 import type { MatchHistoryRepository } from "@/server/domain/models/match-history/match-history-repository";
 import type { MatchRepository } from "@/server/domain/models/match/match-repository";
 import type { CircleSessionRepository } from "@/server/domain/models/circle-session/circle-session-repository";
@@ -24,9 +24,7 @@ const circleSessionRepository = {
   delete: vi.fn(),
 } satisfies CircleSessionRepository;
 
-const accessService = {
-  canViewMatchHistory: vi.fn(),
-} as ReturnType<typeof createAccessService>;
+const accessService = createAccessServiceStub();
 
 const service = createMatchHistoryService({
   matchHistoryRepository,

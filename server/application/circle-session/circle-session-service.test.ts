@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { createCircleSessionService } from "@/server/application/circle-session/circle-session-service";
-import { createAccessService } from "@/server/application/authz/access-service";
+import { createAccessServiceStub } from "@/server/application/test-helpers/access-service-stub";
 import type { CircleRepository } from "@/server/domain/models/circle/circle-repository";
 import type { CircleSessionRepository } from "@/server/domain/models/circle-session/circle-session-repository";
 import { circleId, circleSessionId } from "@/server/domain/common/ids";
@@ -20,13 +20,7 @@ const circleSessionRepository = {
   delete: vi.fn(),
 } satisfies CircleSessionRepository;
 
-const accessService = {
-  canCreateCircleSession: vi.fn(),
-  canEditCircleSession: vi.fn(),
-  canViewCircleSession: vi.fn(),
-  canDeleteCircleSession: vi.fn(),
-  canViewCircle: vi.fn(),
-} as ReturnType<typeof createAccessService>;
+const accessService = createAccessServiceStub();
 
 const service = createCircleSessionService({
   circleRepository,
