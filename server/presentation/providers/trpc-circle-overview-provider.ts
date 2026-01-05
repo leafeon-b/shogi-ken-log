@@ -114,11 +114,14 @@ const buildSessionTitle = (sequence: number) => `第${sequence}回 研究会`;
 const toSessionViewModel = (session: {
   id: string;
   sequence: number;
+  title: string;
   startsAt: Date;
   endsAt: Date;
 }): CircleOverviewSession => ({
   id: session.id,
-  title: buildSessionTitle(session.sequence),
+  title: session.title?.trim()
+    ? session.title
+    : buildSessionTitle(session.sequence),
   dateLabel: formatDate(session.startsAt),
   status: getSessionStatus(session.startsAt, session.endsAt),
 });
@@ -160,13 +163,15 @@ export const trpcCircleOverviewProvider: CircleOverviewProvider = {
     const viewerRole =
       input.viewerRoleOverride ?? getViewerRole(participants, viewerId);
 
-    const recentSessions = [...sessions]
+    const now = new Date();
+    const recentSessions = sessions
+      .filter((session) => session.startsAt < now)
       .sort((a, b) => b.startsAt.getTime() - a.startsAt.getTime())
       .slice(0, 3)
       .map(toSessionViewModel);
 
     const upcomingSessions = sessions
-      .filter((session) => session.startsAt >= new Date())
+      .filter((session) => session.startsAt >= now)
       .sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime());
     const nextSession = upcomingSessions[0];
 
