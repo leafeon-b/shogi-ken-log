@@ -15,28 +15,138 @@ if (!databaseUrl) {
 const adapter = new PrismaBetterSqlite3({ url: databaseUrl });
 const prisma = new PrismaClient({ adapter });
 
-const users = [
-  { id: "user-1", name: "藤井 聡太", email: "sota@example.com" },
-  { id: "user-2", name: "羽生 善治", email: "hanyu@example.com" },
-  { id: "user-3", name: "渡辺 明", email: "watanabe@example.com" },
-  { id: "user-4", name: "伊藤 匠", email: "ito@example.com" },
-  { id: "user-5", name: "豊島 将之", email: "toyoshima@example.com" },
-  { id: "user-6", name: "永瀬 拓矢", email: "nagase@example.com" },
-  { id: "user-7", name: "佐々木 勇気", email: "sasaki@example.com" },
-  { id: "user-8", name: "菅井 竜也", email: "sugai@example.com" },
+type DemoSessionRoleSeed = {
+  circleSessionId: string;
+  role: CircleSessionRole;
+};
+
+type DemoUserSeed = {
+  id: string;
+  name: string;
+  email: string;
+  passwordHash: string | null;
+  circleRole?: CircleRole;
+  sessionRoles?: DemoSessionRoleSeed[];
+};
+
+// SSoT: demoUsers defines login accounts and the role coverage for checks.
+const demoUsers: DemoUserSeed[] = [
+  {
+    id: "user-1",
+    name: "藤井 聡太",
+    email: "sota@example.com",
+    passwordHash:
+      "scrypt$5jteFLxOGwBIhQkuKyZq/w==$Cpp2UvzMDGI6A4nQsmMPTKberD9/ID/CA+0zNz3FJJ4QkrR36iQ6olMP/9YYaTtrNSzX6qn4qW+fRQ6kyRF6yQ==",
+    circleRole: CircleRole.CircleOwner,
+    sessionRoles: [
+      {
+        circleSessionId: "demo-session-42",
+        role: CircleSessionRole.CircleSessionOwner,
+      },
+    ],
+  },
+  {
+    id: "user-2",
+    name: "羽生 善治",
+    email: "hanyu@example.com",
+    passwordHash:
+      "scrypt$LB/WpSUVa4YAq/mw6ooWeQ==$psMSAlyc9B8JVAf/BUGzOo0gO709Ej73xiGjKIlzlRse5jEEK2i76FesK5Si/a0XRMxUZ7L3SB02oYK4V4PYnQ==",
+    circleRole: CircleRole.CircleManager,
+  },
+  {
+    id: "user-3",
+    name: "渡辺 明",
+    email: "watanabe@example.com",
+    passwordHash:
+      "scrypt$ghXg41bEALR5yYMcQ5UrPw==$5r70+5O1QPJYBlI0qHGqqaLHCAUoyahC29MBQhxDAHCdhq7N6j2DYh7FS1Sj8SWgZqCDPYnxEIVqY3K/HqrMRQ==",
+    circleRole: CircleRole.CircleManager,
+  },
+  {
+    id: "user-4",
+    name: "伊藤 匠",
+    email: "ito@example.com",
+    passwordHash:
+      "scrypt$+u68AJg5EEaLBgknMx+9JQ==$CFvEjebQhpCfSPe57BW5aPfV8L0YAduMmYbp5NT8d4a9c4v2/SmFkc/T7wfpemS6zzVmLAhQGIDP43W7SFB8Uw==",
+    circleRole: CircleRole.CircleMember,
+    sessionRoles: [
+      {
+        circleSessionId: "demo-session-42",
+        role: CircleSessionRole.CircleSessionMember,
+      },
+    ],
+  },
+  {
+    id: "user-5",
+    name: "豊島 将之",
+    email: "toyoshima@example.com",
+    passwordHash:
+      "scrypt$wlX3QQxWcvETK6Ym5ejDTQ==$JxuLdzMch3QF/vCia3D8qkSalj2cFzGYRELLUHW21eLrfRcjtJIHtTs5vVh7wC+oYX49mgxBXBaHPL6m7rSc2Q==",
+    sessionRoles: [
+      {
+        circleSessionId: "demo-session-42",
+        role: CircleSessionRole.CircleSessionManager,
+      },
+    ],
+  },
+  {
+    id: "user-6",
+    name: "永瀬 拓矢",
+    email: "nagase@example.com",
+    passwordHash:
+      "scrypt$dewvJFQLnkLZwe/p5NxpfA==$6idej0tvQyepO4xJDK+rrbPAM+B9UakP4D4/OeXDjenceUl89kurJjCl06Sb03Vd286D1DfGHU1b4CWqkw2BvQ==",
+    sessionRoles: [
+      {
+        circleSessionId: "demo-session-42",
+        role: CircleSessionRole.CircleSessionManager,
+      },
+    ],
+  },
+  {
+    id: "user-7",
+    name: "佐々木 勇気",
+    email: "sasaki@example.com",
+    passwordHash:
+      "scrypt$3gd5OcI1qlKw5iI6+UVTRQ==$R3pKeUNut2vV+yVS6pjmDvwqE3S0LjnflI1NcPdN8X8uIJo6KUB6ygVjz4/QD3IPBu+Mw+fnuGpDpr8UgRYWFQ==",
+    sessionRoles: [
+      {
+        circleSessionId: "demo-session-42",
+        role: CircleSessionRole.CircleSessionMember,
+      },
+    ],
+  },
+  {
+    id: "user-8",
+    name: "菅井 竜也",
+    email: "sugai@example.com",
+    passwordHash:
+      "scrypt$lhDwOyRHnhI6aKEy91iRtg==$M+E+IOBx+PuxF7OHwYbAJ2ML77lGn3BdNWlBlOc5Urm2o/5M/bQOET3YtbHv7WZEM3Q31T6k7I15wH/8XHX0Xw==",
+    sessionRoles: [
+      {
+        circleSessionId: "demo-session-42",
+        role: CircleSessionRole.CircleSessionMember,
+      },
+    ],
+  },
 ];
+
+const users = demoUsers.map(({ id, name, email, passwordHash }) => ({
+  id,
+  name,
+  email,
+  passwordHash,
+}));
 
 const circle = {
   id: "demo",
   name: "京大将棋研究会",
 };
 
-const circleMemberships = [
-  { userId: "user-1", role: CircleRole.CircleOwner },
-  { userId: "user-2", role: CircleRole.CircleManager },
-  { userId: "user-3", role: CircleRole.CircleManager },
-  { userId: "user-4", role: CircleRole.CircleMember },
-];
+const circleMemberships = demoUsers
+  .filter((user) => user.circleRole)
+  .map((user) => ({
+    userId: user.id,
+    role: user.circleRole!,
+  }));
 
 const sessions = [
   {
@@ -77,38 +187,13 @@ const sessions = [
   },
 ];
 
-const sessionMemberships = [
-  {
-    circleSessionId: "demo-session-42",
-    userId: "user-1",
-    role: CircleSessionRole.CircleSessionOwner,
-  },
-  {
-    circleSessionId: "demo-session-42",
-    userId: "user-5",
-    role: CircleSessionRole.CircleSessionManager,
-  },
-  {
-    circleSessionId: "demo-session-42",
-    userId: "user-6",
-    role: CircleSessionRole.CircleSessionManager,
-  },
-  {
-    circleSessionId: "demo-session-42",
-    userId: "user-7",
-    role: CircleSessionRole.CircleSessionMember,
-  },
-  {
-    circleSessionId: "demo-session-42",
-    userId: "user-4",
-    role: CircleSessionRole.CircleSessionMember,
-  },
-  {
-    circleSessionId: "demo-session-42",
-    userId: "user-8",
-    role: CircleSessionRole.CircleSessionMember,
-  },
-];
+const sessionMemberships = demoUsers.flatMap((user) =>
+  (user.sessionRoles ?? []).map((sessionRole) => ({
+    circleSessionId: sessionRole.circleSessionId,
+    userId: user.id,
+    role: sessionRole.role,
+  })),
+);
 
 const matches = [
   {
@@ -221,7 +306,11 @@ async function main() {
   for (const user of users) {
     await prisma.user.upsert({
       where: { id: user.id },
-      update: { name: user.name, email: user.email },
+      update: {
+        name: user.name,
+        email: user.email,
+        passwordHash: user.passwordHash,
+      },
       create: user,
     });
   }
