@@ -192,9 +192,11 @@ describe("tRPC router", () => {
       id: circleSessionId("session-1"),
       circleId: circleId("circle-1"),
       sequence: 1,
+      title: "第1回 研究会",
       startsAt: new Date("2025-02-01T09:00:00Z"),
       endsAt: new Date("2025-02-01T12:00:00Z"),
       location: null,
+      note: "",
       createdAt: new Date("2025-01-01T00:00:00Z"),
     });
 
@@ -202,9 +204,11 @@ describe("tRPC router", () => {
     await caller.circleSessions.create({
       circleId: "circle-1",
       sequence: 1,
+      title: "第1回 研究会",
       startsAt: new Date("2025-02-01T09:00:00Z"),
       endsAt: new Date("2025-02-01T12:00:00Z"),
       location: null,
+      note: "",
     });
 
     const call =

@@ -4,7 +4,10 @@ import {
   rescheduleCircleSession,
 } from "@/server/domain/models/circle-session/circle-session";
 import type { CircleId, CircleSessionId } from "@/server/domain/common/ids";
-import { assertPositiveInteger } from "@/server/domain/common/validation";
+import {
+  assertNonEmpty,
+  assertPositiveInteger,
+} from "@/server/domain/common/validation";
 import type { CircleRepository } from "@/server/domain/models/circle/circle-repository";
 import type { CircleSessionRepository } from "@/server/domain/models/circle-session/circle-session-repository";
 import type { createAccessService } from "@/server/application/authz/access-service";
@@ -23,9 +26,11 @@ export const createCircleSessionService = (deps: CircleSessionServiceDeps) => ({
     id: CircleSessionId;
     circleId: CircleId;
     sequence: number;
+    title?: string;
     startsAt: Date;
     endsAt: Date;
     location?: string | null;
+    note?: string;
     createdAt?: Date;
   }): Promise<CircleSession> {
     const circle = await deps.circleRepository.findById(params.circleId);
@@ -44,9 +49,11 @@ export const createCircleSessionService = (deps: CircleSessionServiceDeps) => ({
       id: params.id,
       circleId: params.circleId,
       sequence: params.sequence,
+      title: params.title,
       startsAt: params.startsAt,
       endsAt: params.endsAt,
       location: params.location,
+      note: params.note,
       createdAt: params.createdAt,
     });
     await deps.circleSessionRepository.save(session);
@@ -81,9 +88,11 @@ export const createCircleSessionService = (deps: CircleSessionServiceDeps) => ({
     id: CircleSessionId,
     params: {
       sequence?: number;
+      title?: string;
       startsAt?: Date;
       endsAt?: Date;
       location?: string | null;
+      note?: string;
     },
   ): Promise<CircleSession> {
     const session = await deps.circleSessionRepository.findById(id);
@@ -118,10 +127,24 @@ export const createCircleSessionService = (deps: CircleSessionServiceDeps) => ({
       };
     }
 
+    if (params.title !== undefined) {
+      updated = {
+        ...updated,
+        title: assertNonEmpty(params.title, "CircleSession title"),
+      };
+    }
+
     if (params.location !== undefined) {
       updated = {
         ...updated,
         location: params.location ?? null,
+      };
+    }
+
+    if (params.note !== undefined) {
+      updated = {
+        ...updated,
+        note: params.note.trim(),
       };
     }
 

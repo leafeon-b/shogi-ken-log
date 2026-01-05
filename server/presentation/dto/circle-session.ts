@@ -10,9 +10,11 @@ export const circleSessionDtoSchema = z.object({
   id: circleSessionIdSchema,
   circleId: circleIdSchema,
   sequence: z.number().int().positive(),
+  title: z.string().min(1),
   startsAt: z.date(),
   endsAt: z.date(),
   location: z.string().nullable(),
+  note: z.string(),
   createdAt: z.date(),
 });
 
@@ -35,9 +37,11 @@ export type CircleSessionListInput = z.infer<
 export const circleSessionCreateInputSchema = z.object({
   circleId: circleIdSchema,
   sequence: z.number().int().positive(),
+  title: z.string().min(1),
   startsAt: dateInputSchema,
   endsAt: dateInputSchema,
   location: z.string().nullable().optional(),
+  note: z.string().optional(),
 });
 
 export type CircleSessionCreateInput = z.infer<
@@ -48,9 +52,11 @@ export const circleSessionUpdateInputSchema = z
   .object({
     circleSessionId: circleSessionIdSchema,
     sequence: z.number().int().positive().optional(),
+    title: z.string().min(1).optional(),
     startsAt: dateInputSchema.optional(),
     endsAt: dateInputSchema.optional(),
     location: z.string().nullable().optional(),
+    note: z.string().optional(),
   })
   .refine(
     (value) =>

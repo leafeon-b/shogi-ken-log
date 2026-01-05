@@ -57,9 +57,11 @@ export const circleSessionRouter = router({
           id: circleSessionId(randomUUID()),
           circleId: input.circleId,
           sequence: input.sequence,
+          title: input.title,
           startsAt: input.startsAt,
           endsAt: input.endsAt,
           location: input.location,
+          note: input.note,
         });
         return toCircleSessionDto(session);
       }),
@@ -76,9 +78,11 @@ export const circleSessionRouter = router({
             input.circleSessionId,
             {
               sequence: input.sequence,
+              title: input.title,
               startsAt: input.startsAt,
               endsAt: input.endsAt,
               location: input.location,
+              note: input.note,
             },
           );
         return toCircleSessionDto(session);
