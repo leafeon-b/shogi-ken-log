@@ -4,6 +4,7 @@ import type { CircleRole } from "@/server/domain/services/authz/roles";
 
 export type CircleParticipationRepository = {
   listParticipants(circleId: CircleId): Promise<CircleParticipant[]>;
+  listByUserId(userId: UserId): Promise<CircleParticipant[]>;
   addParticipant(
     circleId: CircleId,
     userId: UserId,
