@@ -9,6 +9,7 @@
     "format": "prettier --write .",
     "lint": "eslint",
     "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",
     "db:push:reset": "prisma db push --force-reset",
     "db:seed": "prisma db seed",
