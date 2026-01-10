@@ -18,8 +18,10 @@ export const mapCircleParticipationFromPersistence = (input: {
   userId: string;
   role: PrismaCircleRole;
   circleId: string;
+  createdAt: Date;
 }): CircleParticipation => ({
   circleId: circleId(input.circleId),
   userId: userId(input.userId),
   role: mapCircleRoleFromPersistence(input.role),
+  createdAt: input.createdAt,
 });

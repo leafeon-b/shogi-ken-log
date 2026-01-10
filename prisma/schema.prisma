@@ -93,10 +93,11 @@ model CircleSession {
 }
 
 model CircleMembership {
-  id       String     @id @default(cuid())
-  userId   String
-  circleId String
-  role     CircleRole
+  id        String     @id @default(cuid())
+  userId    String
+  circleId  String
+  role      CircleRole
+  createdAt DateTime   @default(now())
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
   circle Circle @relation(fields: [circleId], references: [id], onDelete: Cascade)

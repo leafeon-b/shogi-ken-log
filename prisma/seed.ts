@@ -143,9 +143,10 @@ const circle = {
 
 const circleMemberships = demoUsers
   .filter((user) => user.circleRole)
-  .map((user) => ({
+  .map((user, index) => ({
     userId: user.id,
     role: user.circleRole!,
+    createdAt: new Date(Date.UTC(2024, 0, 1 + index)),
   }));
 
 const sessions = [

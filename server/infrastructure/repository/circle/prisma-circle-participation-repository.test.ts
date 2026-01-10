@@ -23,18 +23,21 @@ describe("Prisma Circle 参加者リポジトリ", () => {
   });
 
   test("listParticipations は参加者一覧を返す", async () => {
+    const createdAt = new Date("2025-01-01T00:00:00Z");
     mockedPrisma.circleMembership.findMany.mockResolvedValueOnce([
       {
         id: "membership-1",
         userId: "user-1",
         circleId: "circle-1",
         role: "CircleOwner",
+        createdAt,
       },
       {
         id: "membership-2",
         userId: "user-2",
         circleId: "circle-1",
         role: "CircleMember",
+        createdAt: new Date("2025-01-02T00:00:00Z"),
       },
     ]);
 
@@ -44,27 +47,40 @@ describe("Prisma Circle 参加者リポジトリ", () => {
 
     expect(mockedPrisma.circleMembership.findMany).toHaveBeenCalledWith({
       where: { circleId: "circle-1" },
-      select: { circleId: true, userId: true, role: true },
+      select: { circleId: true, userId: true, role: true, createdAt: true },
     });
     expect(result).toEqual([
-      { circleId: circleId("circle-1"), userId: userId("user-1"), role: "CircleOwner" },
-      { circleId: circleId("circle-1"), userId: userId("user-2"), role: "CircleMember" },
+      {
+        circleId: circleId("circle-1"),
+        userId: userId("user-1"),
+        role: "CircleOwner",
+        createdAt,
+      },
+      {
+        circleId: circleId("circle-1"),
+        userId: userId("user-2"),
+        role: "CircleMember",
+        createdAt: new Date("2025-01-02T00:00:00Z"),
+      },
     ]);
   });
 
   test("listByUserId は参加関係を返す", async () => {
+    const createdAt = new Date("2025-02-01T00:00:00Z");
     mockedPrisma.circleMembership.findMany.mockResolvedValueOnce([
       {
         id: "membership-1",
         userId: "user-1",
         circleId: "circle-1",
         role: "CircleOwner",
+        createdAt,
       },
       {
         id: "membership-2",
         userId: "user-1",
         circleId: "circle-2",
         role: "CircleMember",
+        createdAt: new Date("2025-02-02T00:00:00Z"),
       },
     ]);
 
@@ -74,11 +90,22 @@ describe("Prisma Circle 参加者リポジトリ", () => {
 
     expect(mockedPrisma.circleMembership.findMany).toHaveBeenCalledWith({
       where: { userId: "user-1" },
-      select: { circleId: true, userId: true, role: true },
+      orderBy: { createdAt: "desc" },
+      select: { circleId: true, userId: true, role: true, createdAt: true },
     });
     expect(result).toEqual([
-      { circleId: circleId("circle-1"), userId: userId("user-1"), role: "CircleOwner" },
-      { circleId: circleId("circle-2"), userId: userId("user-1"), role: "CircleMember" },
+      {
+        circleId: circleId("circle-1"),
+        userId: userId("user-1"),
+        role: "CircleOwner",
+        createdAt,
+      },
+      {
+        circleId: circleId("circle-2"),
+        userId: userId("user-1"),
+        role: "CircleMember",
+        createdAt: new Date("2025-02-02T00:00:00Z"),
+      },
     ]);
   });
 

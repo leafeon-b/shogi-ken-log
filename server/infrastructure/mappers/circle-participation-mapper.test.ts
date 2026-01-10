@@ -28,16 +28,19 @@ describe("Circle 参加者マッパー", () => {
   });
 
   test("永続化データを参加関係に変換できる", () => {
+    const createdAt = new Date("2025-01-01T00:00:00Z");
     const mapped = mapCircleParticipationFromPersistence({
       circleId: "circle-1",
       userId: "user-1",
       role: "CircleManager",
+      createdAt,
     });
 
     expect(mapped).toEqual({
       circleId: circleId("circle-1"),
       userId: userId("user-1"),
       role: CircleRole.CircleManager,
+      createdAt,
     });
   });
 });

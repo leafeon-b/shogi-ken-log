@@ -45,6 +45,7 @@ beforeEach(() => {
 
 describe("Circle 参加関係サービス", () => {
   test("listParticipations は一覧を返す", async () => {
+    const createdAt = new Date("2025-01-01T00:00:00Z");
     vi.mocked(
       circleParticipationRepository.listParticipations,
     ).mockResolvedValueOnce([
@@ -52,6 +53,7 @@ describe("Circle 参加関係サービス", () => {
         circleId: circleId("circle-1"),
         userId: userId("user-1"),
         role: "CircleOwner",
+        createdAt,
       },
     ]);
 
@@ -64,7 +66,12 @@ describe("Circle 参加関係サービス", () => {
       circleId("circle-1"),
     );
     expect(result).toEqual([
-      { circleId: circleId("circle-1"), userId: userId("user-1"), role: "CircleOwner" },
+      {
+        circleId: circleId("circle-1"),
+        userId: userId("user-1"),
+        role: "CircleOwner",
+        createdAt,
+      },
     ]);
   });
 
@@ -104,11 +111,13 @@ describe("Circle 参加関係サービス", () => {
         circleId: circleId("circle-1"),
         userId: userId("user-1"),
         role: "CircleOwner",
+        createdAt: new Date("2025-01-01T00:00:00Z"),
       },
       {
         circleId: circleId("circle-1"),
         userId: userId("user-2"),
         role: "CircleMember",
+        createdAt: new Date("2025-01-02T00:00:00Z"),
       },
     ]);
 
@@ -143,6 +152,7 @@ describe("Circle 参加関係サービス", () => {
         circleId: circleId("circle-1"),
         userId: userId("user-1"),
         role: "CircleOwner",
+        createdAt: new Date("2025-01-01T00:00:00Z"),
       },
     ]);
 
