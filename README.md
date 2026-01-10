@@ -19,6 +19,28 @@
 npm run dev
 ```
 
+## 開発用DB/テスト
+
+開発用のセットアップとテスト手順。
+
+```bash
+# Prisma migration
+npx prisma migrate dev
+
+# Seed
+npx prisma db seed
+
+# Type check
+npx tsc --noEmit
+
+# Tests
+npx vitest
+```
+
+注意:
+- `migrate reset` は全データ削除のため開発DBでのみ使用する
+- Seedは `prisma/seed.ts` に定義している
+
 ## 開発時のログイン
 
 - メール+パスワードでログインする場合は `http://localhost:3000/signup` からアカウントを作成する
