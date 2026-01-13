@@ -1,14 +1,8 @@
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
+"use client";
 
-const memberships = [
-  { name: "京大将棋研究会", role: "オーナー", href: "/circles/demo/owner" },
-  {
-    name: "社会人リーグ研究会",
-    role: "マネージャー",
-    href: "/circles/demo/manager",
-  },
-];
+import { Button } from "@/components/ui/button";
+import { trpc } from "@/lib/trpc/client";
+import Link from "next/link";
 
 const recentSessions = [
   {
@@ -19,13 +13,23 @@ const recentSessions = [
   { name: "冬季対局会", date: "2025/02/11", href: "/circle-sessions/demo" },
 ];
 
+const roleLabels: Record<string, string> = {
+  CircleOwner: "オーナー",
+  CircleManager: "マネージャー",
+  CircleMember: "メンバー",
+};
+
 const roleClasses: Record<string, string> = {
-  オーナー: "bg-(--brand-gold)/25 text-(--brand-ink)",
-  マネージャー: "bg-(--brand-sky)/25 text-(--brand-ink)",
-  メンバー: "bg-(--brand-moss)/20 text-(--brand-ink)",
+  CircleOwner: "bg-(--brand-gold)/25 text-(--brand-ink)",
+  CircleManager: "bg-(--brand-sky)/25 text-(--brand-ink)",
+  CircleMember: "bg-(--brand-moss)/20 text-(--brand-ink)",
 };
 
 export default function UserDemoPage() {
+  const participationsQuery =
+    trpc.users.circles.participations.list.useQuery({});
+  const memberships = participationsQuery.data ?? [];
+
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
       <section className="rounded-3xl border border-border/60 bg-white/90 p-8 shadow-sm">
@@ -55,22 +59,43 @@ export default function UserDemoPage() {
             </Button>
           </div>
           <div className="mt-4 space-y-3">
-            {memberships.map((circle) => (
-              <Link
-                key={circle.name}
-                href={circle.href}
-                className="flex items-center justify-between gap-4 rounded-xl border border-border/60 bg-white/70 p-4 transition hover:border-border hover:bg-white hover:shadow-sm"
-              >
-                <p className="text-sm font-semibold text-(--brand-ink)">
-                  {circle.name}
-                </p>
-                <span
-                  className={`rounded-full px-2.5 py-1 text-xs ${roleClasses[circle.role] ?? "bg-(--brand-ink)/10 text-(--brand-ink)"}`}
-                >
-                  {circle.role}
-                </span>
-              </Link>
-            ))}
+            {participationsQuery.isLoading ? (
+              <p className="text-sm text-(--brand-ink-muted)">
+                読み込み中...
+              </p>
+            ) : participationsQuery.isError ? (
+              <p className="text-sm text-(--brand-ink-muted)">
+                参加中の研究会を取得できませんでした
+              </p>
+            ) : memberships.length === 0 ? (
+              <p className="text-sm text-(--brand-ink-muted)">
+                参加中の研究会はまだありません
+              </p>
+            ) : (
+              memberships.map((circle) => {
+                const roleLabel = roleLabels[circle.role] ?? "メンバー";
+                const roleClass =
+                  roleClasses[circle.role] ??
+                  "bg-(--brand-ink)/10 text-(--brand-ink)";
+
+                return (
+                  <Link
+                    key={circle.circleId}
+                    href={`/circles/${circle.circleId}`}
+                    className="flex items-center justify-between gap-4 rounded-xl border border-border/60 bg-white/70 p-4 transition hover:border-border hover:bg-white hover:shadow-sm"
+                  >
+                    <p className="text-sm font-semibold text-(--brand-ink)">
+                      {circle.circleName}
+                    </p>
+                    <span
+                      className={`rounded-full px-2.5 py-1 text-xs ${roleClass}`}
+                    >
+                      {roleLabel}
+                    </span>
+                  </Link>
+                );
+              })
+            )}
           </div>
         </div>
 

@@ -7,6 +7,10 @@ import type {
   CircleOverviewViewModel,
   CircleRoleKey,
 } from "@/server/presentation/view-models/circle-overview";
+import { CircleRole } from "@/server/domain/services/authz/roles";
+import { userId } from "@/server/domain/common/ids";
+import { appRouter } from "@/server/presentation/trpc/router";
+import { createContext } from "@/server/presentation/trpc/context";
 
 type RoleConfig = {
   actions: CircleOverviewAction[];
@@ -22,13 +26,6 @@ export const demoRoleLinks: Array<{
   { role: "owner", label: "オーナー", href: "/circles/demo/owner" },
   { role: "manager", label: "マネージャー", href: "/circles/demo/manager" },
   { role: "member", label: "メンバー", href: "/circles/demo/member" },
-];
-
-const members: CircleOverviewViewModel["members"] = [
-  { userId: "member-1", name: "藤井 聡太", role: "owner" },
-  { userId: "member-2", name: "羽生 善治", role: "manager" },
-  { userId: "member-3", name: "渡辺 明", role: "manager" },
-  { userId: "member-4", name: "伊藤 匠", role: "member" },
 ];
 
 const sessions: CircleOverviewSession[] = [
@@ -115,34 +112,91 @@ const roleConfigs: Record<CircleRoleKey, RoleConfig> = {
   },
 };
 
-export const getDemoCircleOverview = (input?: {
-  viewerRole?: CircleRoleKey | null;
+const roleKeyByDto: Record<CircleRole, CircleRoleKey> = {
+  [CircleRole.CircleOwner]: "owner",
+  [CircleRole.CircleManager]: "manager",
+  [CircleRole.CircleMember]: "member",
+};
+
+const getViewerRole = (
+  participations: Array<{ userId: string; role: CircleRole }>,
+  viewerId: string | null,
+): CircleRoleKey | null => {
+  if (!viewerId) {
+    return null;
+  }
+  const participation = participations.find((item) => item.userId === viewerId);
+  if (!participation) {
+    return null;
+  }
+  return roleKeyByDto[participation.role] ?? null;
+};
+
+export const getDemoCircleOverview = (input: {
+  circleId: string;
+  circleName: string;
+  participationCount: number;
+  members: CircleOverviewViewModel["members"];
+  viewerRole: CircleRoleKey | null;
 }): CircleOverviewViewModel => {
-  const viewerRole = input?.viewerRole ?? null;
-  const roleConfig = viewerRole ? roleConfigs[viewerRole] : null;
+  const roleConfig = input.viewerRole ? roleConfigs[input.viewerRole] : null;
 
   return {
-    circleId: "demo",
-    circleName: "京大将棋研究会",
-    participationCount: 28,
+    circleId: input.circleId,
+    circleName: input.circleName,
+    participationCount: input.participationCount,
     scheduleNote: "毎週土曜 18:00 - 21:00",
     nextSession: {
       id: "next-session",
       dateTimeLabel: "2026/03/26 18:00 - 21:00",
       locationLabel: "オンライン",
     },
-    viewerRole,
+    viewerRole: input.viewerRole,
     actions: roleConfig?.actions ?? defaultActions,
     rolePanel: roleConfig
       ? { title: roleConfig.panelTitle, items: roleConfig.panelItems }
       : null,
     recentSessions: sessions,
-    members,
+    members: input.members,
   };
 };
 
 export const demoCircleOverviewProvider: CircleOverviewProvider = {
   async getOverview(input: CircleOverviewProviderInput) {
-    return getDemoCircleOverview({ viewerRole: input.viewerRoleOverride });
+    const ctx = await createContext();
+    const caller = appRouter.createCaller(ctx);
+
+    const [circle, participations] = await Promise.all([
+      caller.circles.get({ circleId: input.circleId }),
+      caller.circles.participations.list({ circleId: input.circleId }),
+    ]);
+
+    const users = participations.length
+      ? await ctx.userService.listUsers(
+          ctx.actorId,
+          participations.map((participation) => userId(participation.userId)),
+        )
+      : [];
+    const userNameById = new Map(
+      users.map((user) => [user.id as string, user.name]),
+    );
+
+    const viewerId = input.viewerId ?? ctx.actorId ?? null;
+    const viewerRole =
+      input.viewerRoleOverride ?? getViewerRole(participations, viewerId);
+
+    const members = participations.map((participation) => ({
+      userId: participation.userId,
+      name: userNameById.get(participation.userId) ?? participation.userId,
+      role: roleKeyByDto[participation.role] ?? "member",
+    }));
+
+    return getDemoCircleOverview({
+      circleId: circle.id,
+      circleName: circle.name,
+      participationCount: participations.length,
+      members,
+      viewerRole,
+    });
   },
 };

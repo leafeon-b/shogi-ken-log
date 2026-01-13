@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Sidebar,
   SidebarContent,
@@ -11,19 +13,18 @@ import {
 } from "@/components/ui/sidebar";
 import { HelpCircle, Home } from "lucide-react";
 import Link from "next/link";
+import { trpc } from "@/lib/trpc/client";
 
 const items = [
   { title: "ホーム", href: "/home", icon: Home },
   { title: "ヘルプ", href: "/help", icon: HelpCircle },
 ];
 
-const circleItems = [
-  { title: "京大将棋研究会", href: "/circles/demo" },
-  { title: "社会人リーグ研究会", href: "/circles/demo" },
-  { title: "駒落ち検討会", href: "/circles/demo" },
-];
-
 export function AppSidebar() {
+  const participationsQuery =
+    trpc.users.circles.participations.list.useQuery({});
+  const circleItems = participationsQuery.data ?? [];
+
   return (
     <Sidebar collapsible="icon">
       <SidebarContent>
@@ -48,15 +49,35 @@ export function AppSidebar() {
           <SidebarGroupLabel>参加中の研究会</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {circleItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link href={item.href}>
-                      <span className="truncate">{item.title}</span>
-                    </Link>
+              {participationsQuery.isLoading ? (
+                <SidebarMenuItem>
+                  <SidebarMenuButton disabled>
+                    <span className="truncate">読み込み中...</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
-              ))}
+              ) : participationsQuery.isError ? (
+                <SidebarMenuItem>
+                  <SidebarMenuButton disabled>
+                    <span className="truncate">取得に失敗しました</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ) : circleItems.length === 0 ? (
+                <SidebarMenuItem>
+                  <SidebarMenuButton disabled>
+                    <span className="truncate">参加中の研究会はありません</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ) : (
+                circleItems.map((item) => (
+                  <SidebarMenuItem key={item.circleId}>
+                    <SidebarMenuButton asChild>
+                      <Link href={`/circles/${item.circleId}`}>
+                        <span className="truncate">{item.circleName}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
