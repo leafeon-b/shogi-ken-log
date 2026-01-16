@@ -1,14 +1,32 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import CircleCreateDemo from "@/app/(authenticated)/home/circle-create-demo";
 import Link from "next/link";
+import { trpc } from "@/lib/trpc/client";
 
-const recentCircleSessions = [
-  { name: "第42回 週末研究会", note: "先週・出席 14名" },
-  { name: "春季対局会", note: "今月・出席 22名" },
-  { name: "新歓トライアル", note: "今月・出席 9名" },
-];
+const sessionStatusLabels: Record<string, string> = {
+  done: "開催済み",
+  scheduled: "予定",
+  draft: "準備中",
+};
+
+const sessionStatusClasses: Record<string, string> = {
+  done: "bg-(--brand-moss)/20 text-(--brand-ink)",
+  scheduled: "bg-(--brand-sky)/20 text-(--brand-ink)",
+  draft: "bg-(--brand-gold)/20 text-(--brand-ink)",
+};
+
+const pad2 = (value: number) => String(value).padStart(2, "0");
+
+const formatDate = (date: Date) =>
+  `${date.getFullYear()}/${pad2(date.getMonth() + 1)}/${pad2(date.getDate())}`;
 
 export default function Home() {
+  const recentSessionsQuery =
+    trpc.users.circleSessions.participations.list.useQuery({ limit: 3 });
+  const recentCircleSessions = recentSessionsQuery.data ?? [];
+
   return (
     <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-10">
       <div className="pointer-events-none absolute inset-0 -z-10">
@@ -59,25 +77,47 @@ export default function Home() {
             </Button>
           </div>
           <div className="mt-4 space-y-3">
-            {recentCircleSessions.map((session) => (
-              <Link
-                key={session.name}
-                href="/circle-sessions/demo"
-                className="flex items-center justify-between gap-4 rounded-xl border border-border/60 bg-white/70 p-4 transition hover:border-border hover:bg-white hover:shadow-sm"
-              >
-                <div>
-                  <p className="text-sm font-semibold text-(--brand-ink)">
-                    {session.name}
-                  </p>
-                  <p className="text-xs text-(--brand-ink-muted)">
-                    {session.note}
-                  </p>
-                </div>
-                <span className="rounded-full bg-(--brand-sky)/20 px-2.5 py-1 text-xs text-(--brand-ink)">
-                  参加中
-                </span>
-              </Link>
-            ))}
+            {recentSessionsQuery.isLoading ? (
+              <p className="text-sm text-(--brand-ink-muted)">読み込み中...</p>
+            ) : recentSessionsQuery.isError ? (
+              <p className="text-sm text-(--brand-ink-muted)">
+                最近参加した回を取得できませんでした
+              </p>
+            ) : recentCircleSessions.length === 0 ? (
+              <p className="text-sm text-(--brand-ink-muted)">
+                最近参加した回はまだありません
+              </p>
+            ) : (
+              recentCircleSessions.map((session) => {
+                const statusLabel =
+                  sessionStatusLabels[session.status] ?? "参加中";
+                const statusClass =
+                  sessionStatusClasses[session.status] ??
+                  "bg-(--brand-ink)/10 text-(--brand-ink)";
+
+                return (
+                  <Link
+                    key={session.circleSessionId}
+                    href={`/circle-sessions/${session.circleSessionId}`}
+                    className="flex items-center justify-between gap-4 rounded-xl border border-border/60 bg-white/70 p-4 transition hover:border-border hover:bg-white hover:shadow-sm"
+                  >
+                    <div>
+                      <p className="text-sm font-semibold text-(--brand-ink)">
+                        {session.title}
+                      </p>
+                      <p className="text-xs text-(--brand-ink-muted)">
+                        {formatDate(session.startsAt)} / {session.circleName}
+                      </p>
+                    </div>
+                    <span
+                      className={`rounded-full px-2.5 py-1 text-xs ${statusClass}`}
+                    >
+                      {statusLabel}
+                    </span>
+                  </Link>
+                );
+              })
+            )}
           </div>
         </div>
       </section>

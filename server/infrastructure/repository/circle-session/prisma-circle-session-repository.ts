@@ -16,6 +16,22 @@ export const prismaCircleSessionRepository: CircleSessionRepository = {
     return found ? mapCircleSessionToDomain(found) : null;
   },
 
+  async findByIds(ids: readonly CircleSessionId[]): Promise<CircleSession[]> {
+    if (ids.length === 0) {
+      return [];
+    }
+    const uniqueIds = Array.from(new Set(ids.map((id) => id as string)));
+    const sessions = await prisma.circleSession.findMany({
+      where: { id: { in: uniqueIds } },
+    });
+    const byId = new Map(
+      sessions.map((session) => [session.id, mapCircleSessionToDomain(session)]),
+    );
+    return uniqueIds
+      .map((id) => byId.get(id))
+      .filter((session): session is CircleSession => session != null);
+  },
+
   async listByCircleId(circleId: CircleId): Promise<CircleSession[]> {
     const sessions = await prisma.circleSession.findMany({
       where: { circleId: circleId as string },

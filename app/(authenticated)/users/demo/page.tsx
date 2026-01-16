@@ -4,15 +4,6 @@ import { Button } from "@/components/ui/button";
 import { trpc } from "@/lib/trpc/client";
 import Link from "next/link";
 
-const recentSessions = [
-  {
-    name: "第42回 週末研究会",
-    date: "2025/03/12",
-    href: "/circle-sessions/demo",
-  },
-  { name: "冬季対局会", date: "2025/02/11", href: "/circle-sessions/demo" },
-];
-
 const roleLabels: Record<string, string> = {
   CircleOwner: "オーナー",
   CircleManager: "マネージャー",
@@ -25,10 +16,30 @@ const roleClasses: Record<string, string> = {
   CircleMember: "bg-(--brand-moss)/20 text-(--brand-ink)",
 };
 
+const sessionStatusLabels: Record<string, string> = {
+  done: "開催済み",
+  scheduled: "予定",
+  draft: "準備中",
+};
+
+const sessionStatusClasses: Record<string, string> = {
+  done: "bg-(--brand-moss)/20 text-(--brand-ink)",
+  scheduled: "bg-(--brand-sky)/20 text-(--brand-ink)",
+  draft: "bg-(--brand-gold)/20 text-(--brand-ink)",
+};
+
+const pad2 = (value: number) => String(value).padStart(2, "0");
+
+const formatDate = (date: Date) =>
+  `${date.getFullYear()}/${pad2(date.getMonth() + 1)}/${pad2(date.getDate())}`;
+
 export default function UserDemoPage() {
   const participationsQuery =
     trpc.users.circles.participations.list.useQuery({});
   const memberships = participationsQuery.data ?? [];
+  const recentSessionsQuery =
+    trpc.users.circleSessions.participations.list.useQuery({ limit: 3 });
+  const recentSessions = recentSessionsQuery.data ?? [];
 
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
@@ -112,25 +123,49 @@ export default function UserDemoPage() {
             </Button>
           </div>
           <div className="mt-4 space-y-3">
-            {recentSessions.map((session) => (
-              <Link
-                key={session.name}
-                href={session.href}
-                className="flex items-center justify-between gap-4 rounded-xl border border-border/60 bg-white/70 p-4 transition hover:border-border hover:bg-white hover:shadow-sm"
-              >
-                <div>
-                  <p className="text-sm font-semibold text-(--brand-ink)">
-                    {session.name}
-                  </p>
-                  <p className="text-xs text-(--brand-ink-muted)">
-                    {session.date}
-                  </p>
-                </div>
-                <span className="rounded-full bg-(--brand-sky)/20 px-2.5 py-1 text-xs text-(--brand-ink)">
-                  開催済み
-                </span>
-              </Link>
-            ))}
+            {recentSessionsQuery.isLoading ? (
+              <p className="text-sm text-(--brand-ink-muted)">
+                読み込み中...
+              </p>
+            ) : recentSessionsQuery.isError ? (
+              <p className="text-sm text-(--brand-ink-muted)">
+                最近参加した回を取得できませんでした
+              </p>
+            ) : recentSessions.length === 0 ? (
+              <p className="text-sm text-(--brand-ink-muted)">
+                最近参加した回はまだありません
+              </p>
+            ) : (
+              recentSessions.map((session) => {
+                const statusLabel =
+                  sessionStatusLabels[session.status] ?? "参加中";
+                const statusClass =
+                  sessionStatusClasses[session.status] ??
+                  "bg-(--brand-ink)/10 text-(--brand-ink)";
+
+                return (
+                  <Link
+                    key={session.circleSessionId}
+                    href={`/circle-sessions/${session.circleSessionId}`}
+                    className="flex items-center justify-between gap-4 rounded-xl border border-border/60 bg-white/70 p-4 transition hover:border-border hover:bg-white hover:shadow-sm"
+                  >
+                    <div>
+                      <p className="text-sm font-semibold text-(--brand-ink)">
+                        {session.title}
+                      </p>
+                      <p className="text-xs text-(--brand-ink-muted)">
+                        {formatDate(session.startsAt)}
+                      </p>
+                    </div>
+                    <span
+                      className={`rounded-full px-2.5 py-1 text-xs ${statusClass}`}
+                    >
+                      {statusLabel}
+                    </span>
+                  </Link>
+                );
+              })
+            )}
           </div>
         </div>
       </section>

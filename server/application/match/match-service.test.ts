@@ -36,6 +36,7 @@ const circleSessionParticipationRepository = {
 
 const circleSessionRepository = {
   findById: vi.fn(),
+  findByIds: vi.fn(),
   listByCircleId: vi.fn(),
   save: vi.fn(),
   delete: vi.fn(),

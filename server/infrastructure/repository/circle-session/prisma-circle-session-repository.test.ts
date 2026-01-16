@@ -60,6 +60,48 @@ describe("Prisma CircleSession リポジトリ", () => {
     expect(session).toBeNull();
   });
 
+  test("findByIds は入力順に CircleSession を返す", async () => {
+    const prismaSessions = [
+      {
+        id: "session-2",
+        circleId: "circle-1",
+        sequence: 2,
+        title: "第2回 研究会",
+        startsAt: new Date("2024-01-02T10:00:00Z"),
+        endsAt: new Date("2024-01-02T12:00:00Z"),
+        location: null,
+        note: "",
+        createdAt: new Date("2024-01-01T00:00:00Z"),
+      },
+      {
+        id: "session-1",
+        circleId: "circle-1",
+        sequence: 1,
+        title: "第1回 研究会",
+        startsAt: new Date("2024-01-01T10:00:00Z"),
+        endsAt: new Date("2024-01-01T12:00:00Z"),
+        location: null,
+        note: "",
+        createdAt: new Date("2024-01-01T00:00:00Z"),
+      },
+    ] as PrismaCircleSession[];
+
+    mockedPrisma.circleSession.findMany.mockResolvedValueOnce(prismaSessions);
+
+    const sessions = await prismaCircleSessionRepository.findByIds([
+      circleSessionId("session-1"),
+      circleSessionId("session-2"),
+    ]);
+
+    expect(mockedPrisma.circleSession.findMany).toHaveBeenCalledWith({
+      where: { id: { in: ["session-1", "session-2"] } },
+    });
+    expect(sessions.map((session) => session.id)).toEqual([
+      circleSessionId("session-1"),
+      circleSessionId("session-2"),
+    ]);
+  });
+
   test("listByCircleId は開催回一覧を返す", async () => {
     const prismaSession = {
       id: "session-1",

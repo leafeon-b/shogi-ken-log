@@ -1,4 +1,9 @@
-import type { CircleSessionId, UserId } from "@/server/domain/common/ids";
+import {
+  userId,
+  type CircleId,
+  type CircleSessionId,
+  type UserId,
+} from "@/server/domain/common/ids";
 import type { CircleSessionRepository } from "@/server/domain/models/circle-session/circle-session-repository";
 import type { MatchRepository } from "@/server/domain/models/match/match-repository";
 import type { CircleSessionParticipationRepository } from "@/server/domain/models/circle-session/circle-session-participation-repository";
@@ -10,14 +15,43 @@ import {
 } from "@/server/domain/services/authz/ownership";
 import { CircleSessionRole } from "@/server/domain/services/authz/roles";
 import type { CircleSessionParticipation } from "@/server/domain/models/circle-session/circle-session-participation";
+import type { CircleRepository } from "@/server/domain/models/circle/circle-repository";
 
 type AccessService = ReturnType<typeof createAccessService>;
 
 export type CircleSessionParticipationServiceDeps = {
   matchRepository: MatchRepository;
+  circleRepository: CircleRepository;
   circleSessionRepository: CircleSessionRepository;
   circleSessionParticipationRepository: CircleSessionParticipationRepository;
   accessService: AccessService;
+};
+
+export type UserCircleSessionParticipationSummary = {
+  circleSessionId: CircleSessionId;
+  circleId: CircleId;
+  circleName: string;
+  title: string;
+  startsAt: Date;
+  endsAt: Date;
+  location: string | null;
+  status: "scheduled" | "done" | "draft";
+};
+
+const buildSessionTitle = (sequence: number) => `第${sequence}回 研究会`;
+
+const getSessionStatus = (
+  startsAt: Date,
+  endsAt: Date,
+): "scheduled" | "done" => {
+  const now = new Date();
+  if (endsAt < now) {
+    return "done";
+  }
+  if (startsAt > now) {
+    return "scheduled";
+  }
+  return "scheduled";
 };
 
 export const createCircleSessionParticipationService = (
@@ -44,6 +78,82 @@ export const createCircleSessionParticipationService = (
     return deps.circleSessionParticipationRepository.listParticipations(
       params.circleSessionId,
     );
+  },
+
+  async listByUserId(params: {
+    actorId: string;
+    userId: UserId;
+    limit?: number;
+  }): Promise<UserCircleSessionParticipationSummary[]> {
+    if (params.userId !== userId(params.actorId)) {
+      throw new Error("Forbidden");
+    }
+    const allowed = await deps.accessService.canListOwnCircles(
+      params.actorId,
+    );
+    if (!allowed) {
+      throw new Error("Forbidden");
+    }
+
+    const participations =
+      await deps.circleSessionParticipationRepository.listByUserId(
+        params.userId,
+      );
+    if (participations.length === 0) {
+      return [];
+    }
+
+    const uniqueSessionIds = Array.from(
+      new Set(
+        participations.map((participation) => participation.circleSessionId),
+      ),
+    );
+    const sessions =
+      await deps.circleSessionRepository.findByIds(uniqueSessionIds);
+    if (sessions.length !== uniqueSessionIds.length) {
+      throw new Error("CircleSession not found");
+    }
+
+    const uniqueCircleIds = Array.from(
+      new Set(sessions.map((session) => session.circleId)),
+    );
+    const circles = await deps.circleRepository.findByIds(uniqueCircleIds);
+    if (circles.length !== uniqueCircleIds.length) {
+      throw new Error("Circle not found");
+    }
+    const circleNameById = new Map(
+      circles.map((circle) => [circle.id as string, circle.name]),
+    );
+
+    const summaries = sessions.map((session) => {
+      const circleName = circleNameById.get(session.circleId as string);
+      if (!circleName) {
+        throw new Error("Circle not found");
+      }
+      const trimmedTitle = session.title?.trim();
+      const title = trimmedTitle
+        ? session.title
+        : buildSessionTitle(session.sequence);
+
+      return {
+        circleSessionId: session.id,
+        circleId: session.circleId,
+        circleName,
+        title,
+        startsAt: session.startsAt,
+        endsAt: session.endsAt,
+        location: session.location ?? null,
+        status: getSessionStatus(session.startsAt, session.endsAt),
+      };
+    });
+
+    summaries.sort((a, b) => b.startsAt.getTime() - a.startsAt.getTime());
+
+    if (params.limit != null) {
+      return summaries.slice(0, params.limit);
+    }
+
+    return summaries;
   },
 
   async addParticipation(params: {

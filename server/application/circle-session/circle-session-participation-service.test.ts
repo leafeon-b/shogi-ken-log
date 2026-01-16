@@ -4,6 +4,7 @@ import { createAccessServiceStub } from "@/server/application/test-helpers/acces
 import type { MatchRepository } from "@/server/domain/models/match/match-repository";
 import type { CircleSessionParticipationRepository } from "@/server/domain/models/circle-session/circle-session-participation-repository";
 import type { CircleSessionRepository } from "@/server/domain/models/circle-session/circle-session-repository";
+import type { CircleRepository } from "@/server/domain/models/circle/circle-repository";
 import {
   circleId,
   circleSessionId,
@@ -29,15 +30,24 @@ const circleSessionParticipationRepository = {
 
 const circleSessionRepository = {
   findById: vi.fn(),
+  findByIds: vi.fn(),
   listByCircleId: vi.fn(),
   save: vi.fn(),
   delete: vi.fn(),
 } satisfies CircleSessionRepository;
 
+const circleRepository = {
+  findById: vi.fn(),
+  findByIds: vi.fn(),
+  save: vi.fn(),
+  delete: vi.fn(),
+} satisfies CircleRepository;
+
 const accessService = createAccessServiceStub();
 
 const service = createCircleSessionParticipationService({
   matchRepository,
+  circleRepository,
   circleSessionRepository,
   circleSessionParticipationRepository,
   accessService,
@@ -68,6 +78,7 @@ const baseSession = () => ({
 beforeEach(() => {
   vi.clearAllMocks();
   vi.mocked(circleSessionRepository.findById).mockResolvedValue(baseSession());
+  vi.mocked(accessService.canListOwnCircles).mockResolvedValue(true);
   vi.mocked(accessService.canViewCircleSession).mockResolvedValue(true);
   vi.mocked(accessService.canAddCircleSessionMember).mockResolvedValue(true);
   vi.mocked(accessService.canChangeCircleSessionMemberRole).mockResolvedValue(
@@ -125,6 +136,73 @@ describe("CircleSession 参加関係サービス", () => {
     expect(
       circleSessionParticipationRepository.addParticipation,
     ).not.toHaveBeenCalled();
+  });
+
+  test("listByUserId は参加回の要約を返す", async () => {
+    vi.mocked(circleSessionParticipationRepository.listByUserId).mockResolvedValueOnce(
+      [
+        {
+          circleSessionId: circleSessionId("session-1"),
+          userId: userId("user-1"),
+          role: "CircleSessionMember",
+        },
+        {
+          circleSessionId: circleSessionId("session-2"),
+          userId: userId("user-1"),
+          role: "CircleSessionMember",
+        },
+      ],
+    );
+    vi.mocked(circleSessionRepository.findByIds).mockResolvedValueOnce([
+      {
+        id: circleSessionId("session-1"),
+        circleId: circleId("circle-1"),
+        sequence: 1,
+        title: "第1回 研究会",
+        startsAt: new Date("2024-02-01T10:00:00Z"),
+        endsAt: new Date("2024-02-01T12:00:00Z"),
+        location: "京都キャンパス A",
+        note: "",
+        createdAt: new Date("2024-02-01T00:00:00Z"),
+      },
+      {
+        id: circleSessionId("session-2"),
+        circleId: circleId("circle-1"),
+        sequence: 2,
+        title: "",
+        startsAt: new Date("2024-03-01T10:00:00Z"),
+        endsAt: new Date("2024-03-01T12:00:00Z"),
+        location: null,
+        note: "",
+        createdAt: new Date("2024-03-01T00:00:00Z"),
+      },
+    ]);
+    vi.mocked(circleRepository.findByIds).mockResolvedValueOnce([
+      {
+        id: circleId("circle-1"),
+        name: "京大将棋研究会",
+        createdAt: new Date("2024-01-01T00:00:00Z"),
+      },
+    ]);
+
+    const result = await service.listByUserId({
+      actorId: "user-1",
+      userId: userId("user-1"),
+    });
+
+    expect(circleSessionParticipationRepository.listByUserId).toHaveBeenCalledWith(
+      userId("user-1"),
+    );
+    expect(circleSessionRepository.findByIds).toHaveBeenCalledWith([
+      circleSessionId("session-1"),
+      circleSessionId("session-2"),
+    ]);
+    expect(circleRepository.findByIds).toHaveBeenCalledWith([
+      circleId("circle-1"),
+    ]);
+    expect(result).toHaveLength(2);
+    expect(result[0]?.circleName).toBe("京大将棋研究会");
+    expect(result[0]?.title).toBe("第2回 研究会");
   });
 
   test("addParticipation は Owner がいる場合に Member を追加できる", async () => {

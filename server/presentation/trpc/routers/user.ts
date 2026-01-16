@@ -12,6 +12,7 @@ import {
 import { handleTrpcError } from "@/server/presentation/trpc/errors";
 import { publicProcedure, router } from "@/server/presentation/trpc/trpc";
 import { userCircleRouter } from "@/server/presentation/trpc/routers/user-circle";
+import { userCircleSessionRouter } from "@/server/presentation/trpc/routers/user-circle-session";
 
 export const userRouter = router({
   get: publicProcedure
@@ -30,6 +31,7 @@ export const userRouter = router({
   memberships: userMembershipRouter,
   sessions: userSessionRouter,
   circles: userCircleRouter,
+  circleSessions: userCircleSessionRouter,
 
   list: publicProcedure
     .input(userListInputSchema)
