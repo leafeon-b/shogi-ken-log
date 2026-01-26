@@ -2,14 +2,18 @@ import { CircleOverviewContainer } from "@/app/(authenticated)/circles/component
 import { trpcCircleOverviewProvider } from "@/server/presentation/providers/trpc-circle-overview-provider";
 
 type CircleDetailPageProps = {
-  params: { circleId: string };
+  params: Promise<{ circleId: string }>;
 };
 
-export default function CircleDetailPage({ params }: CircleDetailPageProps) {
+export default async function CircleDetailPage({
+  params,
+}: CircleDetailPageProps) {
+  const { circleId } = await params;
+
   return (
     <CircleOverviewContainer
       provider={trpcCircleOverviewProvider}
-      circleId={params.circleId}
+      circleId={circleId}
       viewerId={null}
       getSessionHref={(session) =>
         session.id ? `/circle-sessions/${session.id}` : null
