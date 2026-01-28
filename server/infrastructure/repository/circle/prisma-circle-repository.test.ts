@@ -4,6 +4,7 @@ vi.mock("@/server/infrastructure/db", () => ({
   prisma: {
     circle: {
       findUnique: vi.fn(),
+      findMany: vi.fn(),
       upsert: vi.fn(),
       delete: vi.fn(),
     },
@@ -47,6 +48,36 @@ describe("Prisma Circle リポジトリ", () => {
     const circle = await prismaCircleRepository.findById(circleId("circle-1"));
 
     expect(circle).toBeNull();
+  });
+
+  test("findByIds は入力順に Circle を返す", async () => {
+    const prismaCircles = [
+      {
+        id: "circle-2",
+        name: "Circle B",
+        createdAt: new Date("2024-01-02T00:00:00Z"),
+      },
+      {
+        id: "circle-1",
+        name: "Circle A",
+        createdAt: new Date("2024-01-01T00:00:00Z"),
+      },
+    ] as PrismaCircle[];
+
+    mockedPrisma.circle.findMany.mockResolvedValueOnce(prismaCircles);
+
+    const circles = await prismaCircleRepository.findByIds([
+      circleId("circle-1"),
+      circleId("circle-2"),
+    ]);
+
+    expect(mockedPrisma.circle.findMany).toHaveBeenCalledWith({
+      where: { id: { in: ["circle-1", "circle-2"] } },
+    });
+    expect(circles.map((circle) => circle.id)).toEqual([
+      circleId("circle-1"),
+      circleId("circle-2"),
+    ]);
   });
 
   test("save は upsert を呼ぶ", async () => {
