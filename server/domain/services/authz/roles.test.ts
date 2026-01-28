@@ -15,12 +15,18 @@ const { CircleSessionOwner, CircleSessionManager, CircleSessionMember } =
 describe("ロール", () => {
   describe("研究会ロール", () => {
     test.each([
-      // TODO: actor, targetのパターンを3*3の組み合わせ全て検証する
-      [CircleManager, CircleOwner, false],
-      [CircleMember, CircleManager, false],
-      [CircleOwner, CircleManager, true],
-      [CircleMember, CircleMember, true],
+      // Owner（最上位）
       [CircleOwner, CircleOwner, true],
+      [CircleOwner, CircleManager, true],
+      [CircleOwner, CircleMember, true],
+      // Manager（中位）
+      [CircleManager, CircleOwner, false],
+      [CircleManager, CircleManager, true],
+      [CircleManager, CircleMember, true],
+      // Member（最下位）
+      [CircleMember, CircleOwner, false],
+      [CircleMember, CircleManager, false],
+      [CircleMember, CircleMember, true],
     ])(
       "isSameOrHigherCircleRole（%s と %s）",
       (actorRole, targetRole, expected) => {
@@ -31,12 +37,18 @@ describe("ロール", () => {
 
   describe("開催回ロール", () => {
     test.each([
-      // TODO: actor, targetのパターンを3*3の組み合わせ全て検証する
-      [CircleSessionManager, CircleSessionOwner, false],
-      [CircleSessionMember, CircleSessionManager, false],
-      [CircleSessionOwner, CircleSessionManager, true],
-      [CircleSessionManager, CircleSessionMember, true],
+      // Owner（最上位）
       [CircleSessionOwner, CircleSessionOwner, true],
+      [CircleSessionOwner, CircleSessionManager, true],
+      [CircleSessionOwner, CircleSessionMember, true],
+      // Manager（中位）
+      [CircleSessionManager, CircleSessionOwner, false],
+      [CircleSessionManager, CircleSessionManager, true],
+      [CircleSessionManager, CircleSessionMember, true],
+      // Member（最下位）
+      [CircleSessionMember, CircleSessionOwner, false],
+      [CircleSessionMember, CircleSessionManager, false],
+      [CircleSessionMember, CircleSessionMember, true],
     ])(
       "isSameOrHigherCircleSessionRole（%s と %s）",
       (actorRole, targetRole, expected) => {
