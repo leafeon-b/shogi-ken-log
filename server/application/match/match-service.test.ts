@@ -207,4 +207,68 @@ describe("Match サービス", () => {
     expect(matchRepository.save).not.toHaveBeenCalled();
     expect(matchHistoryRepository.add).not.toHaveBeenCalled();
   });
+
+  test("deleteMatch は対局を論理削除し履歴を追加する", async () => {
+    const existing = createMatch(baseMatchParams);
+    vi.mocked(matchRepository.findById).mockResolvedValue(existing);
+
+    const deleted = await service.deleteMatch({
+      actorId: userId("user-3"),
+      id: baseMatchParams.id,
+    });
+
+    expect(matchRepository.save).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: baseMatchParams.id,
+        deletedAt: expect.any(Date),
+      }),
+    );
+    expect(matchHistoryRepository.add).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: "DELETE",
+        matchId: baseMatchParams.id,
+        editorId: userId("user-3"),
+      }),
+    );
+    expect(deleted.deletedAt).not.toBeNull();
+  });
+
+  test("updateMatch はプレイヤーを変更して履歴を追加する", async () => {
+    const existing = createMatch(baseMatchParams);
+    vi.mocked(matchRepository.findById).mockResolvedValue(existing);
+    vi.mocked(
+      circleSessionParticipationRepository.areUsersParticipating,
+    ).mockResolvedValue(true);
+
+    const updated = await service.updateMatch({
+      actorId: userId("user-3"),
+      id: baseMatchParams.id,
+      player1Id: userId("user-4"),
+      player2Id: userId("user-5"),
+    });
+
+    expect(
+      circleSessionParticipationRepository.areUsersParticipating,
+    ).toHaveBeenCalledWith(baseMatchParams.circleSessionId, [
+      userId("user-4"),
+      userId("user-5"),
+    ]);
+    expect(matchRepository.save).toHaveBeenCalledWith(
+      expect.objectContaining({
+        player1Id: userId("user-4"),
+        player2Id: userId("user-5"),
+      }),
+    );
+    expect(matchHistoryRepository.add).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: "UPDATE",
+        matchId: baseMatchParams.id,
+        editorId: userId("user-3"),
+        player1Id: userId("user-4"),
+        player2Id: userId("user-5"),
+      }),
+    );
+    expect(updated.player1Id).toBe(userId("user-4"));
+    expect(updated.player2Id).toBe(userId("user-5"));
+  });
 });

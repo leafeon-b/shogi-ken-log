@@ -1,4 +1,4 @@
-import { describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 import { createMatchHistoryService } from "@/server/application/match-history/match-history-service";
 import { createAccessServiceStub } from "@/server/application/test-helpers/access-service-stub";
 import type { MatchHistoryRepository } from "@/server/domain/models/match-history/match-history-repository";
@@ -32,6 +32,10 @@ const service = createMatchHistoryService({
   matchRepository,
   circleSessionRepository,
   accessService,
+});
+
+beforeEach(() => {
+  vi.clearAllMocks();
 });
 
 describe("MatchHistory サービス", () => {
@@ -68,5 +72,40 @@ describe("MatchHistory サービス", () => {
       matchId("match-1"),
     );
     expect(result).toEqual([]);
+  });
+
+  test("listByMatchId は対局が存在しないとエラー", async () => {
+    vi.mocked(matchRepository.findById).mockResolvedValueOnce(null);
+
+    await expect(
+      service.listByMatchId({
+        actorId: "user-1",
+        matchId: matchId("match-1"),
+      }),
+    ).rejects.toThrow("Match not found");
+
+    expect(matchHistoryRepository.listByMatchId).not.toHaveBeenCalled();
+  });
+
+  test("listByMatchId はセッションが存在しないとエラー", async () => {
+    vi.mocked(matchRepository.findById).mockResolvedValueOnce({
+      id: matchId("match-1"),
+      circleSessionId: circleSessionId("session-1"),
+      order: 1,
+      player1Id: "user-1",
+      player2Id: "user-2",
+      outcome: "UNKNOWN",
+      deletedAt: null,
+    });
+    vi.mocked(circleSessionRepository.findById).mockResolvedValueOnce(null);
+
+    await expect(
+      service.listByMatchId({
+        actorId: "user-1",
+        matchId: matchId("match-1"),
+      }),
+    ).rejects.toThrow("CircleSession not found");
+
+    expect(matchHistoryRepository.listByMatchId).not.toHaveBeenCalled();
   });
 });
