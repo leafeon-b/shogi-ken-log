@@ -63,6 +63,7 @@ server/
 ### 認可
 
 ロールベースのアクセス制御。2つの階層がある:
+
 - **研究会ロール**: CircleOwner > CircleManager > CircleMember
 - **開催回ロール**: CircleSessionOwner > CircleSessionManager > CircleSessionMember
 
@@ -78,6 +79,7 @@ server/
 ### データベース
 
 SQLite + Prisma ORM。主要モデル:
+
 - **Circle**: 研究会
 - **CircleSession**: 開催回（sequence番号で管理）
 - **CircleMembership / CircleSessionMembership**: ロールベースの参加情報
@@ -106,12 +108,14 @@ SQLite + Prisma ORM。主要モデル:
 ### Planモードを使う基準
 
 以下の場合はPlanモードで計画を立てる:
+
 - 新機能の追加
 - 複数ファイルにまたがる変更
 - アーキテクチャに影響する変更
 - 要件に曖昧さがある場合
 
 以下の場合は直接実装してよい:
+
 - 単純なバグ修正（1-2ファイル）
 - タイポ修正、コメント追加
 - 人間が具体的な実装内容を指示した場合
@@ -131,13 +135,6 @@ SQLite + Prisma ORM。主要モデル:
 - **トレードオフの説明**: 複数の選択肢がある場合、メリット・デメリットを計画に記載
 - **進捗の報告**: 作業状況や問題点を適宜共有する
 - **承認待ち**: 破壊的変更、外部サービス連携、セキュリティ関連は必ず事前承認を得る
-- **学習内容の記録**: 対話を通じて得た重要な知見を記録する
-  - 記録の判断基準: 繰り返し指摘されたこと、プロジェクトの方針に関わること、今後の開発に影響すること
-  - 記録しないもの: 一度きりの些細な指摘、その場限りの判断
-  - 記録先:
-    - CLAUDE.md: プロジェクトの方針・ルール・アーキテクチャに関する知見（該当セクションに追記）
-    - `.claude/skills/`: 特定の状況で適用すべきパターンやスキル
-- **スキル作成の提案**: 繰り返し使いそうな操作手順やワークフローを発見した場合、`.claude/commands/` へのスキル追加を提案する
 
 ### ドキュメント管理
 
@@ -153,6 +150,7 @@ AIは実装完了後、関連ドキュメントの更新が必要か確認し、
 ## テストアカウント（db:seed後）
 
 対象研究会: 「京大将棋研究会」（circleId: `demo`）
+
 - オーナー: sota@example.com / demo-pass-1
 - マネージャー: hanyu@example.com / demo-pass-2, watanabe@example.com / demo-pass-3
 - メンバー: ito@example.com / demo-pass-4
