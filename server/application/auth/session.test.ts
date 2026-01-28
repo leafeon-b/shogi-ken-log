@@ -30,4 +30,10 @@ describe("getSessionUserId", () => {
 
     await expect(getSessionUserId()).rejects.toThrow("Unauthorized");
   });
+
+  test("セッションがnullの場合はUnauthorized", async () => {
+    getServerSessionMock.mockResolvedValueOnce(null);
+
+    await expect(getSessionUserId()).rejects.toThrow("Unauthorized");
+  });
 });

@@ -115,4 +115,27 @@ describe("CircleSession サービス", () => {
     expect(circleSessionRepository.save).toHaveBeenCalledWith(updated);
     expect(updated.startsAt.toISOString()).toBe("2024-02-01T00:00:00.000Z");
   });
+
+  test("updateCircleSessionDetails はタイトル・場所・メモを更新する", async () => {
+    const existing = createCircleSession({
+      ...baseSessionParams,
+      createdAt: new Date("2024-01-01T00:00:00Z"),
+    });
+    vi.mocked(circleSessionRepository.findById).mockResolvedValue(existing);
+
+    const updated = await service.updateCircleSessionDetails(
+      "user-1",
+      existing.id,
+      {
+        title: "更新後タイトル",
+        location: "Osaka",
+        note: "更新後メモ",
+      },
+    );
+
+    expect(circleSessionRepository.save).toHaveBeenCalledWith(updated);
+    expect(updated.title).toBe("更新後タイトル");
+    expect(updated.location).toBe("Osaka");
+    expect(updated.note).toBe("更新後メモ");
+  });
 });
