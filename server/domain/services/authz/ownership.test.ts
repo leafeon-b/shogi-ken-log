@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
 import {
+  assertCanAddCircleMemberWithRole,
   assertCanAddParticipantWithRole,
   assertSingleCircleOwner,
   assertSingleCircleSessionOwner,
@@ -258,6 +259,47 @@ describe("assertCanAddParticipantWithRole", () => {
           },
         ],
         CircleSessionRole.CircleSessionManager,
+      ),
+    ).not.toThrow();
+  });
+});
+
+describe("assertCanAddCircleMemberWithRole", () => {
+  test("Owner がいない状態で Owner 以外を追加しようとするとエラー", () => {
+    expect(() =>
+      assertCanAddCircleMemberWithRole([], CircleRole.CircleMember),
+    ).toThrow("Circle must have exactly one owner");
+  });
+
+  test("Owner がいる状態で Owner を追加しようとするとエラー", () => {
+    expect(() =>
+      assertCanAddCircleMemberWithRole(
+        [{ userId: userId("user-1"), role: CircleRole.CircleOwner }],
+        CircleRole.CircleOwner,
+      ),
+    ).toThrow("Circle must have exactly one owner");
+  });
+
+  test("Owner がいない状態で Owner を追加できる", () => {
+    expect(() =>
+      assertCanAddCircleMemberWithRole([], CircleRole.CircleOwner),
+    ).not.toThrow();
+  });
+
+  test("Owner がいる状態で Member を追加できる", () => {
+    expect(() =>
+      assertCanAddCircleMemberWithRole(
+        [{ userId: userId("user-1"), role: CircleRole.CircleOwner }],
+        CircleRole.CircleMember,
+      ),
+    ).not.toThrow();
+  });
+
+  test("Owner がいる状態で Manager を追加できる", () => {
+    expect(() =>
+      assertCanAddCircleMemberWithRole(
+        [{ userId: userId("user-1"), role: CircleRole.CircleOwner }],
+        CircleRole.CircleManager,
       ),
     ).not.toThrow();
   });
