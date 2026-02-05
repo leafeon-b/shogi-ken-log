@@ -17,6 +17,11 @@ import {
 import { CircleSessionRole } from "@/server/domain/services/authz/roles";
 import type { CircleSessionParticipation } from "@/server/domain/models/circle-session/circle-session-participation";
 import type { CircleRepository } from "@/server/domain/models/circle/circle-repository";
+import {
+  BadRequestError,
+  ForbiddenError,
+  NotFoundError,
+} from "@/server/domain/common/errors";
 
 type AccessService = ReturnType<typeof createAccessService>;
 
@@ -66,7 +71,7 @@ export const createCircleSessionParticipationService = (
       params.circleSessionId,
     );
     if (!session) {
-      throw new Error("CircleSession not found");
+      throw new NotFoundError("CircleSession");
     }
     const allowed = await deps.accessService.canViewCircleSession(
       params.actorId,
@@ -74,7 +79,7 @@ export const createCircleSessionParticipationService = (
       params.circleSessionId as string,
     );
     if (!allowed) {
-      throw new Error("Forbidden");
+      throw new ForbiddenError();
     }
     return deps.circleSessionParticipationRepository.listParticipations(
       params.circleSessionId,
@@ -87,13 +92,13 @@ export const createCircleSessionParticipationService = (
     limit?: number;
   }): Promise<UserCircleSessionParticipationSummary[]> {
     if (params.userId !== userId(params.actorId)) {
-      throw new Error("Forbidden");
+      throw new ForbiddenError();
     }
     const allowed = await deps.accessService.canListOwnCircles(
       params.actorId,
     );
     if (!allowed) {
-      throw new Error("Forbidden");
+      throw new ForbiddenError();
     }
 
     const participations =
@@ -112,7 +117,7 @@ export const createCircleSessionParticipationService = (
     const sessions =
       await deps.circleSessionRepository.findByIds(uniqueSessionIds);
     if (sessions.length !== uniqueSessionIds.length) {
-      throw new Error("CircleSession not found");
+      throw new NotFoundError("CircleSession");
     }
 
     const uniqueCircleIds = Array.from(
@@ -120,7 +125,7 @@ export const createCircleSessionParticipationService = (
     );
     const circles = await deps.circleRepository.findByIds(uniqueCircleIds);
     if (circles.length !== uniqueCircleIds.length) {
-      throw new Error("Circle not found");
+      throw new NotFoundError("Circle");
     }
     const circleNameById = new Map(
       circles.map((circle) => [circle.id as string, circle.name]),
@@ -129,7 +134,7 @@ export const createCircleSessionParticipationService = (
     const summaries = sessions.map((session) => {
       const circleName = circleNameById.get(session.circleId as string);
       if (!circleName) {
-        throw new Error("Circle not found");
+        throw new NotFoundError("Circle");
       }
       const trimmedTitle = session.title?.trim();
       const title = trimmedTitle
@@ -167,14 +172,14 @@ export const createCircleSessionParticipationService = (
       params.circleSessionId,
     );
     if (!session) {
-      throw new Error("CircleSession not found");
+      throw new NotFoundError("CircleSession");
     }
     const allowed = await deps.accessService.canAddCircleSessionMember(
       params.actorId,
       params.circleSessionId as string,
     );
     if (!allowed) {
-      throw new Error("Forbidden");
+      throw new ForbiddenError();
     }
     const participations =
       await deps.circleSessionParticipationRepository.listParticipations(
@@ -182,7 +187,7 @@ export const createCircleSessionParticipationService = (
       );
 
     if (participations.some((member) => member.userId === params.userId)) {
-      throw new Error("Participation already exists");
+      throw new BadRequestError("Participation already exists");
     }
 
     assertCanAddParticipantWithRole(participations, params.role);
@@ -204,7 +209,7 @@ export const createCircleSessionParticipationService = (
       params.circleSessionId,
     );
     if (!session) {
-      throw new Error("CircleSession not found");
+      throw new NotFoundError("CircleSession");
     }
     const allowed = await deps.accessService.canChangeCircleSessionMemberRole(
       params.actorId,
@@ -212,10 +217,10 @@ export const createCircleSessionParticipationService = (
       params.circleSessionId as string,
     );
     if (!allowed) {
-      throw new Error("Forbidden");
+      throw new ForbiddenError();
     }
     if (params.role === CircleSessionRole.CircleSessionOwner) {
-      throw new Error("Use transferOwnership to assign owner");
+      throw new BadRequestError("Use transferOwnership to assign owner");
     }
 
     const participations =
@@ -227,11 +232,11 @@ export const createCircleSessionParticipationService = (
     );
 
     if (!target) {
-      throw new Error("Participation not found");
+      throw new NotFoundError("Participation");
     }
 
     if (target.role === CircleSessionRole.CircleSessionOwner) {
-      throw new Error("Use transferOwnership to change owner");
+      throw new BadRequestError("Use transferOwnership to change owner");
     }
 
     await deps.circleSessionParticipationRepository.updateParticipationRole(
@@ -251,14 +256,14 @@ export const createCircleSessionParticipationService = (
       params.circleSessionId,
     );
     if (!session) {
-      throw new Error("CircleSession not found");
+      throw new NotFoundError("CircleSession");
     }
     const allowed = await deps.accessService.canTransferCircleSessionOwnership(
       params.actorId,
       params.circleSessionId as string,
     );
     if (!allowed) {
-      throw new Error("Forbidden");
+      throw new ForbiddenError();
     }
     const participations =
       await deps.circleSessionParticipationRepository.listParticipations(
@@ -296,14 +301,14 @@ export const createCircleSessionParticipationService = (
       params.circleSessionId,
     );
     if (!session) {
-      throw new Error("CircleSession not found");
+      throw new NotFoundError("CircleSession");
     }
     const allowed = await deps.accessService.canRemoveCircleSessionMember(
       params.actorId,
       params.circleSessionId as string,
     );
     if (!allowed) {
-      throw new Error("Forbidden");
+      throw new ForbiddenError();
     }
     const matches = await deps.matchRepository.listByCircleSessionId(
       params.circleSessionId,
