@@ -1,16 +1,19 @@
-import { getServerSession } from "next-auth";
-import { createAuthOptions } from "@/server/infrastructure/auth/nextauth-handler";
+import type { SessionService } from "@/server/domain/services/auth/session-service";
 import { UnauthorizedError } from "@/server/domain/common/errors";
 
-export const getSession = async () => getServerSession(createAuthOptions());
+export const createGetSession = (sessionService: SessionService) => {
+  return () => sessionService.getSession();
+};
 
-export const getSessionUserId = async (): Promise<string> => {
-  const session = await getSession();
-  const userId = (session?.user as { id?: string } | undefined)?.id;
+export const createGetSessionUserId = (sessionService: SessionService) => {
+  return async (): Promise<string> => {
+    const session = await sessionService.getSession();
+    const userId = session?.user?.id;
 
-  if (!userId) {
-    throw new UnauthorizedError();
-  }
+    if (!userId) {
+      throw new UnauthorizedError();
+    }
 
-  return userId;
+    return userId;
+  };
 };

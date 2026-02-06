@@ -2,7 +2,7 @@ import { AppSidebar } from "@/app/components/app-sidebar";
 import Footer from "@/app/components/footer";
 import Header from "@/app/components/header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { getSession } from "@/server/application/auth/session";
+import { nextAuthSessionService } from "@/server/infrastructure/auth/nextauth-session-service";
 import { redirect } from "next/navigation";
 
 type AuthenticatedLayoutProps = {
@@ -12,7 +12,7 @@ type AuthenticatedLayoutProps = {
 export default async function AuthenticatedLayout({
   children,
 }: AuthenticatedLayoutProps) {
-  const session = await getSession();
+  const session = await nextAuthSessionService.getSession();
 
   if (!session?.user) {
     redirect("/");
