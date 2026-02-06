@@ -1,5 +1,5 @@
-import { createAuthHandler } from "@/server/application/auth/auth-handler";
+import { createNextAuthHandler } from "@/server/infrastructure/auth/nextauth-handler";
 
-const handler = createAuthHandler();
+const handler = createNextAuthHandler();
 
 export { handler as GET, handler as POST };

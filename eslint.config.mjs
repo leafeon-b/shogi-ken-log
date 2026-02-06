@@ -55,18 +55,6 @@ const eslintConfig = defineConfig([
     },
   },
   {
-    files: ["server/application/auth/auth-handler.ts"],
-    rules: {
-      "no-restricted-imports": "off",
-    },
-  },
-  {
-    files: ["server/application/auth/session.ts"],
-    rules: {
-      "no-restricted-imports": "off",
-    },
-  },
-  {
     files: ["app/**/*.{ts,tsx}"],
     rules: {
       "no-restricted-imports": [
@@ -75,6 +63,16 @@ const eslintConfig = defineConfig([
           patterns: ["@/server/infrastructure/**"],
         },
       ],
+    },
+  },
+  {
+    files: [
+      "app/api/auth/**/route.ts",
+      "app/(authenticated)/layout.tsx",
+      "app/(public)/layout.tsx",
+    ],
+    rules: {
+      "no-restricted-imports": "off",
     },
   },
 ]);

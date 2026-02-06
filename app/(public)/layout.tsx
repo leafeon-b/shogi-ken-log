@@ -1,5 +1,5 @@
 import Footer from "@/app/components/footer";
-import { getSession } from "@/server/application/auth/session";
+import { nextAuthSessionService } from "@/server/infrastructure/auth/nextauth-session-service";
 import { redirect } from "next/navigation";
 
 type PublicLayoutProps = {
@@ -7,7 +7,7 @@ type PublicLayoutProps = {
 };
 
 export default async function PublicLayout({ children }: PublicLayoutProps) {
-  const session = await getSession();
+  const session = await nextAuthSessionService.getSession();
 
   if (session?.user) {
     redirect("/home");

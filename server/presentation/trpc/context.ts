@@ -1,5 +1,6 @@
-import { getSessionUserId } from "@/server/application/auth/session";
+import { createGetSessionUserId } from "@/server/application/auth/session";
 import { createServiceContainer } from "@/server/application/service-container";
+import { nextAuthSessionService } from "@/server/infrastructure/auth/nextauth-session-service";
 import { prismaAuthzRepository } from "@/server/infrastructure/repository/authz/prisma-authz-repository";
 import { prismaCircleParticipationRepository } from "@/server/infrastructure/repository/circle/prisma-circle-participation-repository";
 import { prismaCircleRepository } from "@/server/infrastructure/repository/circle/prisma-circle-repository";
@@ -9,6 +10,8 @@ import { prismaMatchHistoryRepository } from "@/server/infrastructure/repository
 import { prismaMatchRepository } from "@/server/infrastructure/repository/match/prisma-match-repository";
 import { prismaUserRepository } from "@/server/infrastructure/repository/user/prisma-user-repository";
 import { prismaSignupRepository } from "@/server/infrastructure/repository/user/prisma-signup-repository";
+
+const getSessionUserId = createGetSessionUserId(nextAuthSessionService);
 
 export const createContext = async () => {
   const actorId = await getSessionUserId();
