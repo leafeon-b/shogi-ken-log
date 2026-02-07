@@ -1,8 +1,9 @@
 "use client";
 
 import { useSession, signOut } from "next-auth/react";
-import { useTheme } from "next-themes";
-import { User, Sun, Moon, LogOut, Trash2 } from "lucide-react";
+// TODO: ダークモード設計完了後に有効化する
+// import { useTheme } from "next-themes";
+import { User, LogOut, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -13,7 +14,8 @@ import {
 
 export default function UserMenu() {
   const { data: session } = useSession();
-  const { theme, setTheme } = useTheme();
+  // TODO: ダークモード設計完了後に有効化する
+  // const { theme, setTheme } = useTheme();
 
   const handleLogout = () => {
     signOut({ callbackUrl: "/" });
@@ -23,9 +25,10 @@ export default function UserMenu() {
     alert("アカウント削除機能は現在実装中です");
   };
 
-  const toggleTheme = () => {
-    setTheme(theme === "dark" ? "light" : "dark");
-  };
+  // TODO: ダークモード設計完了後に有効化する
+  // const toggleTheme = () => {
+  //   setTheme(theme === "dark" ? "light" : "dark");
+  // };
 
   return (
     <DropdownMenu>
@@ -39,6 +42,7 @@ export default function UserMenu() {
         <div className="px-3 py-2 text-sm font-medium border-b">
           {session?.user?.name ?? "ユーザー"}
         </div>
+        {/* TODO: ダークモード設計完了後に有効化する
         <DropdownMenuItem onClick={toggleTheme}>
           {theme === "dark" ? (
             <>
@@ -52,6 +56,7 @@ export default function UserMenu() {
             </>
           )}
         </DropdownMenuItem>
+        */}
         <DropdownMenuItem onClick={handleLogout}>
           <LogOut className="mr-2 h-4 w-4" />
           ログアウト
