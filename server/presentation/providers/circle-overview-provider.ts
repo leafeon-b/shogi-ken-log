@@ -217,6 +217,9 @@ export const createCircleOverviewProvider = (
       nextSession: nextSession
         ? {
             id: nextSession.id as string,
+            title: nextSession.title?.trim()
+              ? nextSession.title
+              : buildSessionTitle(nextSession.sequence),
             dateTimeLabel: formatDateTimeRange(
               nextSession.startsAt,
               nextSession.endsAt,

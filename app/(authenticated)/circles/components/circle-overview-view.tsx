@@ -115,26 +115,31 @@ export function CircleOverviewView({
         <div className="flex flex-wrap items-start justify-between gap-6">
           <div className="min-w-60 flex-1">
             {heroContent ?? defaultHero}
-            {nextSession ? (
-              <LinkCard
-                href={nextSessionHref}
-                className="mt-4 block rounded-2xl border border-border/60 bg-white/80 px-4 py-3 text-sm transition hover:border-border hover:bg-white hover:shadow-sm"
-              >
-                <p className="text-xs font-semibold text-(--brand-ink)">
-                  次回日程
-                </p>
-                <p className="mt-1 text-(--brand-ink-muted)">
-                  {nextSession.dateTimeLabel}
-                  {nextSession.locationLabel
-                    ? ` / ${nextSession.locationLabel}`
-                    : ""}
-                </p>
-              </LinkCard>
-            ) : (
-              <div className="mt-4 rounded-2xl border border-dashed border-border/60 bg-white/70 px-4 py-3 text-xs text-(--brand-ink-muted)">
-                次回日程は未設定です
-              </div>
-            )}
+            <div className="mt-4">
+              <p className="mb-2 text-xs font-semibold text-(--brand-ink-muted)">
+                次回日程
+              </p>
+              {nextSession ? (
+                <LinkCard
+                  href={nextSessionHref}
+                  className="block rounded-2xl border border-border/60 bg-white/80 px-4 py-3 text-sm transition hover:border-border hover:bg-white hover:shadow-sm"
+                >
+                  <p className="text-sm font-semibold text-(--brand-ink)">
+                    {nextSession.title}
+                  </p>
+                  <p className="mt-1 text-xs text-(--brand-ink-muted)">
+                    {nextSession.dateTimeLabel}
+                    {nextSession.locationLabel
+                      ? ` / ${nextSession.locationLabel}`
+                      : ""}
+                  </p>
+                </LinkCard>
+              ) : (
+                <div className="rounded-2xl border border-dashed border-border/60 bg-white/70 px-4 py-3 text-xs text-(--brand-ink-muted)">
+                  次回日程は未設定です
+                </div>
+              )}
+            </div>
           </div>
           <div className="flex w-full flex-col gap-4 sm:w-auto sm:min-w-60 sm:max-w-[320px]">
             <div

@@ -40,6 +40,7 @@ export type CircleOverviewViewModel = {
   scheduleNote: string | null;
   nextSession: {
     id: string | null;
+    title: string;
     dateTimeLabel: string;
     locationLabel: string | null;
   } | null;
