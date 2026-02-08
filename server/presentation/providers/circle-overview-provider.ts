@@ -2,8 +2,6 @@ import { CircleRole } from "@/server/domain/services/authz/roles";
 import { circleId, userId } from "@/server/domain/common/ids";
 import type { ServiceContainer } from "@/server/application/service-container";
 import type {
-  CircleOverviewAction,
-  CircleOverviewPanelItem,
   CircleOverviewProvider,
   CircleOverviewProviderInput,
   CircleOverviewSession,
@@ -12,79 +10,10 @@ import type {
 } from "@/server/presentation/view-models/circle-overview";
 import { NotFoundError } from "@/server/domain/common/errors";
 
-type RoleConfig = {
-  actions: CircleOverviewAction[];
-  panelTitle: string;
-  panelItems: CircleOverviewPanelItem[];
-};
-
 const roleKeyByDto: Record<CircleRole, CircleRoleKey> = {
   [CircleRole.CircleOwner]: "owner",
   [CircleRole.CircleManager]: "manager",
   [CircleRole.CircleMember]: "member",
-};
-
-const defaultActions: CircleOverviewAction[] = [
-  {
-    label: "開催日程を追加",
-    className: "bg-(--brand-moss) text-white hover:bg-(--brand-moss)/90",
-  },
-  {
-    label: "参加者を管理",
-    variant: "outline",
-    className:
-      "border-(--brand-moss)/30 bg-white/70 text-(--brand-ink) hover:bg-white",
-  },
-];
-
-const ownerManagerBase: Pick<
-  RoleConfig,
-  "actions" | "panelTitle" | "panelItems"
-> = {
-  actions: [
-    {
-      label: "開催日程を追加",
-      className:
-        "bg-(--brand-gold) text-(--brand-ink) hover:bg-(--brand-gold)/90",
-    },
-    {
-      label: "参加者を管理",
-      variant: "outline",
-      className:
-        "border-(--brand-gold)/40 bg-white/70 text-(--brand-ink) hover:bg-white",
-    },
-  ],
-  panelTitle: "運営タスク",
-  panelItems: [
-    { title: "参加申請の承認", meta: "承認待ち 2件", status: "要対応" },
-    { title: "次期の役割設定", meta: "4月期の割り当て", status: "準備中" },
-    { title: "開催場所の更新", meta: "京都キャンパス A", status: "進行中" },
-  ],
-};
-
-const roleConfigs: Record<CircleRoleKey, RoleConfig> = {
-  owner: { ...ownerManagerBase },
-  manager: { ...ownerManagerBase },
-  member: {
-    actions: [
-      {
-        label: "参加予定を登録",
-        className: "bg-(--brand-moss) text-white hover:bg-(--brand-moss)/90",
-      },
-      {
-        label: "参加者一覧",
-        variant: "outline",
-        className:
-          "border-(--brand-moss)/30 bg-white/70 text-(--brand-ink) hover:bg-white",
-      },
-    ],
-    panelTitle: "メンバーの参加メモ",
-    panelItems: [
-      { title: "次回の参加", meta: "出席で登録済み", status: "登録済み" },
-      { title: "対局テーマ", meta: "中盤の形を研究", status: "確認中" },
-      { title: "連絡事項", meta: "3/15 会場変更", status: "お知らせ" },
-    ],
-  },
 };
 
 const pad2 = (value: number) => String(value).padStart(2, "0");
@@ -179,15 +108,13 @@ export const createCircleOverviewProvider = (
     );
 
     const viewerId = input.viewerId ?? actorId ?? null;
-    const viewerRole =
-      input.viewerRoleOverride ??
-      getViewerRole(
-        participations.map((p) => ({
-          userId: p.userId as string,
-          role: p.role,
-        })),
-        viewerId,
-      );
+    const viewerRole = getViewerRole(
+      participations.map((p) => ({
+        userId: p.userId as string,
+        role: p.role,
+      })),
+      viewerId,
+    );
 
     const now = new Date();
     const recentSessions = sessions
@@ -228,13 +155,6 @@ export const createCircleOverviewProvider = (
           }
         : null,
       viewerRole,
-      actions: viewerRole ? roleConfigs[viewerRole].actions : defaultActions,
-      rolePanel: viewerRole
-        ? {
-            title: roleConfigs[viewerRole].panelTitle,
-            items: roleConfigs[viewerRole].panelItems,
-          }
-        : null,
       recentSessions,
       members: participations.map((participation) => ({
         userId: participation.userId as string,

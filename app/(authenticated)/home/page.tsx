@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import CircleCreateDemo from "@/app/(authenticated)/home/circle-create-demo";
+import CircleCreateForm from "@/app/(authenticated)/home/circle-create-form";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc/client";
 
@@ -103,7 +103,7 @@ export default function Home() {
           className="flex items-center rounded-2xl border border-border/60 bg-white/85 p-6 shadow-sm motion-safe:animate-[rise_0.7s_ease-out]"
           style={{ animationDelay: "140ms" }}
         >
-          <CircleCreateDemo />
+          <CircleCreateForm />
         </div>
       </section>
 
