@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { trpc } from "@/lib/trpc/client";
 import { useRouter } from "next/navigation";
 
-export default function CircleCreateDemo() {
+export default function CircleCreateForm() {
   const [name, setName] = useState("");
   const createCircle = trpc.circles.create.useMutation();
   const router = useRouter();

@@ -1,25 +1,6 @@
 export type CircleRoleKey = "owner" | "manager" | "member";
 export type CircleSessionStatus = "scheduled" | "done" | "draft";
 
-export type CircleOverviewAction = {
-  label: string;
-  variant?:
-    | "default"
-    | "outline"
-    | "ghost"
-    | "secondary"
-    | "destructive"
-    | "link";
-  className?: string;
-  href?: string;
-};
-
-export type CircleOverviewPanelItem = {
-  title: string;
-  meta: string;
-  status: string;
-};
-
 export type CircleOverviewSession = {
   id: string | null;
   title: string;
@@ -45,11 +26,6 @@ export type CircleOverviewViewModel = {
     locationLabel: string | null;
   } | null;
   viewerRole: CircleRoleKey | null;
-  actions: CircleOverviewAction[];
-  rolePanel: {
-    title: string;
-    items: CircleOverviewPanelItem[];
-  } | null;
   recentSessions: CircleOverviewSession[];
   members: CircleOverviewMember[];
 };
@@ -57,7 +33,6 @@ export type CircleOverviewViewModel = {
 export type CircleOverviewProviderInput = {
   circleId: string;
   viewerId: string | null;
-  viewerRoleOverride?: CircleRoleKey | null;
 };
 
 export type CircleOverviewProvider = {

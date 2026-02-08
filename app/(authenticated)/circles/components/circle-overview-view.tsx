@@ -9,16 +9,9 @@ import type {
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-export type CircleOverviewRoleLink = {
-  role: CircleRoleKey;
-  label: string;
-  href: string;
-};
-
 export type CircleOverviewViewProps = {
   overview: CircleOverviewViewModel;
   heroContent?: ReactNode;
-  roleLinks?: CircleOverviewRoleLink[];
   getSessionHref?: (session: CircleOverviewSession) => string | null;
   getMemberHref?: (member: CircleOverviewMember) => string | null;
   getNextSessionHref?: (
@@ -50,15 +43,6 @@ const sessionStatusClasses: Record<CircleSessionStatus, string> = {
   draft: "bg-(--brand-gold)/20 text-(--brand-ink)",
 };
 
-const panelStatusClasses: Record<string, string> = {
-  要対応: "bg-(--brand-gold)/25 text-(--brand-ink)",
-  進行中: "bg-(--brand-sky)/20 text-(--brand-ink)",
-  準備中: "bg-(--brand-moss)/20 text-(--brand-ink)",
-  登録済み: "bg-(--brand-moss)/20 text-(--brand-ink)",
-  確認中: "bg-(--brand-sky)/20 text-(--brand-ink)",
-  お知らせ: "bg-(--brand-ink)/10 text-(--brand-ink)",
-};
-
 type LinkCardProps = {
   href?: string | null;
   className: string;
@@ -80,7 +64,6 @@ const LinkCard = ({ href, className, children }: LinkCardProps) => {
 export function CircleOverviewView({
   overview,
   heroContent,
-  roleLinks,
   getSessionHref,
   getMemberHref,
   getNextSessionHref,
@@ -91,7 +74,6 @@ export function CircleOverviewView({
   const roleBadgeClassName = overview.viewerRole
     ? roleClasses[overview.viewerRole]
     : "bg-(--brand-ink)/10 text-(--brand-ink)";
-  const isSingleAction = overview.actions.length === 1;
   const scheduleText = overview.scheduleNote
     ? `参加者 ${overview.participationCount}名 / ${overview.scheduleNote}`
     : `参加者 ${overview.participationCount}名`;
@@ -150,58 +132,6 @@ export function CircleOverviewView({
               )}
             </div>
           </div>
-          <div className="flex w-full flex-col gap-4 sm:w-auto sm:min-w-60 sm:max-w-[320px]">
-            {roleLinks?.length ? (
-              <div className="flex flex-wrap items-center justify-end gap-2">
-                {roleLinks.map((link) => {
-                  const isActive = overview.viewerRole === link.role;
-                  return (
-                    <Link
-                      key={link.role}
-                      href={link.href}
-                      className={`rounded-full border px-2.5 py-0.5 text-xs transition ${
-                        isActive
-                          ? "border-(--brand-ink)/30 bg-(--brand-ink)/10 text-(--brand-ink)"
-                          : "border-border/60 bg-white/70 text-(--brand-ink-muted) hover:border-border hover:text-(--brand-ink)"
-                      }`}
-                    >
-                      {link.label}
-                    </Link>
-                  );
-                })}
-              </div>
-            ) : null}
-            <div
-              className={`flex gap-3 ${isSingleAction ? "flex-col" : "flex-wrap"}`}
-            >
-              {overview.actions.map((action) => {
-                const button = (
-                  <Button
-                    key={action.label}
-                    variant={action.variant}
-                    className={`${action.className ?? ""} ${isSingleAction ? "w-full" : ""}`.trim()}
-                  >
-                    {action.label}
-                  </Button>
-                );
-
-                if (!action.href) {
-                  return button;
-                }
-
-                return (
-                  <Button
-                    key={action.label}
-                    variant={action.variant}
-                    className={`${action.className ?? ""} ${isSingleAction ? "w-full" : ""}`.trim()}
-                    asChild
-                  >
-                    <Link href={action.href}>{action.label}</Link>
-                  </Button>
-                );
-              })}
-            </div>
-          </div>
         </div>
       </section>
 
@@ -258,47 +188,6 @@ export function CircleOverviewView({
         </div>
 
         <div className="flex flex-col gap-6">
-          {overview.rolePanel ? (
-            <div className="rounded-2xl border border-border/60 bg-white/90 p-6 shadow-sm">
-              <div className="flex items-center justify-between">
-                <p className="text-sm font-semibold text-(--brand-ink)">
-                  {overview.rolePanel.title}
-                </p>
-                <Button
-                  variant="ghost"
-                  className="text-xs text-(--brand-ink-muted) hover:text-(--brand-ink)"
-                >
-                  すべて見る
-                </Button>
-              </div>
-              <div className="mt-4 space-y-3">
-                {overview.rolePanel.items.map((item) => (
-                  <div
-                    key={item.title}
-                    className="flex items-center justify-between gap-4 rounded-xl border border-border/60 bg-white/70 p-4"
-                  >
-                    <div>
-                      <p className="text-sm font-semibold text-(--brand-ink)">
-                        {item.title}
-                      </p>
-                      <p className="text-xs text-(--brand-ink-muted)">
-                        {item.meta}
-                      </p>
-                    </div>
-                    <span
-                      className={`rounded-full px-2.5 py-1 text-xs ${
-                        panelStatusClasses[item.status] ??
-                        "bg-(--brand-ink)/10 text-(--brand-ink)"
-                      }`}
-                    >
-                      {item.status}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : null}
-
           <div className="rounded-2xl border border-border/60 bg-white/90 p-6 shadow-sm">
             <div className="flex items-center justify-between">
               <p className="text-sm font-semibold text-(--brand-ink)">

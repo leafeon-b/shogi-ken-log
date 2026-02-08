@@ -1,7 +1,6 @@
 "use client";
 
 import { FormEvent, useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -49,15 +48,8 @@ type RoleConfig = {
   actions: RoleAction[];
 };
 
-export type CircleSessionRoleLink = {
-  role: CircleSessionRoleKey;
-  label: string;
-  href: string;
-};
-
 export type CircleSessionDetailViewProps = {
   detail: CircleSessionDetailViewModel;
-  roleLinks?: CircleSessionRoleLink[];
 };
 
 const roleLabels: Record<CircleSessionRoleKey, string> = {
@@ -213,7 +205,6 @@ const getMatchOutcome = (
 
 export function CircleSessionDetailView({
   detail,
-  roleLinks,
 }: CircleSessionDetailViewProps) {
   const participations = detail.participations;
   const matches = detail.matches;
@@ -592,29 +583,6 @@ export function CircleSessionDetailView({
                 {roleLabel}
               </span>
             </div>
-            {roleLinks?.length ? (
-              <div className="flex flex-wrap items-center gap-2">
-                <p className="text-xs font-semibold text-(--brand-ink)">
-                  ロール別デモ
-                </p>
-                {roleLinks.map((link) => {
-                  const isActive = detail.viewerRole === link.role;
-                  return (
-                    <Link
-                      key={link.role}
-                      href={link.href}
-                      className={`rounded-full border px-3 py-1 text-xs transition ${
-                        isActive
-                          ? "border-(--brand-ink)/30 bg-(--brand-ink)/10 text-(--brand-ink)"
-                          : "border-border/60 bg-white/70 text-(--brand-ink-muted) hover:border-border hover:text-(--brand-ink)"
-                      }`}
-                    >
-                      {link.label}
-                    </Link>
-                  );
-                })}
-              </div>
-            ) : null}
           </div>
         ) : null}
       </section>
