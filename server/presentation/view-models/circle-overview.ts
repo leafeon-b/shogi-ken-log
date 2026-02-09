@@ -4,7 +4,8 @@ export type CircleSessionStatus = "scheduled" | "done" | "draft";
 export type CircleOverviewSession = {
   id: string | null;
   title: string;
-  dateLabel: string;
+  startsAt: string;
+  endsAt: string;
   status: CircleSessionStatus;
 };
 
@@ -26,7 +27,7 @@ export type CircleOverviewViewModel = {
     locationLabel: string | null;
   } | null;
   viewerRole: CircleRoleKey | null;
-  recentSessions: CircleOverviewSession[];
+  sessions: CircleOverviewSession[];
   members: CircleOverviewMember[];
 };
 

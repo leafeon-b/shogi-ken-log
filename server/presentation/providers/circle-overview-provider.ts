@@ -51,7 +51,8 @@ const toSessionViewModel = (session: {
   title: session.title?.trim()
     ? session.title
     : buildSessionTitle(session.sequence),
-  dateLabel: formatDate(session.startsAt),
+  startsAt: session.startsAt.toISOString(),
+  endsAt: session.endsAt.toISOString(),
   status: getSessionStatus(session.startsAt, session.endsAt),
 });
 
@@ -116,11 +117,8 @@ export const createCircleOverviewProvider = (
       viewerId,
     );
 
-    const now = new Date();
-    const recentSessions = sessions
-      .filter((session) => session.startsAt < now)
+    const allSessions = sessions
       .sort((a, b) => b.startsAt.getTime() - a.startsAt.getTime())
-      .slice(0, 3)
       .map((session) =>
         toSessionViewModel({
           id: session.id as string,
@@ -131,6 +129,7 @@ export const createCircleOverviewProvider = (
         }),
       );
 
+    const now = new Date();
     const upcomingSessions = sessions
       .filter((session) => session.startsAt >= now)
       .sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime());
@@ -155,7 +154,7 @@ export const createCircleOverviewProvider = (
           }
         : null,
       viewerRole,
-      recentSessions,
+      sessions: allSessions,
       members: participations.map((participation) => ({
         userId: participation.userId as string,
         name:
