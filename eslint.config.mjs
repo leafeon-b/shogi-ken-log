@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    "node_modules/**",
+    "generated/**",
     // Ignore repository metadata and CI configs — lint only application code
     ".github/**",
   ]),
