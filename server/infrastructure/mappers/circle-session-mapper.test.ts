@@ -12,7 +12,7 @@ describe("CircleSession マッパー", () => {
     const prismaSession: PrismaCircleSession = {
       id: "session-1",
       circleId: "circle-1",
-      sequence: 1,
+
       title: "第1回 研究会",
       startsAt: new Date("2024-01-01T10:00:00Z"),
       endsAt: new Date("2024-01-01T12:00:00Z"),
@@ -25,7 +25,6 @@ describe("CircleSession マッパー", () => {
 
     expect(session.id).toBe("session-1");
     expect(session.circleId).toBe("circle-1");
-    expect(session.sequence).toBe(1);
     expect(session.location).toBe("A");
   });
 
@@ -33,7 +32,7 @@ describe("CircleSession マッパー", () => {
     const session = createCircleSession({
       id: circleSessionId("session-1"),
       circleId: circleId("circle-1"),
-      sequence: 1,
+
       title: "第1回 研究会",
       startsAt: new Date("2024-01-01T10:00:00Z"),
       endsAt: new Date("2024-01-01T12:00:00Z"),
@@ -47,7 +46,7 @@ describe("CircleSession マッパー", () => {
     expect(mapped).toEqual({
       id: "session-1",
       circleId: "circle-1",
-      sequence: 1,
+
       title: "第1回 研究会",
       startsAt: new Date("2024-01-01T10:00:00Z"),
       endsAt: new Date("2024-01-01T12:00:00Z"),

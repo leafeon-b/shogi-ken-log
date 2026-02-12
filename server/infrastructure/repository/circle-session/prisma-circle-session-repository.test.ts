@@ -29,7 +29,7 @@ describe("Prisma CircleSession リポジトリ", () => {
     const prismaSession = {
       id: "session-1",
       circleId: "circle-1",
-      sequence: 1,
+
       title: "第1回 研究会",
       startsAt: new Date("2024-01-01T10:00:00Z"),
       endsAt: new Date("2024-01-01T12:00:00Z"),
@@ -65,7 +65,7 @@ describe("Prisma CircleSession リポジトリ", () => {
       {
         id: "session-2",
         circleId: "circle-1",
-        sequence: 2,
+
         title: "第2回 研究会",
         startsAt: new Date("2024-01-02T10:00:00Z"),
         endsAt: new Date("2024-01-02T12:00:00Z"),
@@ -76,7 +76,7 @@ describe("Prisma CircleSession リポジトリ", () => {
       {
         id: "session-1",
         circleId: "circle-1",
-        sequence: 1,
+  
         title: "第1回 研究会",
         startsAt: new Date("2024-01-01T10:00:00Z"),
         endsAt: new Date("2024-01-01T12:00:00Z"),
@@ -106,7 +106,7 @@ describe("Prisma CircleSession リポジトリ", () => {
     const prismaSession = {
       id: "session-1",
       circleId: "circle-1",
-      sequence: 1,
+
       title: "第1回 研究会",
       startsAt: new Date("2024-01-01T10:00:00Z"),
       endsAt: new Date("2024-01-01T12:00:00Z"),
@@ -123,7 +123,7 @@ describe("Prisma CircleSession リポジトリ", () => {
 
     expect(mockedPrisma.circleSession.findMany).toHaveBeenCalledWith({
       where: { circleId: "circle-1" },
-      orderBy: { sequence: "asc" },
+      orderBy: { startsAt: "asc" },
     });
     expect(sessions).toHaveLength(1);
   });
@@ -132,7 +132,7 @@ describe("Prisma CircleSession リポジトリ", () => {
     const session = createCircleSession({
       id: circleSessionId("session-1"),
       circleId: circleId("circle-1"),
-      sequence: 1,
+
       title: "第1回 研究会",
       startsAt: new Date("2024-01-01T10:00:00Z"),
       endsAt: new Date("2024-01-01T12:00:00Z"),
@@ -148,7 +148,6 @@ describe("Prisma CircleSession リポジトリ", () => {
     expect(mockedPrisma.circleSession.upsert).toHaveBeenCalledWith({
       where: { id: data.id },
       update: {
-        sequence: data.sequence,
         title: data.title,
         startsAt: data.startsAt,
         endsAt: data.endsAt,

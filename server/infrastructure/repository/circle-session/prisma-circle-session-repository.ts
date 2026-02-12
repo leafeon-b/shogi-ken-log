@@ -42,7 +42,7 @@ export const prismaCircleSessionRepository: CircleSessionRepository = {
   async listByCircleId(circleId: CircleId): Promise<CircleSession[]> {
     const sessions = await prisma.circleSession.findMany({
       where: { circleId: toPersistenceId(circleId) },
-      orderBy: { sequence: "asc" },
+      orderBy: { startsAt: "asc" },
     });
 
     return sessions.map(mapCircleSessionToDomain);
@@ -54,7 +54,6 @@ export const prismaCircleSessionRepository: CircleSessionRepository = {
     await prisma.circleSession.upsert({
       where: { id: data.id },
       update: {
-        sequence: data.sequence,
         title: data.title,
         startsAt: data.startsAt,
         endsAt: data.endsAt,

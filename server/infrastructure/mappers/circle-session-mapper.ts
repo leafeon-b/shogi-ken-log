@@ -10,7 +10,6 @@ export const mapCircleSessionToDomain = (
   createCircleSession({
     id: circleSessionId(session.id),
     circleId: circleId(session.circleId),
-    sequence: session.sequence,
     title: session.title,
     startsAt: session.startsAt,
     endsAt: session.endsAt,
@@ -22,7 +21,6 @@ export const mapCircleSessionToDomain = (
 export const mapCircleSessionToPersistence = (session: CircleSession) => ({
   id: toPersistenceId(session.id),
   circleId: toPersistenceId(session.circleId),
-  sequence: session.sequence,
   title: session.title,
   startsAt: session.startsAt,
   endsAt: session.endsAt,
