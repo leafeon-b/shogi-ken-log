@@ -26,19 +26,14 @@ const formatTime = (date: Date) =>
 const formatDateTimeRange = (startsAt: Date, endsAt: Date) =>
   `${formatDate(startsAt)} ${formatTime(startsAt)} - ${formatTime(endsAt)}`;
 
-const buildSessionTitle = (sequence: number) => `第${sequence}回 研究会`;
-
 const toSessionViewModel = (session: {
   id: string;
-  sequence: number;
   title: string;
   startsAt: Date;
   endsAt: Date;
 }) => ({
   id: session.id,
-  title: session.title?.trim()
-    ? session.title
-    : buildSessionTitle(session.sequence),
+  title: session.title,
   startsAt: session.startsAt.toISOString(),
   endsAt: session.endsAt.toISOString(),
 });
@@ -109,7 +104,6 @@ export const createCircleOverviewProvider = (
       .map((session) =>
         toSessionViewModel({
           id: session.id as string,
-          sequence: session.sequence,
           title: session.title,
           startsAt: session.startsAt,
           endsAt: session.endsAt,
@@ -130,9 +124,7 @@ export const createCircleOverviewProvider = (
       nextSession: nextSession
         ? {
             id: nextSession.id as string,
-            title: nextSession.title?.trim()
-              ? nextSession.title
-              : buildSessionTitle(nextSession.sequence),
+            title: nextSession.title,
             dateTimeLabel: formatDateTimeRange(
               nextSession.startsAt,
               nextSession.endsAt,

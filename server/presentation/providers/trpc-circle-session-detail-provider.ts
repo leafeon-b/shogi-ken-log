@@ -160,9 +160,7 @@ export const trpcCircleSessionDetailProvider: CircleSessionDetailProvider = {
       circleSessionId: session.id,
       circleId: circle.id,
       circleName: circle.name,
-      title: session.title?.trim()
-        ? session.title
-        : `第${session.sequence}回 研究会`,
+      title: session.title,
       dateTimeLabel: formatDateTimeRange(session.startsAt, session.endsAt),
       locationLabel: session.location,
       memoText: session.note.trim() ? session.note : null,
