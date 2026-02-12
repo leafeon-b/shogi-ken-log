@@ -161,7 +161,7 @@ const circleMemberships = demoUsers
 const sessions = [
   {
     id: "demo-session-40",
-    sequence: 40,
+
     title: "冬季対局会",
     startsAt: new Date("2025-02-11T18:00:00+09:00"),
     endsAt: new Date("2025-02-11T21:00:00+09:00"),
@@ -170,7 +170,7 @@ const sessions = [
   },
   {
     id: "demo-session-41",
-    sequence: 41,
+
     title: "第41回 週末研究会",
     startsAt: new Date("2025-02-26T18:00:00+09:00"),
     endsAt: new Date("2025-02-26T21:00:00+09:00"),
@@ -179,7 +179,7 @@ const sessions = [
   },
   {
     id: "demo-session-42",
-    sequence: 42,
+
     title: "第42回 週末研究会",
     startsAt: new Date("2025-03-12T18:00:00+09:00"),
     endsAt: new Date("2025-03-12T21:00:00+09:00"),
@@ -188,7 +188,7 @@ const sessions = [
   },
   {
     id: "demo-session-43",
-    sequence: 43,
+
     title: "第43回 週末研究会",
     startsAt: new Date("2026-03-26T18:00:00+09:00"),
     endsAt: new Date("2026-03-26T21:00:00+09:00"),
@@ -345,7 +345,6 @@ async function main() {
     await prisma.circleSession.upsert({
       where: { id: session.id },
       update: {
-        sequence: session.sequence,
         title: session.title,
         startsAt: session.startsAt,
         endsAt: session.endsAt,
