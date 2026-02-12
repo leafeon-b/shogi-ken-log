@@ -45,8 +45,6 @@ export type UserCircleSessionParticipationSummary = {
   location: string | null;
 };
 
-const buildSessionTitle = (sequence: number) => `第${sequence}回 研究会`;
-
 export const createCircleSessionParticipationService = (
   deps: CircleSessionParticipationServiceDeps,
 ) => ({
@@ -121,16 +119,11 @@ export const createCircleSessionParticipationService = (
       if (!circleName) {
         throw new NotFoundError("Circle");
       }
-      const trimmedTitle = session.title?.trim();
-      const title = trimmedTitle
-        ? session.title
-        : buildSessionTitle(session.sequence);
-
       return {
         circleSessionId: session.id,
         circleId: session.circleId,
         circleName,
-        title,
+        title: session.title,
         startsAt: session.startsAt,
         endsAt: session.endsAt,
         location: session.location ?? null,

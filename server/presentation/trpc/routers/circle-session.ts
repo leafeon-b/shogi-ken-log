@@ -56,7 +56,6 @@ export const circleSessionRouter = router({
           actorId: ctx.actorId,
           id: circleSessionId(randomUUID()),
           circleId: input.circleId,
-          sequence: input.sequence,
           title: input.title,
           startsAt: input.startsAt,
           endsAt: input.endsAt,
@@ -77,7 +76,6 @@ export const circleSessionRouter = router({
             ctx.actorId,
             input.circleSessionId,
             {
-              sequence: input.sequence,
               title: input.title,
               startsAt: input.startsAt,
               endsAt: input.endsAt,

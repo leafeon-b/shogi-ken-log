@@ -53,7 +53,6 @@ describe("MatchHistory サービス", () => {
       vi.mocked(circleSessionRepository.findById).mockResolvedValueOnce({
         id: circleSessionId("session-1"),
         circleId: circleId("circle-1"),
-        sequence: 1,
         title: "第1回 研究会",
         startsAt: new Date("2024-01-01T00:00:00Z"),
         endsAt: new Date("2024-01-02T00:00:00Z"),
@@ -87,7 +86,6 @@ describe("MatchHistory サービス", () => {
     vi.mocked(circleSessionRepository.findById).mockResolvedValueOnce({
       id: circleSessionId("session-1"),
       circleId: circleId("circle-1"),
-      sequence: 1,
       title: "第1回 研究会",
       startsAt: new Date("2024-01-01T00:00:00Z"),
       endsAt: new Date("2024-01-02T00:00:00Z"),

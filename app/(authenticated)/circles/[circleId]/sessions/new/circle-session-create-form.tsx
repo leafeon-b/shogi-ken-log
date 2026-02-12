@@ -26,7 +26,6 @@ export function CircleSessionCreateForm({
   defaultLocation,
   defaultNote,
 }: CircleSessionCreateFormProps) {
-  const [sequence, setSequence] = useState("");
   const [title, setTitle] = useState(defaultTitle ?? "");
   const [startsAt, setStartsAt] = useState(
     defaultStartsAt
@@ -44,14 +43,12 @@ export function CircleSessionCreateForm({
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const seq = Number(sequence);
     const trimmedTitle = title.trim();
-    if (!seq || !trimmedTitle || !startsAt || !endsAt || createSession.isPending) {
+    if (!trimmedTitle || !startsAt || !endsAt || createSession.isPending) {
       return;
     }
     createSession.mutate({
       circleId,
-      sequence: seq,
       title: trimmedTitle,
       startsAt: new Date(startsAt),
       endsAt: new Date(endsAt),
@@ -75,41 +72,21 @@ export function CircleSessionCreateForm({
         onSubmit={handleSubmit}
         className="flex w-full flex-col gap-4"
       >
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="flex flex-col gap-1.5">
-            <label
-              htmlFor="sequence"
-              className="text-xs font-semibold text-(--brand-ink-muted)"
-            >
-              回数（第N回）
-            </label>
-            <Input
-              id="sequence"
-              type="number"
-              min={1}
-              value={sequence}
-              onChange={(e) => setSequence(e.target.value)}
-              placeholder="1"
-              required
-              className="bg-white"
-            />
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <label
-              htmlFor="title"
-              className="text-xs font-semibold text-(--brand-ink-muted)"
-            >
-              タイトル
-            </label>
-            <Input
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="第1回 定例研究会"
-              required
-              className="bg-white"
-            />
-          </div>
+        <div className="flex flex-col gap-1.5">
+          <label
+            htmlFor="title"
+            className="text-xs font-semibold text-(--brand-ink-muted)"
+          >
+            タイトル
+          </label>
+          <Input
+            id="title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="第1回 定例研究会"
+            required
+            className="bg-white"
+          />
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
