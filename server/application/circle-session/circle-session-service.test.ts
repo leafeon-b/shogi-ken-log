@@ -39,7 +39,6 @@ const baseCircle = createCircle({
 const baseSessionParams = {
   id: circleSessionId("session-1"),
   circleId: baseCircle.id,
-  sequence: 1,
   title: "第1回 研究会",
   startsAt: new Date("2024-01-01T00:00:00Z"),
   endsAt: new Date("2024-01-02T00:00:00Z"),
@@ -115,7 +114,6 @@ describe("CircleSession サービス", () => {
     });
 
     expect(circleSessionRepository.save).toHaveBeenCalledWith(session);
-    expect(session.sequence).toBe(1);
   });
 
   test("updateCircleSessionDetails は開始・終了が片方だけだとエラー", async () => {

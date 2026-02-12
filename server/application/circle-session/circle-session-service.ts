@@ -4,10 +4,7 @@ import {
   rescheduleCircleSession,
 } from "@/server/domain/models/circle-session/circle-session";
 import type { CircleId, CircleSessionId } from "@/server/domain/common/ids";
-import {
-  assertNonEmpty,
-  assertPositiveInteger,
-} from "@/server/domain/common/validation";
+import { assertNonEmpty } from "@/server/domain/common/validation";
 import type { CircleRepository } from "@/server/domain/models/circle/circle-repository";
 import type { CircleSessionRepository } from "@/server/domain/models/circle-session/circle-session-repository";
 import type { createAccessService } from "@/server/application/authz/access-service";
@@ -30,8 +27,7 @@ export const createCircleSessionService = (deps: CircleSessionServiceDeps) => ({
     actorId: string;
     id: CircleSessionId;
     circleId: CircleId;
-    sequence: number;
-    title?: string;
+    title: string;
     startsAt: Date;
     endsAt: Date;
     location?: string | null;
@@ -53,7 +49,6 @@ export const createCircleSessionService = (deps: CircleSessionServiceDeps) => ({
     const session = createCircleSession({
       id: params.id,
       circleId: params.circleId,
-      sequence: params.sequence,
       title: params.title,
       startsAt: params.startsAt,
       endsAt: params.endsAt,
@@ -92,7 +87,6 @@ export const createCircleSessionService = (deps: CircleSessionServiceDeps) => ({
     actorId: string,
     id: CircleSessionId,
     params: {
-      sequence?: number;
       title?: string;
       startsAt?: Date;
       endsAt?: Date;
@@ -123,13 +117,6 @@ export const createCircleSessionService = (deps: CircleSessionServiceDeps) => ({
         params.startsAt,
         params.endsAt,
       );
-    }
-
-    if (params.sequence != null) {
-      updated = {
-        ...updated,
-        sequence: assertPositiveInteger(params.sequence, "sequence"),
-      };
     }
 
     if (params.title !== undefined) {
