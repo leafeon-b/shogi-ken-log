@@ -30,7 +30,7 @@ export type CircleSessionDetailViewModel = {
   startsAtInput: string;
   endsAtInput: string;
   viewerRole: CircleSessionRoleKey | null;
-  viewerCircleRole: CircleRoleKey | null;
+  canCreateCircleSession: boolean;
   participations: CircleSessionParticipation[];
   matches: CircleSessionMatch[];
 };
