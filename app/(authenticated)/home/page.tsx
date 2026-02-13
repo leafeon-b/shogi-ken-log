@@ -1,7 +1,10 @@
 "use client";
 
 import CircleCreateForm from "@/app/(authenticated)/home/circle-create-form";
-import { SessionCalendar } from "@/components/calendar/session-calendar";
+import {
+  SessionCalendar,
+  type SessionExtendedProps,
+} from "@/components/calendar/session-calendar";
 import { trpc } from "@/lib/trpc/client";
 import type { EventInput } from "@fullcalendar/core";
 import Link from "next/link";
@@ -44,7 +47,7 @@ export default function Home() {
       extendedProps: {
         startsAt: s.startsAt,
         endsAt: s.endsAt,
-      },
+      } satisfies SessionExtendedProps,
     }));
   }, [sessionsQuery.data]);
 

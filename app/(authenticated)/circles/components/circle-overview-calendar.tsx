@@ -1,6 +1,9 @@
 "use client";
 
-import { SessionCalendar } from "@/components/calendar/session-calendar";
+import {
+  SessionCalendar,
+  type SessionExtendedProps,
+} from "@/components/calendar/session-calendar";
 import { Button } from "@/components/ui/button";
 import type { CircleOverviewSession } from "@/server/presentation/view-models/circle-overview";
 import type { EventInput } from "@fullcalendar/core";
@@ -31,7 +34,7 @@ export function CircleOverviewCalendar({
         extendedProps: {
           startsAt: s.startsAt,
           endsAt: s.endsAt,
-        },
+        } satisfies SessionExtendedProps,
       })),
     [sessions],
   );
