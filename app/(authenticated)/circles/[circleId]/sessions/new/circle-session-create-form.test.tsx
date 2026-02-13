@@ -58,6 +58,8 @@ describe("CircleSessionCreateForm", () => {
     render(<CircleSessionCreateForm circleId={circleId} />);
 
     await user.type(screen.getByLabelText("タイトル"), "テスト研究会");
+    const startsAtInput = screen.getByLabelText("開始日時");
+    await user.clear(startsAtInput);
     const endsAtInput = screen.getByLabelText("終了日時");
     await user.clear(endsAtInput);
     await user.type(endsAtInput, "2025-04-01T12:00");
@@ -75,6 +77,8 @@ describe("CircleSessionCreateForm", () => {
     const startsAtInput = screen.getByLabelText("開始日時");
     await user.clear(startsAtInput);
     await user.type(startsAtInput, "2025-04-01T10:00");
+    const endsAtInput = screen.getByLabelText("終了日時");
+    await user.clear(endsAtInput);
 
     await user.click(screen.getByRole("button", { name: /開催回を作成/ }));
 
@@ -145,8 +149,7 @@ describe("CircleSessionCreateForm", () => {
     ).toBe("テストメモ");
   });
 
-  it("defaultStartsAt が設定されると startsAt にデフォルト値が入る", async () => {
-    const user = userEvent.setup();
+  it("defaultStartsAt が日付のみの場合 T10:00 が付与される", () => {
     render(
       <CircleSessionCreateForm
         circleId={circleId}
@@ -155,15 +158,42 @@ describe("CircleSessionCreateForm", () => {
     );
 
     const startsAtInput = screen.getByLabelText("開始日時") as HTMLInputElement;
-    expect(startsAtInput.value).toBe("2025-06-15T00:00");
+    expect(startsAtInput.value).toBe("2025-06-15T10:00");
+  });
 
-    await user.type(screen.getByLabelText("タイトル"), "研究会");
-    const endsAtInput = screen.getByLabelText("終了日時");
-    await user.clear(endsAtInput);
-    await user.type(endsAtInput, "2025-06-15T17:00");
+  it("defaultEndsAt が日付のみの場合 T18:00 が付与される", () => {
+    render(
+      <CircleSessionCreateForm
+        circleId={circleId}
+        defaultStartsAt="2025-06-15"
+        defaultEndsAt="2025-06-15"
+      />,
+    );
 
-    await user.click(screen.getByRole("button", { name: /開催回を作成/ }));
+    const endsAtInput = screen.getByLabelText("終了日時") as HTMLInputElement;
+    expect(endsAtInput.value).toBe("2025-06-15T18:00");
+  });
 
-    expect(mutateMock).toHaveBeenCalledOnce();
+  it("defaultStartsAt / defaultEndsAt 未指定の場合、当日の 10:00 / 18:00 が設定される", () => {
+    const now = new Date();
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+    render(<CircleSessionCreateForm circleId={circleId} />);
+
+    const startsAtInput = screen.getByLabelText("開始日時") as HTMLInputElement;
+    const endsAtInput = screen.getByLabelText("終了日時") as HTMLInputElement;
+    expect(startsAtInput.value).toBe(`${today}T10:00`);
+    expect(endsAtInput.value).toBe(`${today}T18:00`);
+  });
+
+  it("defaultEndsAt 未指定の場合、startsAt と同日の T18:00 が設定される", () => {
+    render(
+      <CircleSessionCreateForm
+        circleId={circleId}
+        defaultStartsAt="2025-08-20"
+      />,
+    );
+
+    const endsAtInput = screen.getByLabelText("終了日時") as HTMLInputElement;
+    expect(endsAtInput.value).toBe("2025-08-20T18:00");
   });
 });
