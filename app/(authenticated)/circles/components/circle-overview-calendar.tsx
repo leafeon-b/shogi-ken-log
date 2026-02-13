@@ -69,7 +69,7 @@ export function CircleOverviewCalendar({
           >
             <Link href={createSessionHref}>
               <Plus className="size-3.5" aria-hidden="true" />
-              新規作成
+              予定の作成
             </Link>
           </Button>
         ) : null}

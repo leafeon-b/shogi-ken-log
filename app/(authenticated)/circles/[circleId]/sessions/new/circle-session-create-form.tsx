@@ -185,7 +185,7 @@ export function CircleSessionCreateForm({
           disabled={createSession.isPending}
         >
           <Plus className="size-4" />
-          {createSession.isPending ? "作成中..." : "開催回を作成"}
+          {createSession.isPending ? "作成中..." : "予定を作成"}
         </Button>
       </form>
       {createSession.error ? (

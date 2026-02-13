@@ -1,8 +1,5 @@
 "use client";
 
-import { FormEvent, useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
-import { Copy, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -23,6 +20,9 @@ import type {
   CircleSessionMatchOutcome,
   CircleSessionRoleKey,
 } from "@/server/presentation/view-models/circle-session-detail";
+import { Copy, Pencil } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { FormEvent, useEffect, useRef, useState } from "react";
 
 type RowOutcome = "ROW_WIN" | "ROW_LOSS" | "DRAW" | "UNKNOWN";
 type DialogMode = "add" | "edit" | "delete";
@@ -606,7 +606,7 @@ export function CircleSessionDetailView({
                   onClick={handleDuplicate}
                 >
                   <Copy className="size-4" />
-                  複製して作成
+                  複製
                 </Button>
               ) : null}
             </div>

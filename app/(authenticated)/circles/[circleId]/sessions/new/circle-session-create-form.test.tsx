@@ -48,7 +48,7 @@ describe("CircleSessionCreateForm", () => {
     await user.clear(endsAtInput);
     await user.type(endsAtInput, "2025-04-01T12:00");
 
-    await user.click(screen.getByRole("button", { name: /開催回を作成/ }));
+    await user.click(screen.getByRole("button", { name: /予定を作成/ }));
 
     expect(mutateMock).not.toHaveBeenCalled();
   });
@@ -64,7 +64,7 @@ describe("CircleSessionCreateForm", () => {
     await user.clear(endsAtInput);
     await user.type(endsAtInput, "2025-04-01T12:00");
 
-    await user.click(screen.getByRole("button", { name: /開催回を作成/ }));
+    await user.click(screen.getByRole("button", { name: /予定を作成/ }));
 
     expect(mutateMock).not.toHaveBeenCalled();
   });
@@ -80,7 +80,7 @@ describe("CircleSessionCreateForm", () => {
     const endsAtInput = screen.getByLabelText("終了日時");
     await user.clear(endsAtInput);
 
-    await user.click(screen.getByRole("button", { name: /開催回を作成/ }));
+    await user.click(screen.getByRole("button", { name: /予定を作成/ }));
 
     expect(mutateMock).not.toHaveBeenCalled();
   });
@@ -97,7 +97,7 @@ describe("CircleSessionCreateForm", () => {
     await user.clear(endsAtInput);
     await user.type(endsAtInput, "2025-04-01T12:00");
 
-    await user.click(screen.getByRole("button", { name: /開催回を作成/ }));
+    await user.click(screen.getByRole("button", { name: /予定を作成/ }));
 
     expect(mutateMock).toHaveBeenCalledOnce();
     expect(mutateMock).toHaveBeenCalledWith(

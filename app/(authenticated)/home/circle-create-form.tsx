@@ -1,12 +1,12 @@
 "use client";
 
-import type { FormEvent } from "react";
-import { useEffect, useState } from "react";
-import { CirclePlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { trpc } from "@/lib/trpc/client";
+import { CirclePlus } from "lucide-react";
 import { useRouter } from "next/navigation";
+import type { FormEvent } from "react";
+import { useEffect, useState } from "react";
 
 export default function CircleCreateForm() {
   const [name, setName] = useState("");
@@ -49,7 +49,7 @@ export default function CircleCreateForm() {
           disabled={createCircle.isPending}
         >
           <CirclePlus />
-          {createCircle.isPending ? "作成中..." : "研究会を新規作成"}
+          {createCircle.isPending ? "作成中..." : "研究会を作成"}
         </Button>
       </form>
       {created ? (

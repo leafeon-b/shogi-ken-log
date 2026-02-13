@@ -1,12 +1,12 @@
 import CredentialsLoginForm from "@/app/components/credentials-login-form";
-import Link from "next/link";
 import LoginButton from "@/app/components/login-button";
+import Link from "next/link";
 
 const valueProps = [
   {
     title: "研究会の記録を簡単に管理",
     description:
-      "日程、参加者、対局メモをひとつの画面で整理し、記録の迷子を防ぎます。",
+      "予定、参加者、対局メモをひとつの画面で整理し、記録の迷子を防ぎます。",
   },
   {
     title: "メンバー間での情報共有が容易",
@@ -37,7 +37,7 @@ export default async function LandingPage() {
               </h1>
               <p className="max-w-2xl text-base leading-relaxed text-(--brand-ink-muted) sm:text-lg">
                 研究会の記録と共有を、迷わず続けられる場所へ。SKKTは、
-                日程管理から振り返りまでをやさしく支える記録サービスです。
+                予定管理から振り返りまでをやさしく支える記録サービスです。
               </p>
             </div>
             <div className="space-y-4 rounded-2xl border border-border/60 bg-white/90 p-6">

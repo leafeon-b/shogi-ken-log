@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
+import type { CircleOverviewViewModel } from "@/server/presentation/view-models/circle-overview";
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { CircleOverviewViewModel } from "@/server/presentation/view-models/circle-overview";
 import { CircleOverviewView } from "./circle-overview-view";
 
 vi.mock(
@@ -15,7 +15,7 @@ vi.mock(
     }) => (
       <div data-testid="calendar" data-create-href={createSessionHref ?? ""}>
         {createSessionHref ? (
-          <span data-testid="create-link">新規作成</span>
+          <span data-testid="create-link">予定の作成</span>
         ) : null}
       </div>
     ),

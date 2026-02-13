@@ -95,7 +95,7 @@ export function CircleOverviewView({
             {heroContent ?? defaultHero}
             <div className="mt-4">
               <p className="mb-2 text-xs font-semibold text-(--brand-ink-muted)">
-                次回日程
+                次回予定
               </p>
               {nextSession ? (
                 <LinkCard
@@ -114,7 +114,7 @@ export function CircleOverviewView({
                 </LinkCard>
               ) : (
                 <div className="rounded-2xl border border-dashed border-border/60 bg-white/70 px-4 py-3 text-xs text-(--brand-ink-muted)">
-                  次回日程は未設定です
+                  次回予定は未設定です
                 </div>
               )}
             </div>

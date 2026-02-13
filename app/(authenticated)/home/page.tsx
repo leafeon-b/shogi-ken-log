@@ -2,10 +2,10 @@
 
 import CircleCreateForm from "@/app/(authenticated)/home/circle-create-form";
 import { SessionCalendar } from "@/components/calendar/session-calendar";
-import Link from "next/link";
-import { useMemo } from "react";
 import { trpc } from "@/lib/trpc/client";
 import type { EventInput } from "@fullcalendar/core";
+import Link from "next/link";
+import { useMemo } from "react";
 
 const pad2 = (value: number) => String(value).padStart(2, "0");
 
@@ -62,7 +62,7 @@ export default function Home() {
             className="rounded-2xl border border-border/60 bg-white/85 p-6 shadow-sm motion-safe:animate-[rise_0.7s_ease-out]"
             style={{ animationDelay: "80ms" }}
           >
-            <p className="text-sm font-semibold text-(--brand-ink)">次回日程</p>
+            <p className="text-sm font-semibold text-(--brand-ink)">次回予定</p>
             <p className="mt-3 text-sm text-(--brand-ink-muted)">
               読み込み中...
             </p>
@@ -75,7 +75,7 @@ export default function Home() {
           >
             <div className="flex items-center justify-between">
               <p className="text-sm font-semibold text-(--brand-ink)">
-                次回日程
+                次回予定
               </p>
               <span className="rounded-full bg-(--brand-gold)/20 px-3 py-1 text-xs text-(--brand-ink)">
                 {formatDate(nextSession.startsAt)}
@@ -95,7 +95,7 @@ export default function Home() {
             className="rounded-2xl border border-border/60 bg-white/85 p-6 shadow-sm motion-safe:animate-[rise_0.7s_ease-out]"
             style={{ animationDelay: "80ms" }}
           >
-            <p className="text-sm font-semibold text-(--brand-ink)">次回日程</p>
+            <p className="text-sm font-semibold text-(--brand-ink)">次回予定</p>
             <p className="mt-3 text-sm text-(--brand-ink-muted)">
               予定されている研究会はありません
             </p>
@@ -113,7 +113,7 @@ export default function Home() {
       <section>
         <div className="rounded-2xl border border-border/60 bg-white/90 p-6 shadow-sm">
           <p className="mb-4 text-sm font-semibold text-(--brand-ink)">
-            参加した回
+            カレンダー
           </p>
           {sessionsQuery.isLoading ? (
             <p className="text-sm text-(--brand-ink-muted)">読み込み中...</p>

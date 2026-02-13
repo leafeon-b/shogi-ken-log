@@ -15,7 +15,7 @@ export default function HelpPage() {
           使い方のポイント
         </h2>
         <ul className="mt-4 space-y-3 text-sm text-(--brand-ink-muted)">
-          <li>・研究会のメンバーと日程を、まとめて迷わず整理できます。</li>
+          <li>・研究会のメンバーと予定を、まとめて迷わず整理できます。</li>
           <li>・対局結果は、その場ですぐ残せます。</li>
           <li>・記録はメンバー全員に行き渡り、共有がスムーズです。</li>
           <li>・自分の記録を可視化し、次の活動に活かせます。</li>
