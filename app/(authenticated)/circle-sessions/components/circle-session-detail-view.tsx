@@ -863,7 +863,72 @@ export function CircleSessionDetailView({
         </div>
       </section>
 
-      {activeDialog ? (
+      <AlertDialog
+        open={activeDialog?.mode === "delete"}
+        onOpenChange={(open) => {
+          if (!open) closeDialog();
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>対局結果を削除</AlertDialogTitle>
+            <AlertDialogDescription>
+              この対局結果を削除します。操作は取り消せません。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          {activeDialog?.mode === "delete" ? (
+            <>
+              <div className="rounded-xl border border-border/60 bg-(--brand-ink)/5 px-3 py-2 text-sm font-semibold text-(--brand-ink)">
+                {dialogRowName} × {dialogColumnName}
+              </div>
+              <div>
+                <label
+                  htmlFor="delete-match-select"
+                  className="text-xs font-semibold text-(--brand-ink)"
+                >
+                  対象の対局結果
+                </label>
+                {activePairMatches.length > 1 ? (
+                  <select
+                    id="delete-match-select"
+                    className="mt-2 w-full rounded-lg border border-border/60 bg-white px-3 py-2 text-sm text-(--brand-ink) shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
+                    value={selectedMatch?.index ?? ""}
+                    onChange={(event) =>
+                      handleMatchSelectChange(Number(event.target.value))
+                    }
+                  >
+                    {activePairMatches.map((entry, index) => {
+                      const outcome = getMatchOutcome(
+                        activeDialog.rowId,
+                        entry.match,
+                      );
+                      return (
+                        <option key={entry.index} value={entry.index}>
+                          第{index + 1}局目: {outcome.title}
+                        </option>
+                      );
+                    })}
+                  </select>
+                ) : (
+                  <p className="mt-2 text-sm text-(--brand-ink-muted)">
+                    {selectedMatch
+                      ? `第1局目: ${getMatchOutcome(activeDialog.rowId, selectedMatch.match).title}`
+                      : "対局結果なし"}
+                  </p>
+                )}
+              </div>
+            </>
+          ) : null}
+          <AlertDialogFooter>
+            <AlertDialogCancel>キャンセル</AlertDialogCancel>
+            <AlertDialogAction variant="destructive" onClick={handleDelete}>
+              削除
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {activeDialog && activeDialog.mode !== "delete" ? (
         <div
           className="fixed inset-0 z-40 flex items-center justify-center bg-black/30 p-4"
           onClick={closeDialog}
@@ -898,7 +963,7 @@ export function CircleSessionDetailView({
               {dialogRowName} × {dialogColumnName}
             </div>
 
-            {activeDialog.mode !== "add" ? (
+            {activeDialog.mode === "edit" ? (
               <div className="mt-4">
                 <label className="text-xs font-semibold text-(--brand-ink)">
                   対象の対局結果
@@ -933,78 +998,53 @@ export function CircleSessionDetailView({
               </div>
             ) : null}
 
-            {activeDialog.mode === "delete" ? (
+            <form className="mt-4" onSubmit={handleDialogSubmit}>
+              <label className="mt-4 block text-xs font-semibold text-(--brand-ink)">
+                結果
+              </label>
+              <select
+                className="mt-2 w-full rounded-lg border border-border/60 bg-white px-3 py-2 text-sm text-(--brand-ink) shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
+                value={selectedOutcome}
+                onChange={(event) =>
+                  setSelectedOutcome(event.target.value as RowOutcome)
+                }
+                required
+              >
+                {outcomeOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
               <div className="mt-4">
-                <p className="text-sm text-(--brand-ink-muted)">
-                  この対局結果を削除します。操作は取り消せません。
-                </p>
-                <div className="mt-6 flex justify-end gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="border-(--brand-ink)/20 bg-white/80 text-(--brand-ink)"
-                    onClick={closeDialog}
-                  >
-                    キャンセル
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    onClick={handleDelete}
-                  >
-                    削除
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <form className="mt-4" onSubmit={handleDialogSubmit}>
-                <label className="mt-4 block text-xs font-semibold text-(--brand-ink)">
-                  結果
+                <label className="text-xs font-semibold text-(--brand-ink)">
+                  対局日
                 </label>
-                <select
+                <input
+                  type="date"
                   className="mt-2 w-full rounded-lg border border-border/60 bg-white px-3 py-2 text-sm text-(--brand-ink) shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
-                  value={selectedOutcome}
-                  onChange={(event) =>
-                    setSelectedOutcome(event.target.value as RowOutcome)
-                  }
+                  value={selectedDate}
+                  onChange={(event) => setSelectedDate(event.target.value)}
                   required
+                />
+              </div>
+              <div className="mt-6 flex justify-end gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="border-(--brand-ink)/20 bg-white/80 text-(--brand-ink)"
+                  onClick={closeDialog}
                 >
-                  {outcomeOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-                <div className="mt-4">
-                  <label className="text-xs font-semibold text-(--brand-ink)">
-                    対局日
-                  </label>
-                  <input
-                    type="date"
-                    className="mt-2 w-full rounded-lg border border-border/60 bg-white px-3 py-2 text-sm text-(--brand-ink) shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
-                    value={selectedDate}
-                    onChange={(event) => setSelectedDate(event.target.value)}
-                    required
-                  />
-                </div>
-                <div className="mt-6 flex justify-end gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="border-(--brand-ink)/20 bg-white/80 text-(--brand-ink)"
-                    onClick={closeDialog}
-                  >
-                    キャンセル
-                  </Button>
-                  <Button
-                    type="submit"
-                    className="bg-(--brand-moss) text-white hover:bg-(--brand-moss)/90"
-                  >
-                    {activeDialog.mode === "add" ? "追加" : "保存"}
-                  </Button>
-                </div>
-              </form>
-            )}
+                  キャンセル
+                </Button>
+                <Button
+                  type="submit"
+                  className="bg-(--brand-moss) text-white hover:bg-(--brand-moss)/90"
+                >
+                  {activeDialog.mode === "add" ? "追加" : "保存"}
+                </Button>
+              </div>
+            </form>
           </div>
         </div>
       ) : null}
