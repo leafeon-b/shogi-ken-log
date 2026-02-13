@@ -13,16 +13,20 @@ import {
 
 const FC_PLUGINS = [dayGridPlugin, interactionPlugin];
 
-function formatTooltipDateTime(startsAt: unknown, endsAt: unknown): string {
-  const toDate = (v: unknown): Date | null => {
-    if (v instanceof Date) return v;
-    if (typeof v === "string" || typeof v === "number") return new Date(v);
-    return null;
-  };
+export type SessionExtendedProps = {
+  startsAt: string | Date;
+  endsAt: string | Date;
+};
+
+function formatTooltipDateTime(
+  startsAt: string | Date,
+  endsAt: string | Date,
+): string {
+  const toDate = (v: string | Date): Date =>
+    v instanceof Date ? v : new Date(v);
 
   const start = toDate(startsAt);
   const end = toDate(endsAt);
-  if (!start || !end) return "";
 
   const pad2 = (n: number) => String(n).padStart(2, "0");
   const date = `${start.getFullYear()}/${pad2(start.getMonth() + 1)}/${pad2(start.getDate())}`;
@@ -34,8 +38,7 @@ function formatTooltipDateTime(startsAt: unknown, endsAt: unknown): string {
 
 function EventWithTooltip({ arg }: { arg: EventContentArg }) {
   const { extendedProps, title } = arg.event;
-  const startsAt = extendedProps.startsAt;
-  const endsAt = extendedProps.endsAt;
+  const { startsAt, endsAt } = extendedProps as SessionExtendedProps;
 
   const hasTooltipData = startsAt && endsAt;
 
