@@ -18,6 +18,27 @@ type CircleSessionCreateFormProps = {
   defaultNote?: string;
 };
 
+const DEFAULT_START_TIME = "10:00";
+const DEFAULT_END_TIME = "18:00";
+
+function getLocalDateString(): string {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function toDatetimeLocal(
+  value: string | undefined,
+  defaultTime: string,
+  fallbackDate?: string,
+): string {
+  if (value && value.includes("T")) return value;
+  const date = value || fallbackDate || getLocalDateString();
+  return `${date}T${defaultTime}`;
+}
+
 export function CircleSessionCreateForm({
   circleId,
   defaultStartsAt,
@@ -27,14 +48,16 @@ export function CircleSessionCreateForm({
   defaultNote,
 }: CircleSessionCreateFormProps) {
   const [title, setTitle] = useState(defaultTitle ?? "");
-  const [startsAt, setStartsAt] = useState(
-    defaultStartsAt
-      ? defaultStartsAt.includes("T")
-        ? defaultStartsAt
-        : `${defaultStartsAt}T00:00`
-      : "",
+  const [startsAt, setStartsAt] = useState(() =>
+    toDatetimeLocal(defaultStartsAt, DEFAULT_START_TIME),
   );
-  const [endsAt, setEndsAt] = useState(defaultEndsAt ?? "");
+  const [endsAt, setEndsAt] = useState(() => {
+    const startDate = toDatetimeLocal(
+      defaultStartsAt,
+      DEFAULT_START_TIME,
+    ).slice(0, 10);
+    return toDatetimeLocal(defaultEndsAt, DEFAULT_END_TIME, startDate);
+  });
   const [location, setLocation] = useState(defaultLocation ?? "");
   const [note, setNote] = useState(defaultNote ?? "");
 
