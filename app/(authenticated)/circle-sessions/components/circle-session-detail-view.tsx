@@ -354,9 +354,7 @@ export function CircleSessionDetailView({
   };
 
   const router = useRouter();
-  const canDuplicate =
-    detail.viewerCircleRole === "owner" ||
-    detail.viewerCircleRole === "manager";
+  const canDuplicate = detail.canCreateCircleSession;
 
   const handleDuplicate = () => {
     const params = new URLSearchParams();
