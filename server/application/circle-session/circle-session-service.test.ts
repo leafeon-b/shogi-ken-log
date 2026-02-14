@@ -3,9 +3,11 @@ import { createCircleSessionService } from "@/server/application/circle-session/
 import { createAccessServiceStub } from "@/server/application/test-helpers/access-service-stub";
 import type { CircleRepository } from "@/server/domain/models/circle/circle-repository";
 import type { CircleSessionRepository } from "@/server/domain/models/circle-session/circle-session-repository";
-import { circleId, circleSessionId } from "@/server/domain/common/ids";
+import type { CircleSessionParticipationRepository } from "@/server/domain/models/circle-session/circle-session-participation-repository";
+import { circleId, circleSessionId, userId } from "@/server/domain/common/ids";
 import { createCircle } from "@/server/domain/models/circle/circle";
 import { createCircleSession } from "@/server/domain/models/circle-session/circle-session";
+import { CircleSessionRole } from "@/server/domain/services/authz/roles";
 
 const circleRepository = {
   findById: vi.fn(),
@@ -22,11 +24,21 @@ const circleSessionRepository = {
   delete: vi.fn(),
 } satisfies CircleSessionRepository;
 
+const circleSessionParticipationRepository = {
+  listParticipations: vi.fn(),
+  listByUserId: vi.fn(),
+  addParticipation: vi.fn(),
+  updateParticipationRole: vi.fn(),
+  areUsersParticipating: vi.fn(),
+  removeParticipation: vi.fn(),
+} satisfies CircleSessionParticipationRepository;
+
 const accessService = createAccessServiceStub();
 
 const service = createCircleSessionService({
   circleRepository,
   circleSessionRepository,
+  circleSessionParticipationRepository,
   accessService,
 });
 
@@ -171,5 +183,55 @@ describe("CircleSession サービス", () => {
     expect(updated.title).toBe("更新後タイトル");
     expect(updated.location).toBe("Osaka");
     expect(updated.note).toBe("更新後メモ");
+  });
+
+  describe("セッション作成時の自動参加登録", () => {
+    test("createCircleSession は作成者を CircleSessionOwner として参加登録する", async () => {
+      vi.mocked(circleRepository.findById).mockResolvedValue(baseCircle);
+
+      await service.createCircleSession({
+        actorId: "user-1",
+        ...baseSessionParams,
+      });
+
+      expect(
+        circleSessionParticipationRepository.addParticipation,
+      ).toHaveBeenCalledWith(
+        baseSessionParams.id,
+        userId("user-1"),
+        CircleSessionRole.CircleSessionOwner,
+      );
+    });
+
+    test("認可失敗時は addParticipation が呼ばれない", async () => {
+      vi.mocked(circleRepository.findById).mockResolvedValue(baseCircle);
+      vi.mocked(accessService.canCreateCircleSession).mockResolvedValue(false);
+
+      await expect(
+        service.createCircleSession({
+          actorId: "user-1",
+          ...baseSessionParams,
+        }),
+      ).rejects.toThrow("Forbidden");
+
+      expect(
+        circleSessionParticipationRepository.addParticipation,
+      ).not.toHaveBeenCalled();
+    });
+
+    test("研究会が存在しない場合は addParticipation が呼ばれない", async () => {
+      vi.mocked(circleRepository.findById).mockResolvedValue(null);
+
+      await expect(
+        service.createCircleSession({
+          actorId: "user-1",
+          ...baseSessionParams,
+        }),
+      ).rejects.toThrow("Circle not found");
+
+      expect(
+        circleSessionParticipationRepository.addParticipation,
+      ).not.toHaveBeenCalled();
+    });
   });
 });

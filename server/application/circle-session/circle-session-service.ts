@@ -4,21 +4,25 @@ import {
   rescheduleCircleSession,
 } from "@/server/domain/models/circle-session/circle-session";
 import type { CircleId, CircleSessionId } from "@/server/domain/common/ids";
+import { userId } from "@/server/domain/common/ids";
 import { assertNonEmpty } from "@/server/domain/common/validation";
 import type { CircleRepository } from "@/server/domain/models/circle/circle-repository";
 import type { CircleSessionRepository } from "@/server/domain/models/circle-session/circle-session-repository";
+import type { CircleSessionParticipationRepository } from "@/server/domain/models/circle-session/circle-session-participation-repository";
 import type { createAccessService } from "@/server/application/authz/access-service";
 import {
   BadRequestError,
   ForbiddenError,
   NotFoundError,
 } from "@/server/domain/common/errors";
+import { CircleSessionRole } from "@/server/domain/services/authz/roles";
 
 type AccessService = ReturnType<typeof createAccessService>;
 
 export type CircleSessionServiceDeps = {
   circleRepository: CircleRepository;
   circleSessionRepository: CircleSessionRepository;
+  circleSessionParticipationRepository: CircleSessionParticipationRepository;
   accessService: AccessService;
 };
 
@@ -57,6 +61,11 @@ export const createCircleSessionService = (deps: CircleSessionServiceDeps) => ({
       createdAt: params.createdAt,
     });
     await deps.circleSessionRepository.save(session);
+    await deps.circleSessionParticipationRepository.addParticipation(
+      session.id,
+      userId(params.actorId),
+      CircleSessionRole.CircleSessionOwner,
+    );
     return session;
   },
 
