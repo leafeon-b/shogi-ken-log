@@ -37,12 +37,15 @@ export function formatTooltipDateTime(
   return `${date} ${startTime} - ${endTime}`;
 }
 
+function isValidDateValue(value: unknown): value is string | Date {
+  return typeof value === "string" || value instanceof Date;
+}
+
 export function EventWithTooltip({ arg }: { arg: EventContentArg }) {
   const { extendedProps, title } = arg.event;
-  const startsAt = extendedProps.startsAt as string | Date | undefined;
-  const endsAt = extendedProps.endsAt as string | Date | undefined;
+  const { startsAt, endsAt } = extendedProps;
 
-  const hasTooltipData = startsAt && endsAt;
+  const hasTooltipData = isValidDateValue(startsAt) && isValidDateValue(endsAt);
 
   if (!hasTooltipData) {
     return <span className="truncate">{title}</span>;
