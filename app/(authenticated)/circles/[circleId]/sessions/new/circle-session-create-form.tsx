@@ -1,7 +1,7 @@
 "use client";
 
 import type { FormEvent } from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,6 +47,7 @@ export function CircleSessionCreateForm({
   defaultLocation,
   defaultNote,
 }: CircleSessionCreateFormProps) {
+  const titleRef = useRef<HTMLInputElement>(null);
   const [title, setTitle] = useState(defaultTitle ?? "");
   const [titleError, setTitleError] = useState("");
   const [startsAt, setStartsAt] = useState(() =>
@@ -70,6 +71,7 @@ export function CircleSessionCreateForm({
     const trimmedTitle = title.trim();
     if (!trimmedTitle) {
       setTitleError("タイトルを入力してください");
+      titleRef.current?.focus();
       return;
     }
     if (!startsAt || !endsAt || createSession.isPending) {
@@ -98,16 +100,18 @@ export function CircleSessionCreateForm({
     <div className="w-full">
       <form
         onSubmit={handleSubmit}
+        noValidate
         className="flex w-full flex-col gap-4"
       >
         <div className="flex flex-col gap-1.5">
           <label
             htmlFor="title"
-            className="text-xs font-semibold text-(--brand-ink-muted)"
+            className="text-xs font-semibold text-(--brand-ink-muted) after:ml-0.5 after:text-red-600 after:content-['*']"
           >
             タイトル
           </label>
           <Input
+            ref={titleRef}
             id="title"
             value={title}
             onChange={(e) => {
@@ -115,11 +119,13 @@ export function CircleSessionCreateForm({
               setTitleError("");
             }}
             placeholder="第1回 定例研究会"
-            required
+            aria-required="true"
+            aria-invalid={titleError ? "true" : undefined}
+            aria-describedby={titleError ? "title-error" : undefined}
             className="bg-white"
           />
           {titleError && (
-            <p className="text-xs text-red-600" role="alert">
+            <p id="title-error" className="text-xs text-red-600" role="alert">
               {titleError}
             </p>
           )}
@@ -138,7 +144,7 @@ export function CircleSessionCreateForm({
               type="datetime-local"
               value={startsAt}
               onChange={(e) => setStartsAt(e.target.value)}
-              required
+              aria-required="true"
               className="bg-white"
             />
           </div>
@@ -154,7 +160,7 @@ export function CircleSessionCreateForm({
               type="datetime-local"
               value={endsAt}
               onChange={(e) => setEndsAt(e.target.value)}
-              required
+              aria-required="true"
               className="bg-white"
             />
           </div>
