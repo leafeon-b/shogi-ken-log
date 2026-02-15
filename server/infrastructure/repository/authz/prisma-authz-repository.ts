@@ -3,11 +3,13 @@ import {
   mapCircleMembershipFromPersistence,
   mapCircleSessionMembershipFromPersistence,
 } from "@/server/infrastructure/mappers/authz-mapper";
-import { prisma } from "@/server/infrastructure/db";
+import { prisma, type PrismaClientLike } from "@/server/infrastructure/db";
 
-export const prismaAuthzRepository: AuthzRepository = {
+export const createPrismaAuthzRepository = (
+  client: PrismaClientLike,
+): AuthzRepository => ({
   async isRegisteredUser(userId: string): Promise<boolean> {
-    const found = await prisma.user.findUnique({
+    const found = await client.user.findUnique({
       where: { id: userId },
       select: { id: true },
     });
@@ -16,7 +18,7 @@ export const prismaAuthzRepository: AuthzRepository = {
   },
 
   async findCircleMembership(userId: string, circleId: string) {
-    const membership = await prisma.circleMembership.findFirst({
+    const membership = await client.circleMembership.findFirst({
       where: { userId, circleId },
       select: { role: true },
     });
@@ -25,11 +27,13 @@ export const prismaAuthzRepository: AuthzRepository = {
   },
 
   async findCircleSessionMembership(userId: string, circleSessionId: string) {
-    const membership = await prisma.circleSessionMembership.findFirst({
+    const membership = await client.circleSessionMembership.findFirst({
       where: { userId, circleSessionId },
       select: { role: true },
     });
 
     return mapCircleSessionMembershipFromPersistence(membership?.role ?? null);
   },
-};
+});
+
+export const prismaAuthzRepository = createPrismaAuthzRepository(prisma);

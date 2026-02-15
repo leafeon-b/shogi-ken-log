@@ -1,5 +1,5 @@
 import type { CircleSessionRepository } from "@/server/domain/models/circle-session/circle-session-repository";
-import { prisma } from "@/server/infrastructure/db";
+import { prisma, type PrismaClientLike } from "@/server/infrastructure/db";
 import {
   mapCircleSessionToDomain,
   mapCircleSessionToPersistence,
@@ -11,9 +11,11 @@ import {
   toPersistenceIds,
 } from "@/server/infrastructure/common/id-utils";
 
-export const prismaCircleSessionRepository: CircleSessionRepository = {
+export const createPrismaCircleSessionRepository = (
+  client: PrismaClientLike,
+): CircleSessionRepository => ({
   async findById(id: CircleSessionId): Promise<CircleSession | null> {
-    const found = await prisma.circleSession.findUnique({
+    const found = await client.circleSession.findUnique({
       where: { id: toPersistenceId(id) },
     });
 
@@ -25,7 +27,7 @@ export const prismaCircleSessionRepository: CircleSessionRepository = {
       return [];
     }
     const uniqueIds = Array.from(new Set(toPersistenceIds(ids)));
-    const sessions = await prisma.circleSession.findMany({
+    const sessions = await client.circleSession.findMany({
       where: { id: { in: uniqueIds } },
     });
     const byId = new Map(
@@ -40,7 +42,7 @@ export const prismaCircleSessionRepository: CircleSessionRepository = {
   },
 
   async listByCircleId(circleId: CircleId): Promise<CircleSession[]> {
-    const sessions = await prisma.circleSession.findMany({
+    const sessions = await client.circleSession.findMany({
       where: { circleId: toPersistenceId(circleId) },
       orderBy: { startsAt: "asc" },
     });
@@ -51,7 +53,7 @@ export const prismaCircleSessionRepository: CircleSessionRepository = {
   async save(session: CircleSession): Promise<void> {
     const data = mapCircleSessionToPersistence(session);
 
-    await prisma.circleSession.upsert({
+    await client.circleSession.upsert({
       where: { id: data.id },
       update: {
         title: data.title,
@@ -65,6 +67,9 @@ export const prismaCircleSessionRepository: CircleSessionRepository = {
   },
 
   async delete(id: CircleSessionId): Promise<void> {
-    await prisma.circleSession.delete({ where: { id: toPersistenceId(id) } });
+    await client.circleSession.delete({ where: { id: toPersistenceId(id) } });
   },
-};
+});
+
+export const prismaCircleSessionRepository =
+  createPrismaCircleSessionRepository(prisma);

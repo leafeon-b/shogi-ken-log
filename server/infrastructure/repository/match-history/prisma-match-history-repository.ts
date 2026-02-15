@@ -1,5 +1,5 @@
 import type { MatchHistoryRepository } from "@/server/domain/models/match-history/match-history-repository";
-import { prisma } from "@/server/infrastructure/db";
+import { prisma, type PrismaClientLike } from "@/server/infrastructure/db";
 import {
   mapMatchHistoryToDomain,
   mapMatchHistoryToPersistence,
@@ -8,9 +8,11 @@ import type { MatchHistory } from "@/server/domain/models/match-history/match-hi
 import type { MatchId } from "@/server/domain/common/ids";
 import { toPersistenceId } from "@/server/infrastructure/common/id-utils";
 
-export const prismaMatchHistoryRepository: MatchHistoryRepository = {
+export const createPrismaMatchHistoryRepository = (
+  client: PrismaClientLike,
+): MatchHistoryRepository => ({
   async listByMatchId(matchId: MatchId): Promise<MatchHistory[]> {
-    const histories = await prisma.matchHistory.findMany({
+    const histories = await client.matchHistory.findMany({
       where: { matchId: toPersistenceId(matchId) },
       orderBy: { createdAt: "asc" },
     });
@@ -21,6 +23,9 @@ export const prismaMatchHistoryRepository: MatchHistoryRepository = {
   async add(history: MatchHistory): Promise<void> {
     const data = mapMatchHistoryToPersistence(history);
 
-    await prisma.matchHistory.create({ data });
+    await client.matchHistory.create({ data });
   },
-};
+});
+
+export const prismaMatchHistoryRepository =
+  createPrismaMatchHistoryRepository(prisma);

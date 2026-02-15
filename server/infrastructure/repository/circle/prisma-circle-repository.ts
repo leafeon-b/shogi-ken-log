@@ -1,5 +1,5 @@
 import type { CircleRepository } from "@/server/domain/models/circle/circle-repository";
-import { prisma } from "@/server/infrastructure/db";
+import { prisma, type PrismaClientLike } from "@/server/infrastructure/db";
 import type { Circle } from "@/server/domain/models/circle/circle";
 import type { CircleId } from "@/server/domain/common/ids";
 import {
@@ -11,9 +11,11 @@ import {
   toPersistenceIds,
 } from "@/server/infrastructure/common/id-utils";
 
-export const prismaCircleRepository: CircleRepository = {
+export const createPrismaCircleRepository = (
+  client: PrismaClientLike,
+): CircleRepository => ({
   async findById(id: CircleId): Promise<Circle | null> {
-    const found = await prisma.circle.findUnique({
+    const found = await client.circle.findUnique({
       where: { id: toPersistenceId(id) },
     });
 
@@ -25,7 +27,7 @@ export const prismaCircleRepository: CircleRepository = {
       return [];
     }
     const uniqueIds = Array.from(new Set(toPersistenceIds(ids)));
-    const circles = await prisma.circle.findMany({
+    const circles = await client.circle.findMany({
       where: { id: { in: uniqueIds } },
     });
     const byId = new Map(
@@ -39,7 +41,7 @@ export const prismaCircleRepository: CircleRepository = {
   async save(circle: Circle): Promise<void> {
     const data = mapCircleToPersistence(circle);
 
-    await prisma.circle.upsert({
+    await client.circle.upsert({
       where: { id: data.id },
       update: {
         name: data.name,
@@ -49,6 +51,8 @@ export const prismaCircleRepository: CircleRepository = {
   },
 
   async delete(id: CircleId): Promise<void> {
-    await prisma.circle.delete({ where: { id: toPersistenceId(id) } });
+    await client.circle.delete({ where: { id: toPersistenceId(id) } });
   },
-};
+});
+
+export const prismaCircleRepository = createPrismaCircleRepository(prisma);
