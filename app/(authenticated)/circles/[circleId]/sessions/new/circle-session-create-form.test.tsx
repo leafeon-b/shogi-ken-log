@@ -211,6 +211,20 @@ describe("CircleSessionCreateForm", () => {
     expect(mutateMock).not.toHaveBeenCalled();
   });
 
+  it("全角スペースのみのタイトルで送信するとエラーメッセージが表示される", async () => {
+    const user = userEvent.setup();
+    render(<CircleSessionCreateForm circleId={circleId} />);
+
+    const titleInput = screen.getByLabelText("タイトル");
+    await user.type(titleInput, "\u3000\u3000\u3000");
+
+    await user.click(screen.getByRole("button", { name: /予定を作成/ }));
+
+    const alert = screen.getByRole("alert");
+    expect(alert.textContent).toBe("タイトルを入力してください");
+    expect(mutateMock).not.toHaveBeenCalled();
+  });
+
   it("タイトル入力時にエラーメッセージがクリアされる", async () => {
     const user = userEvent.setup();
     render(<CircleSessionCreateForm circleId={circleId} />);
