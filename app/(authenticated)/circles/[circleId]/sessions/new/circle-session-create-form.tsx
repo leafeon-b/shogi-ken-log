@@ -48,6 +48,7 @@ export function CircleSessionCreateForm({
   defaultNote,
 }: CircleSessionCreateFormProps) {
   const [title, setTitle] = useState(defaultTitle ?? "");
+  const [titleError, setTitleError] = useState("");
   const [startsAt, setStartsAt] = useState(() =>
     toDatetimeLocal(defaultStartsAt, DEFAULT_START_TIME),
   );
@@ -67,7 +68,11 @@ export function CircleSessionCreateForm({
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const trimmedTitle = title.trim();
-    if (!trimmedTitle || !startsAt || !endsAt || createSession.isPending) {
+    if (!trimmedTitle) {
+      setTitleError("タイトルを入力してください");
+      return;
+    }
+    if (!startsAt || !endsAt || createSession.isPending) {
       return;
     }
     createSession.mutate({
@@ -105,11 +110,19 @@ export function CircleSessionCreateForm({
           <Input
             id="title"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(e) => {
+              setTitle(e.target.value);
+              setTitleError("");
+            }}
             placeholder="第1回 定例研究会"
             required
             className="bg-white"
           />
+          {titleError && (
+            <p className="text-xs text-red-600" role="alert">
+              {titleError}
+            </p>
+          )}
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">

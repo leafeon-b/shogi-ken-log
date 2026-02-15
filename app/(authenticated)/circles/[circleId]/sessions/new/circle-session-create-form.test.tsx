@@ -196,4 +196,31 @@ describe("CircleSessionCreateForm", () => {
     const endsAtInput = screen.getByLabelText("終了日時") as HTMLInputElement;
     expect(endsAtInput.value).toBe("2025-08-20T18:00");
   });
+
+  it("空白のみのタイトルで送信するとエラーメッセージが表示される", async () => {
+    const user = userEvent.setup();
+    render(<CircleSessionCreateForm circleId={circleId} />);
+
+    const titleInput = screen.getByLabelText("タイトル");
+    await user.type(titleInput, "   ");
+
+    await user.click(screen.getByRole("button", { name: /予定を作成/ }));
+
+    const alert = screen.getByRole("alert");
+    expect(alert.textContent).toBe("タイトルを入力してください");
+    expect(mutateMock).not.toHaveBeenCalled();
+  });
+
+  it("タイトル入力時にエラーメッセージがクリアされる", async () => {
+    const user = userEvent.setup();
+    render(<CircleSessionCreateForm circleId={circleId} />);
+
+    const titleInput = screen.getByLabelText("タイトル");
+    await user.type(titleInput, "   ");
+    await user.click(screen.getByRole("button", { name: /予定を作成/ }));
+    expect(screen.getByRole("alert")).toBeTruthy();
+
+    await user.type(titleInput, "テスト");
+    expect(screen.queryByRole("alert")).toBeNull();
+  });
 });
