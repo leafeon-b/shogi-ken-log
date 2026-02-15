@@ -61,6 +61,86 @@ describe("EventWithTooltip", () => {
     expect(screen.queryByText(/\d{4}\/\d{2}\/\d{2}/)).toBeNull();
   });
 
+  it("startsAt が number の場合ツールチップなし（タイトルのみ）", () => {
+    const arg = {
+      arg: {
+        event: {
+          title: "テスト",
+          extendedProps: { startsAt: 12345, endsAt: "2025-01-15T16:00:00" },
+        } as unknown as EventImpl,
+      } as unknown as EventContentArg,
+    };
+
+    render(<EventWithTooltip {...arg} />);
+
+    expect(screen.getByText("テスト")).not.toBeNull();
+    expect(screen.queryByText(/\d{4}\/\d{2}\/\d{2}/)).toBeNull();
+  });
+
+  it("startsAt が object（非Date）の場合ツールチップなし", () => {
+    const arg = {
+      arg: {
+        event: {
+          title: "テスト",
+          extendedProps: { startsAt: { foo: "bar" }, endsAt: "2025-01-15T16:00:00" },
+        } as unknown as EventImpl,
+      } as unknown as EventContentArg,
+    };
+
+    render(<EventWithTooltip {...arg} />);
+
+    expect(screen.getByText("テスト")).not.toBeNull();
+    expect(screen.queryByText(/\d{4}\/\d{2}\/\d{2}/)).toBeNull();
+  });
+
+  it("endsAt が number の場合ツールチップなし", () => {
+    const arg = {
+      arg: {
+        event: {
+          title: "テスト",
+          extendedProps: { startsAt: "2025-01-15T14:00:00", endsAt: 99999 },
+        } as unknown as EventImpl,
+      } as unknown as EventContentArg,
+    };
+
+    render(<EventWithTooltip {...arg} />);
+
+    expect(screen.getByText("テスト")).not.toBeNull();
+    expect(screen.queryByText(/\d{4}\/\d{2}\/\d{2}/)).toBeNull();
+  });
+
+  it("startsAt が undefined の場合ツールチップなし", () => {
+    const arg = {
+      arg: {
+        event: {
+          title: "テスト",
+          extendedProps: { endsAt: "2025-01-15T16:00:00" },
+        } as unknown as EventImpl,
+      } as unknown as EventContentArg,
+    };
+
+    render(<EventWithTooltip {...arg} />);
+
+    expect(screen.getByText("テスト")).not.toBeNull();
+    expect(screen.queryByText(/\d{4}\/\d{2}\/\d{2}/)).toBeNull();
+  });
+
+  it("startsAt が null の場合ツールチップなし", () => {
+    const arg = {
+      arg: {
+        event: {
+          title: "テスト",
+          extendedProps: { startsAt: null, endsAt: "2025-01-15T16:00:00" },
+        } as unknown as EventImpl,
+      } as unknown as EventContentArg,
+    };
+
+    render(<EventWithTooltip {...arg} />);
+
+    expect(screen.getByText("テスト")).not.toBeNull();
+    expect(screen.queryByText(/\d{4}\/\d{2}\/\d{2}/)).toBeNull();
+  });
+
   it("Date 型の startsAt / endsAt で正しくレンダリングされる", () => {
     render(
       <EventWithTooltip
