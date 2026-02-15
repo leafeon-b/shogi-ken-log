@@ -332,9 +332,7 @@ describe("assertCanChangeCircleMemberRole", () => {
 describe("assertCanRemoveCircleSessionMember", () => {
   test("Owner を削除しようとするとエラー", () => {
     expect(() =>
-      assertCanRemoveCircleSessionMember(
-        CircleSessionRole.CircleSessionOwner,
-      ),
+      assertCanRemoveCircleSessionMember(CircleSessionRole.CircleSessionOwner),
     ).toThrow("Use transferOwnership to remove owner");
   });
 
@@ -348,9 +346,7 @@ describe("assertCanRemoveCircleSessionMember", () => {
 
   test("Member を削除できる", () => {
     expect(() =>
-      assertCanRemoveCircleSessionMember(
-        CircleSessionRole.CircleSessionMember,
-      ),
+      assertCanRemoveCircleSessionMember(CircleSessionRole.CircleSessionMember),
     ).not.toThrow();
   });
 });

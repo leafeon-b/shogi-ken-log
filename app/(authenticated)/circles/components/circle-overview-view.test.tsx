@@ -54,9 +54,7 @@ describe("CircleOverviewView ロールベース表示制御", () => {
     );
 
     const calendar = screen.getByTestId("calendar");
-    expect(calendar.dataset.createHref).toBe(
-      "/circles/circle-1/sessions/new",
-    );
+    expect(calendar.dataset.createHref).toBe("/circles/circle-1/sessions/new");
     expect(screen.getByTestId("create-link")).toBeDefined();
   });
 
@@ -69,9 +67,7 @@ describe("CircleOverviewView ロールベース表示制御", () => {
     );
 
     const calendar = screen.getByTestId("calendar");
-    expect(calendar.dataset.createHref).toBe(
-      "/circles/circle-1/sessions/new",
-    );
+    expect(calendar.dataset.createHref).toBe("/circles/circle-1/sessions/new");
     expect(screen.getByTestId("create-link")).toBeDefined();
   });
 
@@ -103,9 +99,7 @@ describe("CircleOverviewView ロールベース表示制御", () => {
 
   it("getCreateSessionHref が未指定の場合、owner でも null になる", () => {
     render(
-      <CircleOverviewView
-        overview={buildOverview({ viewerRole: "owner" })}
-      />,
+      <CircleOverviewView overview={buildOverview({ viewerRole: "owner" })} />,
     );
 
     const calendar = screen.getByTestId("calendar");

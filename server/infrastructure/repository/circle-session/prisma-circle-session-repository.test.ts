@@ -76,7 +76,7 @@ describe("Prisma CircleSession リポジトリ", () => {
       {
         id: "session-1",
         circleId: "circle-1",
-  
+
         title: "第1回 研究会",
         startsAt: new Date("2024-01-01T10:00:00Z"),
         endsAt: new Date("2024-01-01T12:00:00Z"),

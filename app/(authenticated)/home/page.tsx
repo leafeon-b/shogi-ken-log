@@ -19,8 +19,9 @@ const formatTime = (date: Date) =>
   `${pad2(date.getHours())}:${pad2(date.getMinutes())}`;
 
 export default function Home() {
-  const sessionsQuery =
-    trpc.users.circleSessions.participations.list.useQuery({});
+  const sessionsQuery = trpc.users.circleSessions.participations.list.useQuery(
+    {},
+  );
 
   const nextSession = useMemo(() => {
     const sessions = sessionsQuery.data;

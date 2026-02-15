@@ -164,24 +164,24 @@ Each issue MUST have exactly TWO labels: one type label and one priority label.
 
 #### Type Labels (select one)
 
-| Label                | When to use                                    |
-| -------------------- | ---------------------------------------------- |
-| `bug`                | Incorrect behavior or defect found             |
-| `enhancement`        | New feature or functional improvement          |
-| `documentation`      | Documentation additions or corrections         |
-| `type: security`     | Security vulnerability or hardening            |
-| `type: accessibility`| Accessibility (WCAG) compliance improvement    |
-| `type: testing`      | Test coverage addition or test improvement     |
-| `type: ui/ux`        | UI/UX design or usability improvement          |
-| `type: refactoring`  | Code structure, readability, architecture      |
+| Label                 | When to use                                 |
+| --------------------- | ------------------------------------------- |
+| `bug`                 | Incorrect behavior or defect found          |
+| `enhancement`         | New feature or functional improvement       |
+| `documentation`       | Documentation additions or corrections      |
+| `type: security`      | Security vulnerability or hardening         |
+| `type: accessibility` | Accessibility (WCAG) compliance improvement |
+| `type: testing`       | Test coverage addition or test improvement  |
+| `type: ui/ux`         | UI/UX design or usability improvement       |
+| `type: refactoring`   | Code structure, readability, architecture   |
 
 #### Priority Labels (select one)
 
-| Label              | Criteria                                              |
-| ------------------ | ----------------------------------------------------- |
-| `priority: high`   | Security risk, data integrity, or user-facing breakage|
-| `priority: medium` | Code quality, maintainability, or moderate UX impact  |
-| `priority: low`    | Minor style, nice-to-have, or low-impact improvement  |
+| Label              | Criteria                                               |
+| ------------------ | ------------------------------------------------------ |
+| `priority: high`   | Security risk, data integrity, or user-facing breakage |
+| `priority: medium` | Code quality, maintainability, or moderate UX impact   |
+| `priority: low`    | Minor style, nice-to-have, or low-impact improvement   |
 
 ### Execution
 
@@ -200,6 +200,6 @@ Append to verify.md:
 
 ## Created Issues
 
-| # | Title | Labels |
-|---|-------|--------|
+| #        | Title   | Labels             |
+| -------- | ------- | ------------------ |
 | {number} | {title} | {type}, {priority} |

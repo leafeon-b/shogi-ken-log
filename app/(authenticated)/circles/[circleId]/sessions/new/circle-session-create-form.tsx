@@ -91,10 +91,7 @@ export function CircleSessionCreateForm({
 
   return (
     <div className="w-full">
-      <form
-        onSubmit={handleSubmit}
-        className="flex w-full flex-col gap-4"
-      >
+      <form onSubmit={handleSubmit} className="flex w-full flex-col gap-4">
         <div className="flex flex-col gap-1.5">
           <label
             htmlFor="title"

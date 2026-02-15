@@ -72,10 +72,7 @@ type SessionCalendarProps = {
   onDateClick?: (arg: DateClickArg) => void;
 };
 
-export function SessionCalendar({
-  events,
-  onDateClick,
-}: SessionCalendarProps) {
+export function SessionCalendar({ events, onDateClick }: SessionCalendarProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const onDateClickRef = useRef(onDateClick);
   useEffect(() => {

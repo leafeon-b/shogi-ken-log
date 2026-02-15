@@ -101,9 +101,7 @@ describe("CircleSessionDetailView 複製ボタン", () => {
         />,
       );
 
-      expect(
-        screen.getByRole("button", { name: /複製/ }),
-      ).toBeDefined();
+      expect(screen.getByRole("button", { name: /複製/ })).toBeDefined();
     });
 
     it("canCreateCircleSession: false の場合、複製ボタンが表示されない", () => {

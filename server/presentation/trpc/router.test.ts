@@ -897,5 +897,4 @@ describe("tRPC router", () => {
       caller.users.memberships.list({ userId: "user-1" }),
     ).rejects.toMatchObject({ code: "BAD_REQUEST" });
   });
-
 });
