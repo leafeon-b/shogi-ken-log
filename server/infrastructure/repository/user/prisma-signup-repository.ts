@@ -4,12 +4,14 @@ import type {
 } from "@/server/domain/models/user/signup-repository";
 import type { UserId } from "@/server/domain/common/ids";
 import { userId } from "@/server/domain/common/ids";
-import { prisma } from "@/server/infrastructure/db";
+import { prisma, type PrismaClientLike } from "@/server/infrastructure/db";
 import { hashPassword } from "@/server/infrastructure/auth/password";
 
-export const prismaSignupRepository: SignupRepository = {
+export const createPrismaSignupRepository = (
+  client: PrismaClientLike,
+): SignupRepository => ({
   async emailExists(email: string): Promise<boolean> {
-    const existing = await prisma.user.findUnique({
+    const existing = await client.user.findUnique({
       where: { email },
       select: { id: true },
     });
@@ -18,7 +20,7 @@ export const prismaSignupRepository: SignupRepository = {
 
   async createUser(data: SignupData): Promise<UserId> {
     const passwordHash = hashPassword(data.password);
-    const user = await prisma.user.create({
+    const user = await client.user.create({
       data: {
         email: data.email,
         name: data.name,
@@ -28,4 +30,6 @@ export const prismaSignupRepository: SignupRepository = {
     });
     return userId(user.id);
   },
-};
+});
+
+export const prismaSignupRepository = createPrismaSignupRepository(prisma);

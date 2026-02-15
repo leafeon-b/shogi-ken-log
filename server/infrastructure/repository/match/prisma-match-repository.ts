@@ -1,5 +1,5 @@
 import type { MatchRepository } from "@/server/domain/models/match/match-repository";
-import { prisma } from "@/server/infrastructure/db";
+import { prisma, type PrismaClientLike } from "@/server/infrastructure/db";
 import {
   mapMatchToDomain,
   mapMatchToPersistence,
@@ -8,9 +8,11 @@ import type { Match } from "@/server/domain/models/match/match";
 import type { CircleSessionId, MatchId } from "@/server/domain/common/ids";
 import { toPersistenceId } from "@/server/infrastructure/common/id-utils";
 
-export const prismaMatchRepository: MatchRepository = {
+export const createPrismaMatchRepository = (
+  client: PrismaClientLike,
+): MatchRepository => ({
   async findById(id: MatchId): Promise<Match | null> {
-    const found = await prisma.match.findUnique({
+    const found = await client.match.findUnique({
       where: { id: toPersistenceId(id) },
     });
 
@@ -20,7 +22,7 @@ export const prismaMatchRepository: MatchRepository = {
   async listByCircleSessionId(
     circleSessionId: CircleSessionId,
   ): Promise<Match[]> {
-    const matches = await prisma.match.findMany({
+    const matches = await client.match.findMany({
       where: { circleSessionId: toPersistenceId(circleSessionId) },
       orderBy: { order: "asc" },
     });
@@ -31,7 +33,7 @@ export const prismaMatchRepository: MatchRepository = {
   async save(match: Match): Promise<void> {
     const data = mapMatchToPersistence(match);
 
-    await prisma.match.upsert({
+    await client.match.upsert({
       where: { id: data.id },
       update: {
         order: data.order,
@@ -43,4 +45,6 @@ export const prismaMatchRepository: MatchRepository = {
       create: data,
     });
   },
-};
+});
+
+export const prismaMatchRepository = createPrismaMatchRepository(prisma);

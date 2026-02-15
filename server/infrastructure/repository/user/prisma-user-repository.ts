@@ -1,7 +1,7 @@
 import type { UserRepository } from "@/server/domain/models/user/user-repository";
 import type { User } from "@/server/domain/models/user/user";
 import type { UserId } from "@/server/domain/common/ids";
-import { prisma } from "@/server/infrastructure/db";
+import { prisma, type PrismaClientLike } from "@/server/infrastructure/db";
 import {
   mapUserToDomain,
   mapUserToPersistence,
@@ -11,9 +11,11 @@ import {
   toPersistenceIds,
 } from "@/server/infrastructure/common/id-utils";
 
-export const prismaUserRepository: UserRepository = {
+export const createPrismaUserRepository = (
+  client: PrismaClientLike,
+): UserRepository => ({
   async findById(id: UserId): Promise<User | null> {
-    const found = await prisma.user.findUnique({
+    const found = await client.user.findUnique({
       where: { id: toPersistenceId(id) },
     });
 
@@ -25,7 +27,7 @@ export const prismaUserRepository: UserRepository = {
       return [];
     }
     const uniqueIds = Array.from(new Set(toPersistenceIds(ids)));
-    const users = await prisma.user.findMany({
+    const users = await client.user.findMany({
       where: { id: { in: uniqueIds } },
     });
 
@@ -38,7 +40,7 @@ export const prismaUserRepository: UserRepository = {
   async save(user: User): Promise<void> {
     const data = mapUserToPersistence(user);
 
-    await prisma.user.upsert({
+    await client.user.upsert({
       where: { id: data.id },
       update: {
         name: data.name,
@@ -48,4 +50,6 @@ export const prismaUserRepository: UserRepository = {
       create: data,
     });
   },
-};
+});
+
+export const prismaUserRepository = createPrismaUserRepository(prisma);
