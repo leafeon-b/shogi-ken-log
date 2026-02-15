@@ -25,10 +25,12 @@ import {
   ForbiddenError,
   NotFoundError,
 } from "@/server/domain/common/errors";
+import type {
+  TransactionRunner,
+  UnitOfWork,
+} from "@/server/application/common/transaction-runner";
 
 type AccessService = ReturnType<typeof createAccessService>;
-
-export type TransactionRunner = <T>(operation: () => Promise<T>) => Promise<T>;
 
 export type MatchServiceDeps = {
   matchRepository: MatchRepository;
@@ -37,11 +39,11 @@ export type MatchServiceDeps = {
   circleSessionRepository: CircleSessionRepository;
   accessService: AccessService;
   generateMatchHistoryId: () => MatchHistoryId;
-  transactionRunner?: TransactionRunner;
+  transactionRunner: TransactionRunner;
 };
 
 export const createMatchService = (deps: MatchServiceDeps) => {
-  const run = deps.transactionRunner ?? (async (operation) => operation());
+  const run = deps.transactionRunner;
 
   const ensurePlayersParticipating = async (
     circleSessionId: CircleSessionId,
@@ -59,11 +61,12 @@ export const createMatchService = (deps: MatchServiceDeps) => {
   };
 
   const recordHistory = (
+    uow: UnitOfWork,
     action: MatchHistoryAction,
     match: Match,
     editorId: UserId,
   ) =>
-    deps.matchHistoryRepository.add(
+    uow.matchHistoryRepository.add(
       createMatchHistory({
         id: deps.generateMatchHistoryId(),
         matchId: match.id,
@@ -86,7 +89,7 @@ export const createMatchService = (deps: MatchServiceDeps) => {
       player2Id: UserId;
       outcome?: Match["outcome"];
     }): Promise<Match> {
-      return run(async () => {
+      return run(async (uow) => {
         const session = await deps.circleSessionRepository.findById(
           params.circleSessionId,
         );
@@ -115,8 +118,8 @@ export const createMatchService = (deps: MatchServiceDeps) => {
           player2Id: params.player2Id,
           outcome: params.outcome,
         });
-        await deps.matchRepository.save(match);
-        await recordHistory("CREATE", match, params.actorId);
+        await uow.matchRepository.save(match);
+        await recordHistory(uow, "CREATE", match, params.actorId);
         return match;
       });
     },
@@ -128,7 +131,7 @@ export const createMatchService = (deps: MatchServiceDeps) => {
       player2Id?: UserId;
       outcome?: Match["outcome"];
     }): Promise<Match> {
-      return run(async () => {
+      return run(async (uow) => {
         const match = await deps.matchRepository.findById(params.id);
         if (!match) {
           throw new NotFoundError("Match");
@@ -175,8 +178,8 @@ export const createMatchService = (deps: MatchServiceDeps) => {
           updated = updateMatchOutcome(updated, params.outcome);
         }
 
-        await deps.matchRepository.save(updated);
-        await recordHistory("UPDATE", updated, params.actorId);
+        await uow.matchRepository.save(updated);
+        await recordHistory(uow, "UPDATE", updated, params.actorId);
         return updated;
       });
     },
@@ -185,7 +188,7 @@ export const createMatchService = (deps: MatchServiceDeps) => {
       actorId: UserId;
       id: MatchId;
     }): Promise<Match> {
-      return run(async () => {
+      return run(async (uow) => {
         const match = await deps.matchRepository.findById(params.id);
         if (!match) {
           throw new NotFoundError("Match");
@@ -209,8 +212,8 @@ export const createMatchService = (deps: MatchServiceDeps) => {
         }
 
         const deleted = deleteMatch(match);
-        await deps.matchRepository.save(deleted);
-        await recordHistory("DELETE", deleted, params.actorId);
+        await uow.matchRepository.save(deleted);
+        await recordHistory(uow, "DELETE", deleted, params.actorId);
         return deleted;
       });
     },

@@ -10,6 +10,7 @@ import { prismaMatchHistoryRepository } from "@/server/infrastructure/repository
 import { prismaMatchRepository } from "@/server/infrastructure/repository/match/prisma-match-repository";
 import { prismaUserRepository } from "@/server/infrastructure/repository/user/prisma-user-repository";
 import { prismaSignupRepository } from "@/server/infrastructure/repository/user/prisma-signup-repository";
+import { prismaTransactionRunner } from "@/server/infrastructure/prisma-transaction-runner";
 
 const getSessionUserId = createGetSessionUserId(nextAuthSessionService);
 
@@ -26,6 +27,7 @@ export const createContext = async () => {
     userRepository: prismaUserRepository,
     authzRepository: prismaAuthzRepository,
     signupRepository: prismaSignupRepository,
+    transactionRunner: prismaTransactionRunner,
   });
 
   return {

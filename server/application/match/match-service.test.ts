@@ -51,6 +51,8 @@ const service = createMatchService({
   circleSessionRepository,
   accessService,
   generateMatchHistoryId: () => matchHistoryId("history-1"),
+  transactionRunner: async (op) =>
+    op({ matchRepository, matchHistoryRepository }),
 });
 
 const baseMatchParams = {

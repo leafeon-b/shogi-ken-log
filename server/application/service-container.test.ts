@@ -86,6 +86,11 @@ describe("Service container", () => {
       authzRepository,
       signupRepository,
       generateMatchHistoryId: () => matchHistoryId("history-1"),
+      transactionRunner: async (op) =>
+        op({
+          matchRepository,
+          matchHistoryRepository,
+        }),
     });
 
     expect(container.circleService).toBeDefined();
