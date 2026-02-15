@@ -186,13 +186,14 @@ Each issue MUST have exactly TWO labels: one type label and one priority label.
 ### Execution
 
 1. Collect all improvement suggestions from review results.
-2. Group and deduplicate across intents (e.g., same concern found by both safety and implementation reviewers).
-3. For each distinct suggestion, draft:
+2. If a suggestion is minor and can be safely fixed without changing design, architecture, or external behavior, apply the fix immediately instead of creating an issue. Clearly report what was changed and why.
+3. Group and deduplicate across intents (e.g., same concern found by both safety and implementation reviewers), excluding already fixed items.
+4. For each distinct remaining suggestion, draft:
    - **Title**: concise, imperative form (e.g., "Add input validation to match creation endpoint")
    - **Body**: context, what was found, why it matters, suggested approach (if any)
    - **Labels**: one type + one priority
-4. Present the list of proposed issues to the user for approval.
-5. After approval, create issues via `gh issue create`.
+5. Present the list of proposed issues to the user for approval.
+6. After approval, create issues via `gh issue create`.
 
 ### Output Addition
 
