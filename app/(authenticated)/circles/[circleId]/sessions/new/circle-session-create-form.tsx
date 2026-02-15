@@ -68,7 +68,7 @@ export function CircleSessionCreateForm({
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const trimmedTitle = title.trim();
+    const trimmedTitle = title.replace(/^[\s\u3000]+|[\s\u3000]+$/g, "");
     if (!trimmedTitle) {
       setTitleError("タイトルを入力してください");
       titleRef.current?.focus();
