@@ -10,6 +10,10 @@ import type { CircleRepository } from "@/server/domain/models/circle/circle-repo
 import type { CircleSessionRepository } from "@/server/domain/models/circle-session/circle-session-repository";
 import type { CircleSessionParticipationRepository } from "@/server/domain/models/circle-session/circle-session-participation-repository";
 import type { createAccessService } from "@/server/application/authz/access-service";
+import type {
+  Repositories,
+  UnitOfWork,
+} from "@/server/application/common/unit-of-work";
 import {
   BadRequestError,
   ForbiddenError,
@@ -24,9 +28,15 @@ export type CircleSessionServiceDeps = {
   circleSessionRepository: CircleSessionRepository;
   circleSessionParticipationRepository: CircleSessionParticipationRepository;
   accessService: AccessService;
+  unitOfWork?: UnitOfWork;
 };
 
-export const createCircleSessionService = (deps: CircleSessionServiceDeps) => ({
+export const createCircleSessionService = (deps: CircleSessionServiceDeps) => {
+  const uow: UnitOfWork =
+    deps.unitOfWork ??
+    (async (op) => op(deps as unknown as Repositories));
+
+  return {
   async createCircleSession(params: {
     actorId: string;
     id: CircleSessionId;
@@ -60,12 +70,14 @@ export const createCircleSessionService = (deps: CircleSessionServiceDeps) => ({
       note: params.note,
       createdAt: params.createdAt,
     });
-    await deps.circleSessionRepository.save(session);
-    await deps.circleSessionParticipationRepository.addParticipation(
-      session.id,
-      userId(params.actorId),
-      CircleSessionRole.CircleSessionOwner,
-    );
+    await uow(async (repos) => {
+      await repos.circleSessionRepository.save(session);
+      await repos.circleSessionParticipationRepository.addParticipation(
+        session.id,
+        userId(params.actorId),
+        CircleSessionRole.CircleSessionOwner,
+      );
+    });
     return session;
   },
 
@@ -207,4 +219,5 @@ export const createCircleSessionService = (deps: CircleSessionServiceDeps) => ({
     }
     await deps.circleSessionRepository.delete(id);
   },
-});
+  };
+};

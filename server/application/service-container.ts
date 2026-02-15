@@ -14,7 +14,7 @@ import type { CircleSessionRepository } from "@/server/domain/models/circle-sess
 import type { MatchRepository } from "@/server/domain/models/match/match-repository";
 import type { MatchHistoryRepository } from "@/server/domain/models/match-history/match-history-repository";
 import type { CircleSessionParticipationRepository } from "@/server/domain/models/circle-session/circle-session-participation-repository";
-import type { TransactionRunner } from "@/server/application/match/match-service";
+import type { UnitOfWork } from "@/server/application/common/unit-of-work";
 import { matchHistoryId } from "@/server/domain/common/ids";
 import type { AuthzRepository } from "@/server/domain/services/authz/authz-repository";
 import type { UserRepository } from "@/server/domain/models/user/user-repository";
@@ -47,7 +47,7 @@ export type ServiceContainerDeps = {
   authzRepository: AuthzRepository;
   signupRepository: SignupRepository;
   generateMatchHistoryId?: () => ReturnType<typeof matchHistoryId>;
-  transactionRunner?: TransactionRunner;
+  unitOfWork?: UnitOfWork;
 };
 
 export const createServiceContainer = (
@@ -62,6 +62,7 @@ export const createServiceContainer = (
       circleRepository: deps.circleRepository,
       circleParticipationRepository: deps.circleParticipationRepository,
       accessService,
+      unitOfWork: deps.unitOfWork,
     }),
     circleParticipationService: createCircleParticipationService({
       circleParticipationRepository: deps.circleParticipationRepository,
@@ -74,6 +75,7 @@ export const createServiceContainer = (
       circleSessionParticipationRepository:
         deps.circleSessionParticipationRepository,
       accessService,
+      unitOfWork: deps.unitOfWork,
     }),
     circleSessionParticipationService: createCircleSessionParticipationService({
       matchRepository: deps.matchRepository,
@@ -91,7 +93,7 @@ export const createServiceContainer = (
       circleSessionRepository: deps.circleSessionRepository,
       accessService,
       generateMatchHistoryId,
-      transactionRunner: deps.transactionRunner,
+      unitOfWork: deps.unitOfWork,
     }),
     accessService,
     userService: createUserService({

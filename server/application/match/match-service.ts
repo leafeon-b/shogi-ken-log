@@ -20,6 +20,10 @@ import type { MatchHistoryRepository } from "@/server/domain/models/match-histor
 import type { CircleSessionParticipationRepository } from "@/server/domain/models/circle-session/circle-session-participation-repository";
 import type { CircleSessionRepository } from "@/server/domain/models/circle-session/circle-session-repository";
 import type { createAccessService } from "@/server/application/authz/access-service";
+import type {
+  Repositories,
+  UnitOfWork,
+} from "@/server/application/common/unit-of-work";
 import {
   BadRequestError,
   ForbiddenError,
@@ -28,8 +32,6 @@ import {
 
 type AccessService = ReturnType<typeof createAccessService>;
 
-export type TransactionRunner = <T>(operation: () => Promise<T>) => Promise<T>;
-
 export type MatchServiceDeps = {
   matchRepository: MatchRepository;
   matchHistoryRepository: MatchHistoryRepository;
@@ -37,19 +39,22 @@ export type MatchServiceDeps = {
   circleSessionRepository: CircleSessionRepository;
   accessService: AccessService;
   generateMatchHistoryId: () => MatchHistoryId;
-  transactionRunner?: TransactionRunner;
+  unitOfWork?: UnitOfWork;
 };
 
 export const createMatchService = (deps: MatchServiceDeps) => {
-  const run = deps.transactionRunner ?? (async (operation) => operation());
+  const uow: UnitOfWork =
+    deps.unitOfWork ??
+    (async (op) => op(deps as unknown as Repositories));
 
   const ensurePlayersParticipating = async (
+    circleSessionParticipationRepository: CircleSessionParticipationRepository,
     circleSessionId: CircleSessionId,
     player1Id: UserId,
     player2Id: UserId,
   ) => {
     const ok =
-      await deps.circleSessionParticipationRepository.areUsersParticipating(
+      await circleSessionParticipationRepository.areUsersParticipating(
         circleSessionId,
         [player1Id, player2Id],
       );
@@ -59,11 +64,12 @@ export const createMatchService = (deps: MatchServiceDeps) => {
   };
 
   const recordHistory = (
+    matchHistoryRepository: MatchHistoryRepository,
     action: MatchHistoryAction,
     match: Match,
     editorId: UserId,
   ) =>
-    deps.matchHistoryRepository.add(
+    matchHistoryRepository.add(
       createMatchHistory({
         id: deps.generateMatchHistoryId(),
         matchId: match.id,
@@ -86,8 +92,8 @@ export const createMatchService = (deps: MatchServiceDeps) => {
       player2Id: UserId;
       outcome?: Match["outcome"];
     }): Promise<Match> {
-      return run(async () => {
-        const session = await deps.circleSessionRepository.findById(
+      return uow(async (repos) => {
+        const session = await repos.circleSessionRepository.findById(
           params.circleSessionId,
         );
         if (!session) {
@@ -102,6 +108,7 @@ export const createMatchService = (deps: MatchServiceDeps) => {
           throw new ForbiddenError();
         }
         await ensurePlayersParticipating(
+          repos.circleSessionParticipationRepository,
           params.circleSessionId,
           params.player1Id,
           params.player2Id,
@@ -115,8 +122,13 @@ export const createMatchService = (deps: MatchServiceDeps) => {
           player2Id: params.player2Id,
           outcome: params.outcome,
         });
-        await deps.matchRepository.save(match);
-        await recordHistory("CREATE", match, params.actorId);
+        await repos.matchRepository.save(match);
+        await recordHistory(
+          repos.matchHistoryRepository,
+          "CREATE",
+          match,
+          params.actorId,
+        );
         return match;
       });
     },
@@ -128,15 +140,15 @@ export const createMatchService = (deps: MatchServiceDeps) => {
       player2Id?: UserId;
       outcome?: Match["outcome"];
     }): Promise<Match> {
-      return run(async () => {
-        const match = await deps.matchRepository.findById(params.id);
+      return uow(async (repos) => {
+        const match = await repos.matchRepository.findById(params.id);
         if (!match) {
           throw new NotFoundError("Match");
         }
         if (match.deletedAt) {
           throw new BadRequestError("Match is deleted");
         }
-        const session = await deps.circleSessionRepository.findById(
+        const session = await repos.circleSessionRepository.findById(
           match.circleSessionId,
         );
         if (!session) {
@@ -160,6 +172,7 @@ export const createMatchService = (deps: MatchServiceDeps) => {
             );
           }
           await ensurePlayersParticipating(
+            repos.circleSessionParticipationRepository,
             match.circleSessionId,
             params.player1Id,
             params.player2Id,
@@ -175,8 +188,13 @@ export const createMatchService = (deps: MatchServiceDeps) => {
           updated = updateMatchOutcome(updated, params.outcome);
         }
 
-        await deps.matchRepository.save(updated);
-        await recordHistory("UPDATE", updated, params.actorId);
+        await repos.matchRepository.save(updated);
+        await recordHistory(
+          repos.matchHistoryRepository,
+          "UPDATE",
+          updated,
+          params.actorId,
+        );
         return updated;
       });
     },
@@ -185,15 +203,15 @@ export const createMatchService = (deps: MatchServiceDeps) => {
       actorId: UserId;
       id: MatchId;
     }): Promise<Match> {
-      return run(async () => {
-        const match = await deps.matchRepository.findById(params.id);
+      return uow(async (repos) => {
+        const match = await repos.matchRepository.findById(params.id);
         if (!match) {
           throw new NotFoundError("Match");
         }
         if (match.deletedAt) {
           throw new BadRequestError("Match is deleted");
         }
-        const session = await deps.circleSessionRepository.findById(
+        const session = await repos.circleSessionRepository.findById(
           match.circleSessionId,
         );
         if (!session) {
@@ -209,8 +227,13 @@ export const createMatchService = (deps: MatchServiceDeps) => {
         }
 
         const deleted = deleteMatch(match);
-        await deps.matchRepository.save(deleted);
-        await recordHistory("DELETE", deleted, params.actorId);
+        await repos.matchRepository.save(deleted);
+        await recordHistory(
+          repos.matchHistoryRepository,
+          "DELETE",
+          deleted,
+          params.actorId,
+        );
         return deleted;
       });
     },
