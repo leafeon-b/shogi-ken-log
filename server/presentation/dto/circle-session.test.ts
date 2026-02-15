@@ -46,6 +46,33 @@ describe("circleSessionCreateInputSchema", () => {
     expect(result.success).toBe(false);
   });
 
+  test("全角スペースのみはtrim後に空文字となりバリデーションエラーになる", () => {
+    const result = circleSessionCreateInputSchema.safeParse({
+      ...validBase,
+      title: "\u3000\u3000\u3000",
+    });
+    expect(result.success).toBe(false);
+  });
+
+  test("半角・全角スペース混在のみはtrim後に空文字となりバリデーションエラーになる", () => {
+    const result = circleSessionCreateInputSchema.safeParse({
+      ...validBase,
+      title: " \u3000 \u3000 ",
+    });
+    expect(result.success).toBe(false);
+  });
+
+  test("前後の全角スペースがtrimされる", () => {
+    const result = circleSessionCreateInputSchema.safeParse({
+      ...validBase,
+      title: "\u3000合宿\u3000",
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.title).toBe("合宿");
+    }
+  });
+
   test("100文字ちょうどは成功する", () => {
     const result = circleSessionCreateInputSchema.safeParse({
       ...validBase,
@@ -106,6 +133,33 @@ describe("circleSessionUpdateInputSchema", () => {
       title: "   ",
     });
     expect(result.success).toBe(false);
+  });
+
+  test("全角スペースのみはtrim後に空文字となりバリデーションエラーになる", () => {
+    const result = circleSessionUpdateInputSchema.safeParse({
+      ...updateBase,
+      title: "\u3000\u3000\u3000",
+    });
+    expect(result.success).toBe(false);
+  });
+
+  test("半角・全角スペース混在のみはtrim後に空文字となりバリデーションエラーになる", () => {
+    const result = circleSessionUpdateInputSchema.safeParse({
+      ...updateBase,
+      title: " \u3000 \u3000 ",
+    });
+    expect(result.success).toBe(false);
+  });
+
+  test("前後の全角スペースがtrimされる", () => {
+    const result = circleSessionUpdateInputSchema.safeParse({
+      ...updateBase,
+      title: "\u3000合宿\u3000",
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.title).toBe("合宿");
+    }
   });
 
   test("100文字ちょうどは成功する", () => {

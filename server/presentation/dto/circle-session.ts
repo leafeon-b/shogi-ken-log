@@ -35,7 +35,10 @@ export type CircleSessionListInput = z.infer<
 
 export const circleSessionCreateInputSchema = z.object({
   circleId: circleIdSchema,
-  title: z.string().trim().min(1).max(100),
+  title: z
+    .string()
+    .transform((v) => v.replace(/^[\s\u3000]+|[\s\u3000]+$/g, ""))
+    .pipe(z.string().min(1).max(100)),
   startsAt: dateInputSchema,
   endsAt: dateInputSchema,
   location: z.string().nullable().optional(),
@@ -49,7 +52,11 @@ export type CircleSessionCreateInput = z.infer<
 export const circleSessionUpdateInputSchema = z
   .object({
     circleSessionId: circleSessionIdSchema,
-    title: z.string().trim().min(1).max(100).optional(),
+    title: z
+      .string()
+      .transform((v) => v.replace(/^[\s\u3000]+|[\s\u3000]+$/g, ""))
+      .pipe(z.string().min(1).max(100))
+      .optional(),
     startsAt: dateInputSchema.optional(),
     endsAt: dateInputSchema.optional(),
     location: z.string().nullable().optional(),
