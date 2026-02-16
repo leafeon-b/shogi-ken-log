@@ -1102,10 +1102,14 @@ export function CircleSessionDetailView({
           ) : null}
 
           <form onSubmit={handleDialogSubmit}>
-            <label className="block text-xs font-semibold text-(--brand-ink)">
+            <label
+              htmlFor="match-outcome"
+              className="block text-xs font-semibold text-(--brand-ink-muted) after:ml-0.5 after:text-red-600 after:content-['*']"
+            >
               結果
             </label>
             <select
+              id="match-outcome"
               className="mt-2 w-full rounded-lg border border-border/60 bg-white px-3 py-2 text-sm text-(--brand-ink) shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
               value={selectedOutcome}
               onChange={(event) =>
@@ -1120,10 +1124,14 @@ export function CircleSessionDetailView({
               ))}
             </select>
             <div className="mt-4">
-              <label className="text-xs font-semibold text-(--brand-ink)">
+              <label
+                htmlFor="match-date"
+                className="block text-xs font-semibold text-(--brand-ink-muted) after:ml-0.5 after:text-red-600 after:content-['*']"
+              >
                 対局日
               </label>
               <input
+                id="match-date"
                 type="date"
                 className="mt-2 w-full rounded-lg border border-border/60 bg-white px-3 py-2 text-sm text-(--brand-ink) shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
                 value={selectedDate}
