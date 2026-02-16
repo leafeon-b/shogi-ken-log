@@ -1,8 +1,3 @@
-import type {
-  CircleRole,
-  CircleSessionRole,
-} from "@/server/domain/services/authz/roles";
-import { beforeEach, describe, expect, test, vi } from "vitest";
 import { createAccessService } from "@/server/application/authz/access-service";
 import type { AuthzRepository } from "@/server/domain/services/authz/authz-repository";
 import type {
@@ -15,6 +10,11 @@ import {
   noCircleMembership,
   noCircleSessionMembership,
 } from "@/server/domain/services/authz/memberships";
+import type {
+  CircleRole,
+  CircleSessionRole,
+} from "@/server/domain/services/authz/roles";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 
 const userId = "user-1";
 const targetUserId = "user-2";
@@ -258,8 +258,8 @@ describe("認可ポリシー", () => {
     });
   });
 
-  describe("開催回", () => {
-    describe("canCreateCircleSession（開催回作成）", () => {
+  describe("セッション", () => {
+    describe("canCreateCircleSession（セッション作成）", () => {
       const cases: Array<{
         membership: CircleMembership;
         expected: boolean;
@@ -278,7 +278,7 @@ describe("認可ポリシー", () => {
       });
     });
 
-    describe("canViewCircleSession（開催回閲覧）", () => {
+    describe("canViewCircleSession（セッション閲覧）", () => {
       const cases: Array<{
         circleMembership: CircleMembership;
         sessionMembership: CircleSessionMembership;
@@ -310,7 +310,7 @@ describe("認可ポリシー", () => {
       });
     });
 
-    describe("canAddCircleSessionMember（開催回参加者追加）", () => {
+    describe("canAddCircleSessionMember（セッション参加者追加）", () => {
       test.each([
         { membership: sessionMember("CircleSessionMember"), expected: true },
         { membership: noSessionMember(), expected: false },
@@ -322,7 +322,7 @@ describe("認可ポリシー", () => {
       });
     });
 
-    describe("canEditCircleSession（開催回編集）", () => {
+    describe("canEditCircleSession（セッション編集）", () => {
       const cases: Array<{
         membership: CircleSessionMembership;
         expected: boolean;
@@ -341,7 +341,7 @@ describe("認可ポリシー", () => {
       });
     });
 
-    describe("canDeleteCircleSession（開催回削除）", () => {
+    describe("canDeleteCircleSession（セッション削除）", () => {
       const cases: Array<{
         membership: CircleSessionMembership;
         expected: boolean;
@@ -359,7 +359,7 @@ describe("認可ポリシー", () => {
       });
     });
 
-    describe("canRemoveCircleSessionMember（開催回参加取消）", () => {
+    describe("canRemoveCircleSessionMember（セッション参加取消）", () => {
       const cases: Array<{
         membership: CircleSessionMembership;
         expected: boolean;
@@ -378,7 +378,7 @@ describe("認可ポリシー", () => {
       });
     });
 
-    describe("canTransferCircleSessionOwnership（開催回オーナー移譲）", () => {
+    describe("canTransferCircleSessionOwnership（セッションオーナー移譲）", () => {
       const cases: Array<{
         membership: CircleSessionMembership;
         expected: boolean;
@@ -396,7 +396,7 @@ describe("認可ポリシー", () => {
       });
     });
 
-    describe("canChangeCircleSessionMemberRole（開催回参加者ロール変更）", () => {
+    describe("canChangeCircleSessionMemberRole（セッション参加者ロール変更）", () => {
       const cases: Array<{
         actorRole: CircleSessionRole;
         targetRole: CircleSessionRole;

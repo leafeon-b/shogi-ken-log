@@ -4,7 +4,7 @@
 
 ## プロジェクト概要
 
-SKKT（将棋研究会管理ツール）は、将棋研究会の活動を管理するWebアプリケーションです。開催回のスケジュール、参加者管理、対局記録などを扱います。
+SKKT（将棋研究会管理ツール）は、将棋研究会の活動を管理するWebアプリケーションです。セッションのスケジュール、参加者管理、対局記録などを扱います。
 
 ## 前提条件
 
@@ -65,7 +65,7 @@ server/
 ロールベースのアクセス制御。2つの階層がある:
 
 - **研究会ロール**: CircleOwner > CircleManager > CircleMember
-- **開催回ロール**: CircleSessionOwner > CircleSessionManager > CircleSessionMember
+- **セッションロール**: CircleSessionOwner > CircleSessionManager > CircleSessionMember
 
 ポリシーは `server/domain/services/authz/policies.ts` で定義、`AccessService` で適用。
 
@@ -81,7 +81,7 @@ server/
 SQLite + Prisma ORM。主要モデル:
 
 - **Circle**: 研究会
-- **CircleSession**: 開催回
+- **CircleSession**: セッション
 - **CircleMembership / CircleSessionMembership**: ロールベースの参加情報
 - **Match**: 対局記録（論理削除対応）
 - **MatchHistory**: 対局の変更履歴

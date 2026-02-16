@@ -12,11 +12,11 @@ vi.mock("@/server/infrastructure/db", () => ({
 }));
 
 import type { CircleSession as PrismaCircleSession } from "@/generated/prisma/client";
-import { prisma } from "@/server/infrastructure/db";
 import { circleId, circleSessionId } from "@/server/domain/common/ids";
 import { createCircleSession } from "@/server/domain/models/circle-session/circle-session";
-import { prismaCircleSessionRepository } from "@/server/infrastructure/repository/circle-session/prisma-circle-session-repository";
+import { prisma } from "@/server/infrastructure/db";
 import { mapCircleSessionToPersistence } from "@/server/infrastructure/mappers/circle-session-mapper";
+import { prismaCircleSessionRepository } from "@/server/infrastructure/repository/circle-session/prisma-circle-session-repository";
 
 const mockedPrisma = vi.mocked(prisma, { deep: true });
 
@@ -76,7 +76,7 @@ describe("Prisma CircleSession リポジトリ", () => {
       {
         id: "session-1",
         circleId: "circle-1",
-  
+
         title: "第1回 研究会",
         startsAt: new Date("2024-01-01T10:00:00Z"),
         endsAt: new Date("2024-01-01T12:00:00Z"),
@@ -102,7 +102,7 @@ describe("Prisma CircleSession リポジトリ", () => {
     ]);
   });
 
-  test("listByCircleId は開催回一覧を返す", async () => {
+  test("listByCircleId はセッション一覧を返す", async () => {
     const prismaSession = {
       id: "session-1",
       circleId: "circle-1",

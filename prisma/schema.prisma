@@ -104,7 +104,7 @@ model CircleMembership {
 }
 
 model CircleSessionMembership {
-  id              String @id @default(cuid())
+  id              String            @id @default(cuid())
   userId          String
   circleSessionId String
   role            CircleSessionRole
@@ -112,7 +112,7 @@ model CircleSessionMembership {
   user    User          @relation(fields: [userId], references: [id], onDelete: Restrict)
   session CircleSession @relation(fields: [circleSessionId], references: [id], onDelete: Cascade)
 
-  /// 開催回参加（単発参加）。研究会参加とは独立。
+  /// セッション参加（単発参加）。研究会参加とは独立。
   @@unique([userId, circleSessionId])
   @@index([circleSessionId])
   @@index([circleSessionId, role])
@@ -140,7 +140,7 @@ model Match {
 
   /// NOTE:
   /// - player1Id != player2Id はDB CHECK制約で担保（migrationにSQL追加）
-  /// - 対局者が開催回参加者であることはアプリ層で検証
+  /// - 対局者がセッション参加者であることはアプリ層で検証
   @@unique([circleSessionId, order])
   @@index([player1Id])
   @@index([player2Id])

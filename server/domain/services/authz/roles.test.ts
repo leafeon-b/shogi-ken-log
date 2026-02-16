@@ -1,12 +1,10 @@
 import {
-  CircleRole,
-  CircleSessionRole,
+    CircleRole,
+    CircleSessionRole,
+    isSameOrHigherCircleRole,
+    isSameOrHigherCircleSessionRole,
 } from "@/server/domain/services/authz/roles";
 import { describe, expect, test } from "vitest";
-import {
-  isSameOrHigherCircleRole,
-  isSameOrHigherCircleSessionRole,
-} from "@/server/domain/services/authz/roles";
 
 const { CircleOwner, CircleManager, CircleMember } = CircleRole;
 const { CircleSessionOwner, CircleSessionManager, CircleSessionMember } =
@@ -35,7 +33,7 @@ describe("ロール", () => {
     );
   });
 
-  describe("開催回ロール", () => {
+  describe("セッションロール", () => {
     test.each([
       // Owner（最上位）
       [CircleSessionOwner, CircleSessionOwner, true],

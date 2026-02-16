@@ -1,14 +1,14 @@
-import { beforeEach, describe, expect, test, vi } from "vitest";
 import { createCircleSessionService } from "@/server/application/circle-session/circle-session-service";
-import { createAccessServiceStub } from "@/server/application/test-helpers/access-service-stub";
-import type { CircleRepository } from "@/server/domain/models/circle/circle-repository";
-import type { CircleSessionRepository } from "@/server/domain/models/circle-session/circle-session-repository";
-import type { CircleSessionParticipationRepository } from "@/server/domain/models/circle-session/circle-session-participation-repository";
 import type { UnitOfWork } from "@/server/application/common/unit-of-work";
+import { createAccessServiceStub } from "@/server/application/test-helpers/access-service-stub";
 import { circleId, circleSessionId, userId } from "@/server/domain/common/ids";
-import { createCircle } from "@/server/domain/models/circle/circle";
 import { createCircleSession } from "@/server/domain/models/circle-session/circle-session";
+import type { CircleSessionParticipationRepository } from "@/server/domain/models/circle-session/circle-session-participation-repository";
+import type { CircleSessionRepository } from "@/server/domain/models/circle-session/circle-session-repository";
+import { createCircle } from "@/server/domain/models/circle/circle";
+import type { CircleRepository } from "@/server/domain/models/circle/circle-repository";
 import { CircleSessionRole } from "@/server/domain/services/authz/roles";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 
 const circleRepository = {
   findById: vi.fn(),
@@ -118,7 +118,7 @@ describe("CircleSession サービス", () => {
     expect(circleSessionRepository.save).not.toHaveBeenCalled();
   });
 
-  test("createCircleSession は開催回を保存する", async () => {
+  test("createCircleSession はセッションを保存する", async () => {
     vi.mocked(circleRepository.findById).mockResolvedValue(baseCircle);
 
     const session = await service.createCircleSession({
