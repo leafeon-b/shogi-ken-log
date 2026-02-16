@@ -35,15 +35,6 @@ export const createPrismaCircleInviteLinkRepository = (
     return found ? mapCircleInviteLinkToDomain(found) : null;
   },
 
-  async listByCircleId(circleId: CircleId): Promise<CircleInviteLink[]> {
-    const links = await client.circleInviteLink.findMany({
-      where: { circleId: toPersistenceId(circleId) },
-      orderBy: { createdAt: "desc" },
-    });
-
-    return links.map(mapCircleInviteLinkToDomain);
-  },
-
   async save(link: CircleInviteLink): Promise<void> {
     const data = mapCircleInviteLinkToPersistence(link);
 

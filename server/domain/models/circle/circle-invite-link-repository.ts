@@ -4,6 +4,5 @@ import type { CircleInviteLink } from "@/server/domain/models/circle/circle-invi
 export type CircleInviteLinkRepository = {
   findByToken(token: string): Promise<CircleInviteLink | null>;
   findActiveByCircleId(circleId: CircleId): Promise<CircleInviteLink | null>;
-  listByCircleId(circleId: CircleId): Promise<CircleInviteLink[]>;
   save(link: CircleInviteLink): Promise<void>;
 };

@@ -9,7 +9,6 @@ import { circleId, circleInviteLinkId, userId } from "@/server/domain/common/ids
 const circleInviteLinkRepository = {
   findByToken: vi.fn(),
   findActiveByCircleId: vi.fn(),
-  listByCircleId: vi.fn(),
   save: vi.fn(),
 } satisfies CircleInviteLinkRepository;
 
