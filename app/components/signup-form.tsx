@@ -73,7 +73,7 @@ export default function SignupForm({ callbackUrl }: SignupFormProps) {
         return;
       }
 
-      router.push(result.url ?? sanitizeCallbackUrl(callbackUrl));
+      router.push(sanitizeCallbackUrl(result.url ?? callbackUrl));
     } finally {
       setIsSubmitting(false);
     }
