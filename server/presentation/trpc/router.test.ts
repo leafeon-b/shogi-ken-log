@@ -25,6 +25,7 @@ const createContext = () => {
     listByUserId: vi.fn(),
     addParticipation: vi.fn(),
     changeParticipationRole: vi.fn(),
+    withdrawParticipation: vi.fn(),
     removeParticipation: vi.fn(),
     transferOwnership: vi.fn(),
   };
