@@ -270,6 +270,118 @@ describe("Circle 参加関係サービス", () => {
     );
   });
 
+  describe("withdrawParticipation（自己脱退）", () => {
+    test("Manager は脱退できる", async () => {
+      vi.mocked(
+        circleParticipationRepository.listByCircleId,
+      ).mockResolvedValueOnce([
+        {
+          circleId: circleId("circle-1"),
+          userId: userId("user-owner"),
+          role: "CircleOwner",
+          createdAt: new Date("2025-01-01T00:00:00Z"),
+        },
+        {
+          circleId: circleId("circle-1"),
+          userId: userId("user-manager"),
+          role: "CircleManager",
+          createdAt: new Date("2025-01-02T00:00:00Z"),
+        },
+      ]);
+
+      await service.withdrawParticipation({
+        actorId: "user-manager",
+        circleId: circleId("circle-1"),
+      });
+
+      expect(
+        circleParticipationRepository.removeParticipation,
+      ).toHaveBeenCalledWith(circleId("circle-1"), userId("user-manager"));
+    });
+
+    test("Member は脱退できる", async () => {
+      vi.mocked(
+        circleParticipationRepository.listByCircleId,
+      ).mockResolvedValueOnce([
+        {
+          circleId: circleId("circle-1"),
+          userId: userId("user-owner"),
+          role: "CircleOwner",
+          createdAt: new Date("2025-01-01T00:00:00Z"),
+        },
+        {
+          circleId: circleId("circle-1"),
+          userId: userId("user-member"),
+          role: "CircleMember",
+          createdAt: new Date("2025-01-02T00:00:00Z"),
+        },
+      ]);
+
+      await service.withdrawParticipation({
+        actorId: "user-member",
+        circleId: circleId("circle-1"),
+      });
+
+      expect(
+        circleParticipationRepository.removeParticipation,
+      ).toHaveBeenCalledWith(circleId("circle-1"), userId("user-member"));
+    });
+
+    test("Owner は脱退を拒否される", async () => {
+      vi.mocked(
+        circleParticipationRepository.listByCircleId,
+      ).mockResolvedValueOnce([
+        {
+          circleId: circleId("circle-1"),
+          userId: userId("user-owner"),
+          role: "CircleOwner",
+          createdAt: new Date("2025-01-01T00:00:00Z"),
+        },
+      ]);
+
+      await expect(
+        service.withdrawParticipation({
+          actorId: "user-owner",
+          circleId: circleId("circle-1"),
+        }),
+      ).rejects.toThrow("Use transferOwnership to remove owner");
+
+      expect(
+        circleParticipationRepository.removeParticipation,
+      ).not.toHaveBeenCalled();
+    });
+
+    test("非メンバーは Forbidden エラー", async () => {
+      vi.mocked(accessService.canViewCircle).mockResolvedValue(false);
+
+      await expect(
+        service.withdrawParticipation({
+          actorId: "user-stranger",
+          circleId: circleId("circle-1"),
+        }),
+      ).rejects.toThrow("Forbidden");
+
+      expect(
+        circleParticipationRepository.removeParticipation,
+      ).not.toHaveBeenCalled();
+    });
+
+    test("Circle が存在しない場合は NotFound エラー", async () => {
+      vi.mocked(circleRepository.findById).mockResolvedValueOnce(null);
+
+      await expect(
+        service.withdrawParticipation({
+          actorId: "user-actor",
+          circleId: circleId("circle-999"),
+        }),
+      ).rejects.toThrow("Circle not found");
+
+      expect(
+        circleParticipationRepository.removeParticipation,
+      ).not.toHaveBeenCalled();
+    });
+  });
+
   test("removeParticipation は Owner の削除を拒否する", async () => {
     vi.mocked(
       circleParticipationRepository.listByCircleId,

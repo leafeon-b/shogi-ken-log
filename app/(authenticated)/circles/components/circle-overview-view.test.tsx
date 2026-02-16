@@ -22,6 +22,15 @@ vi.mock(
   }),
 );
 
+vi.mock(
+  "@/app/(authenticated)/circles/components/circle-withdraw-button",
+  () => ({
+    CircleWithdrawButton: () => (
+      <button data-testid="withdraw-button">脱退</button>
+    ),
+  }),
+);
+
 afterEach(() => {
   cleanup();
 });
