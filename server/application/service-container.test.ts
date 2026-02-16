@@ -75,6 +75,12 @@ describe("Service container", () => {
     const authzRepository = createAuthzStub();
     const signupRepository = createSignupStub();
 
+    const circleInviteLinkRepository = {
+      findByToken: vi.fn(),
+      listByCircleId: vi.fn(),
+      save: vi.fn(),
+    };
+
     const container = createServiceContainer({
       circleRepository,
       circleParticipationRepository,
@@ -85,6 +91,7 @@ describe("Service container", () => {
       userRepository,
       authzRepository,
       signupRepository,
+      circleInviteLinkRepository,
       generateMatchHistoryId: () => matchHistoryId("history-1"),
     });
 
@@ -97,6 +104,7 @@ describe("Service container", () => {
     expect(container.matchService).toBeDefined();
     expect(container.matchHistoryService).toBeDefined();
     expect(container.signupService).toBeDefined();
+    expect(container.circleInviteLinkService).toBeDefined();
 
     circleRepository.findById.mockResolvedValueOnce(null);
     await expect(

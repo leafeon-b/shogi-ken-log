@@ -1,5 +1,6 @@
 import CredentialsLoginForm from "@/app/components/credentials-login-form";
 import LoginButton from "@/app/components/login-button";
+import { sanitizeCallbackUrl } from "@/lib/url";
 import Link from "next/link";
 
 const valueProps = [
@@ -19,7 +20,13 @@ const valueProps = [
   },
 ];
 
-export default async function LandingPage() {
+type LandingPageProps = {
+  searchParams: Promise<{ callbackUrl?: string }>;
+};
+
+export default async function LandingPage({ searchParams }: LandingPageProps) {
+  const { callbackUrl: rawCallbackUrl } = await searchParams;
+  const callbackUrl = sanitizeCallbackUrl(rawCallbackUrl);
   return (
     <div className="relative overflow-hidden">
       <div className="pointer-events-none absolute inset-0 -z-10">
@@ -41,15 +48,15 @@ export default async function LandingPage() {
               </p>
             </div>
             <div className="space-y-4 rounded-2xl border border-border/60 bg-white/90 p-6">
-              <LoginButton className="w-full bg-(--brand-moss) text-white hover:bg-(--brand-moss)/90" />
+              <LoginButton className="w-full bg-(--brand-moss) text-white hover:bg-(--brand-moss)/90" callbackUrl={callbackUrl} />
               <div className="flex items-center gap-3 text-xs text-(--brand-ink-muted)">
                 <span className="h-px flex-1 bg-border/80" />
                 メールでログイン
                 <span className="h-px flex-1 bg-border/80" />
               </div>
-              <CredentialsLoginForm />
+              <CredentialsLoginForm callbackUrl={callbackUrl} />
               <Link
-                href="/signup"
+                href={callbackUrl ? `/signup?callbackUrl=${encodeURIComponent(callbackUrl)}` : "/signup"}
                 className="block text-center text-xs font-semibold text-(--brand-ink-muted) hover:text-(--brand-ink)"
               >
                 アカウントを作成する

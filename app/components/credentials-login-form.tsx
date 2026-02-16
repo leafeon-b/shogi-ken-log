@@ -3,10 +3,15 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { sanitizeCallbackUrl } from "@/lib/url";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-export default function CredentialsLoginForm() {
+type CredentialsLoginFormProps = {
+  callbackUrl?: string;
+};
+
+export default function CredentialsLoginForm({ callbackUrl }: CredentialsLoginFormProps) {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,14 +31,14 @@ export default function CredentialsLoginForm() {
         email,
         password,
         redirect: false,
-        callbackUrl: "/home",
+        callbackUrl: callbackUrl ?? "/home",
       });
       if (!result || result.error) {
         setErrorMessage("メールアドレスまたはパスワードが正しくありません。");
         return;
       }
       if (result.url) {
-        router.push(result.url);
+        router.push(sanitizeCallbackUrl(result.url));
         return;
       }
       setErrorMessage("ログインに失敗しました。");

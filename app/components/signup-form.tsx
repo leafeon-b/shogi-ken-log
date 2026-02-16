@@ -3,12 +3,17 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { sanitizeCallbackUrl } from "@/lib/url";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 const MIN_PASSWORD_LENGTH = 8;
 
-export default function SignupForm() {
+type SignupFormProps = {
+  callbackUrl?: string;
+};
+
+export default function SignupForm({ callbackUrl }: SignupFormProps) {
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -60,7 +65,7 @@ export default function SignupForm() {
         email,
         password,
         redirect: false,
-        callbackUrl: "/home",
+        callbackUrl: callbackUrl ?? "/home",
       });
 
       if (!result || result.error) {
@@ -68,7 +73,7 @@ export default function SignupForm() {
         return;
       }
 
-      router.push(result.url ?? "/home");
+      router.push(sanitizeCallbackUrl(result.url ?? callbackUrl));
     } finally {
       setIsSubmitting(false);
     }
