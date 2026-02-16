@@ -19,6 +19,22 @@ export const createPrismaCircleInviteLinkRepository = (
     return found ? mapCircleInviteLinkToDomain(found) : null;
   },
 
+  async findActiveByCircleId(
+    circleId: CircleId,
+  ): Promise<CircleInviteLink | null> {
+    // "Active" = not expired: expiresAt > now (consistent with domain isExpired: now >= expiresAt)
+    // BR-011: At most one active link should exist. orderBy is defensive for race conditions.
+    const found = await client.circleInviteLink.findFirst({
+      where: {
+        circleId: toPersistenceId(circleId),
+        expiresAt: { gt: new Date() },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return found ? mapCircleInviteLinkToDomain(found) : null;
+  },
+
   async listByCircleId(circleId: CircleId): Promise<CircleInviteLink[]> {
     const links = await client.circleInviteLink.findMany({
       where: { circleId: toPersistenceId(circleId) },
