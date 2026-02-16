@@ -1,5 +1,6 @@
 import CredentialsLoginForm from "@/app/components/credentials-login-form";
 import LoginButton from "@/app/components/login-button";
+import { sanitizeCallbackUrl } from "@/lib/url";
 import Link from "next/link";
 
 const valueProps = [
@@ -24,7 +25,8 @@ type LandingPageProps = {
 };
 
 export default async function LandingPage({ searchParams }: LandingPageProps) {
-  const { callbackUrl } = await searchParams;
+  const { callbackUrl: rawCallbackUrl } = await searchParams;
+  const callbackUrl = sanitizeCallbackUrl(rawCallbackUrl);
   return (
     <div className="relative overflow-hidden">
       <div className="pointer-events-none absolute inset-0 -z-10">

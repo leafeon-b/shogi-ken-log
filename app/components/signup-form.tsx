@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { sanitizeCallbackUrl } from "@/lib/url";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -72,7 +73,7 @@ export default function SignupForm({ callbackUrl }: SignupFormProps) {
         return;
       }
 
-      router.push(result.url ?? callbackUrl ?? "/home");
+      router.push(result.url ?? sanitizeCallbackUrl(callbackUrl));
     } finally {
       setIsSubmitting(false);
     }
