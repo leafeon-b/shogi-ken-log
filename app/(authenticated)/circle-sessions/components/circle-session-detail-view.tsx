@@ -40,6 +40,7 @@ import type {
   CircleSessionMatchOutcome,
   CircleSessionRoleKey,
 } from "@/server/presentation/view-models/circle-session-detail";
+import { CircleSessionWithdrawButton } from "@/app/(authenticated)/circle-sessions/components/circle-session-withdraw-button";
 import { Copy, Pencil, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { FormEvent, useRef, useState } from "react";
@@ -792,6 +793,13 @@ export function CircleSessionDetailView({
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
+              ) : null}
+              {detail.canWithdrawFromCircleSession && detail.viewerRole && detail.viewerRole !== "owner" ? (
+                <CircleSessionWithdrawButton
+                  circleSessionId={detail.circleSessionId}
+                  circleId={detail.circleId}
+                  sessionTitle={detail.title}
+                />
               ) : null}
             </div>
           </div>
