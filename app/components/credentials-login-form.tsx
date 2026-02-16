@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { sanitizeCallbackUrl } from "@/lib/url";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -37,7 +38,7 @@ export default function CredentialsLoginForm({ callbackUrl }: CredentialsLoginFo
         return;
       }
       if (result.url) {
-        router.push(result.url);
+        router.push(sanitizeCallbackUrl(result.url));
         return;
       }
       setErrorMessage("ログインに失敗しました。");
