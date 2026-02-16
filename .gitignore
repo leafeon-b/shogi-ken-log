@@ -26,8 +26,6 @@
 # misc
 .DS_Store
 *.pem
-.github/*
-!.github/workflows/
 .claude/artifacts/
 
 # debug
