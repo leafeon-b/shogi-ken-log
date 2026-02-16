@@ -2,7 +2,12 @@ import Link from "next/link";
 import LoginButton from "@/app/components/login-button";
 import SignupForm from "@/app/components/signup-form";
 
-export default function SignupPage() {
+type SignupPageProps = {
+  searchParams: Promise<{ callbackUrl?: string }>;
+};
+
+export default async function SignupPage({ searchParams }: SignupPageProps) {
+  const { callbackUrl } = await searchParams;
   return (
     <div className="relative overflow-hidden">
       <div className="pointer-events-none absolute inset-0 -z-10">
@@ -25,7 +30,7 @@ export default function SignupPage() {
             </p>
           </div>
           <div className="mt-6 space-y-4 rounded-2xl border border-border/60 bg-white/90 p-6">
-            <SignupForm />
+            <SignupForm callbackUrl={callbackUrl} />
             <div className="flex items-center gap-3 text-xs text-(--brand-ink-muted)">
               <span className="h-px flex-1 bg-border/80" />
               もしくは
@@ -34,9 +39,10 @@ export default function SignupPage() {
             <LoginButton
               className="w-full bg-(--brand-moss) text-white hover:bg-(--brand-moss)/90"
               label="Googleで登録/ログイン"
+              callbackUrl={callbackUrl}
             />
             <Link
-              href="/"
+              href={callbackUrl ? `/?callbackUrl=${encodeURIComponent(callbackUrl)}` : "/"}
               className="block text-center text-xs font-semibold text-(--brand-ink-muted) hover:text-(--brand-ink)"
             >
               既にアカウントを持っている場合はログインへ戻る
