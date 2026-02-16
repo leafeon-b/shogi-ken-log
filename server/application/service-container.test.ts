@@ -1,6 +1,7 @@
 import { describe, expect, test, vi } from "vitest";
 import { createServiceContainer } from "@/server/application/service-container";
 import { matchHistoryId } from "@/server/domain/common/ids";
+import type { CircleInviteLinkRepository } from "@/server/domain/models/circle/circle-invite-link-repository";
 
 const createStub = () => ({
   findById: vi.fn(),
@@ -78,9 +79,8 @@ describe("Service container", () => {
     const circleInviteLinkRepository = {
       findByToken: vi.fn(),
       findActiveByCircleId: vi.fn(),
-      listByCircleId: vi.fn(),
       save: vi.fn(),
-    };
+    } satisfies CircleInviteLinkRepository;
 
     const container = createServiceContainer({
       circleRepository,
