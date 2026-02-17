@@ -12,8 +12,8 @@ SET "createdAt" = TIMESTAMP '2025-01-01 00:00:00' + ("order" * INTERVAL '1 secon
 ALTER TABLE "Match" ALTER COLUMN "createdAt" SET NOT NULL;
 ALTER TABLE "Match" ALTER COLUMN "createdAt" SET DEFAULT CURRENT_TIMESTAMP;
 
--- Step 4: Drop the unique constraint on (circleSessionId, order)
-ALTER TABLE "Match" DROP CONSTRAINT "Match_circleSessionId_order_key";
+-- Step 4: Drop the unique index on (circleSessionId, order)
+DROP INDEX "Match_circleSessionId_order_key";
 
 -- Step 5: Drop the order column from Match
 ALTER TABLE "Match" DROP COLUMN "order";
