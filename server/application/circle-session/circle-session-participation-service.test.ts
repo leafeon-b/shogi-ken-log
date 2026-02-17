@@ -26,6 +26,7 @@ const circleSessionParticipationRepository = {
   updateParticipationRole: vi.fn(),
   areUsersParticipating: vi.fn(),
   removeParticipation: vi.fn(),
+  removeAllByCircleAndUser: vi.fn(),
 } satisfies CircleSessionParticipationRepository;
 
 const circleSessionRepository = {
