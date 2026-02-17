@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { createCircleParticipationService } from "@/server/application/circle/circle-participation-service";
 import { createAccessServiceStub } from "@/server/application/test-helpers/access-service-stub";
+import { ForbiddenError } from "@/server/domain/common/errors";
 import type { CircleParticipationRepository } from "@/server/domain/models/circle/circle-participation-repository";
 import type { CircleRepository } from "@/server/domain/models/circle/circle-repository";
 import { circleId, userId } from "@/server/domain/common/ids";
@@ -388,7 +389,7 @@ describe("Circle 参加関係サービス", () => {
   test("removeParticipation は Owner の削除を拒否する", async () => {
     vi.mocked(
       circleParticipationRepository.listByCircleId,
-    ).mockResolvedValueOnce([
+    ).mockResolvedValue([
       {
         circleId: circleId("circle-1"),
         userId: userId("user-1"),
@@ -397,6 +398,13 @@ describe("Circle 参加関係サービス", () => {
       },
     ]);
 
+    await expect(
+      service.removeParticipation({
+        actorId: "user-actor",
+        circleId: circleId("circle-1"),
+        userId: userId("user-1"),
+      }),
+    ).rejects.toThrow(ForbiddenError);
     await expect(
       service.removeParticipation({
         actorId: "user-actor",

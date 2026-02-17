@@ -12,6 +12,7 @@ import {
   transferCircleOwnership,
   transferCircleSessionOwnership,
 } from "@/server/domain/services/authz/ownership";
+import { ForbiddenError } from "@/server/domain/common/errors";
 import { userId } from "@/server/domain/common/ids";
 import {
   CircleRole,
@@ -289,10 +290,13 @@ describe("assertCanWithdraw", () => {
 });
 
 describe("assertCanRemoveCircleMember", () => {
-  test("Owner を削除しようとするとエラー", () => {
-    expect(() => assertCanRemoveCircleMember(CircleRole.CircleOwner)).toThrow(
-      "Use transferOwnership to remove owner",
-    );
+  test("Owner を削除しようとすると ForbiddenError", () => {
+    expect(() =>
+      assertCanRemoveCircleMember(CircleRole.CircleOwner),
+    ).toThrow(ForbiddenError);
+    expect(() =>
+      assertCanRemoveCircleMember(CircleRole.CircleOwner),
+    ).toThrow("Use transferOwnership to remove owner");
   });
 
   test("Manager を削除できる", () => {
