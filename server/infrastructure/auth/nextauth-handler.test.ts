@@ -391,3 +391,62 @@ describe("authorize コールバック（レート制限）", () => {
     );
   });
 });
+
+describe("コールバックチェーン統合", () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  const setupCallbacks = (repoOverrides: Partial<UserRepository> = {}) => {
+    const mockRepo = createMockUserRepository(repoOverrides);
+    const options = createAuthOptions({
+      userRepository: mockRepo,
+      loginRateLimiter: createMockRateLimiter(),
+    });
+    const jwtCallback = options.callbacks!.jwt! as (params: {
+      token: JWT;
+      user?: { id: string };
+    }) => Promise<JWT>;
+    const sessionCallback = options.callbacks!.session! as unknown as (params: {
+      session: { user?: { id?: string } };
+      token: JWT;
+    }) => { user?: { id?: string } };
+    return { jwtCallback, sessionCallback, mockRepo };
+  };
+
+  test("DB障害 → JWT空トークン → session で user.id 未設定", async () => {
+    const { jwtCallback, sessionCallback } = setupCallbacks({
+      findPasswordChangedAt: vi
+        .fn()
+        .mockRejectedValue(new Error("Connection refused")),
+    });
+
+    const token = { id: "user-1", iat: 1700000000 } as JWT;
+    const jwtResult = await jwtCallback({ token });
+
+    expect(jwtResult.id).toBeUndefined();
+
+    const session = { user: {} as { id?: string } };
+    const sessionResult = sessionCallback({ session, token: jwtResult });
+
+    expect(sessionResult.user?.id).toBeUndefined();
+  });
+
+  test("パスワード変更検出 → JWT空トークン → session で user.id 未設定", async () => {
+    const { jwtCallback, sessionCallback } = setupCallbacks({
+      findPasswordChangedAt: vi
+        .fn()
+        .mockResolvedValue(new Date(1700001000 * 1000)),
+    });
+
+    const token = { id: "user-1", iat: 1700000000 } as JWT;
+    const jwtResult = await jwtCallback({ token });
+
+    expect(jwtResult.id).toBeUndefined();
+
+    const session = { user: {} as { id?: string } };
+    const sessionResult = sessionCallback({ session, token: jwtResult });
+
+    expect(sessionResult.user?.id).toBeUndefined();
+  });
+});
