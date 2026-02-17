@@ -115,6 +115,19 @@ describe("updateProfile", () => {
     expect(userRepository.updateProfile).not.toHaveBeenCalled();
   });
 
+  test("name=null, email=null の場合はメール重複チェックをスキップして更新する", async () => {
+    userRepository.findById.mockResolvedValue(testUser);
+
+    await service.updateProfile(actorId, null, null);
+
+    expect(userRepository.emailExists).not.toHaveBeenCalled();
+    expect(userRepository.updateProfile).toHaveBeenCalledWith(
+      actorId,
+      null,
+      null,
+    );
+  });
+
   test("ユーザーが存在しない場合 Forbidden エラー", async () => {
     userRepository.findById.mockResolvedValue(null);
 
