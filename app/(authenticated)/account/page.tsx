@@ -178,8 +178,8 @@ export default function AccountPage() {
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-8">
       <h1 className="text-2xl font-bold text-(--brand-ink)">アカウント設定</h1>
 
-      <section className="rounded-2xl border border-border/60 bg-white/85 p-6 shadow-sm">
-        <h2 className="mb-4 text-lg font-semibold text-(--brand-ink)">
+      <section aria-labelledby="section-profile" className="rounded-2xl border border-border/60 bg-white/85 p-6 shadow-sm">
+        <h2 id="section-profile" className="mb-4 text-lg font-semibold text-(--brand-ink)">
           プロフィール
         </h2>
         {meQuery.isLoading ? (
@@ -193,8 +193,8 @@ export default function AccountPage() {
       </section>
 
       {meQuery.data?.hasPassword && (
-        <section className="rounded-2xl border border-border/60 bg-white/85 p-6 shadow-sm">
-          <h2 className="mb-4 text-lg font-semibold text-(--brand-ink)">
+        <section aria-labelledby="section-password" className="rounded-2xl border border-border/60 bg-white/85 p-6 shadow-sm">
+          <h2 id="section-password" className="mb-4 text-lg font-semibold text-(--brand-ink)">
             パスワードの変更
           </h2>
           <PasswordForm />
