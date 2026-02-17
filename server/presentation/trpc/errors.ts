@@ -28,7 +28,7 @@ export const toTrpcError = (error: unknown): TRPCError => {
     return new TRPCError({ code: "NOT_FOUND", message });
   }
 
-  return new TRPCError({ code: "BAD_REQUEST", message });
+  return new TRPCError({ code: "INTERNAL_SERVER_ERROR", message });
 };
 
 export const handleTrpcError = async <T>(

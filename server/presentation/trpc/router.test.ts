@@ -903,7 +903,7 @@ describe("tRPC router", () => {
 
     await expect(
       caller.users.memberships.list({ userId: "user-1" }),
-    ).rejects.toMatchObject({ code: "BAD_REQUEST" });
+    ).rejects.toMatchObject({ code: "INTERNAL_SERVER_ERROR" });
   });
 
 });
