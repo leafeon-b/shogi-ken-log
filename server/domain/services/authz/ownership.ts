@@ -1,3 +1,4 @@
+import { ForbiddenError } from "@/server/domain/common/errors";
 import type { UserId } from "@/server/domain/common/ids";
 import { assertDifferentIds } from "@/server/domain/common/validation";
 import {
@@ -117,7 +118,7 @@ export const assertCanWithdrawFromSession = (
 
 export const assertCanRemoveCircleMember = (targetRole: CircleRole): void => {
   if (targetRole === CircleRole.CircleOwner) {
-    throw new Error("Use transferOwnership to remove owner");
+    throw new ForbiddenError("Use transferOwnership to remove owner");
   }
 };
 
