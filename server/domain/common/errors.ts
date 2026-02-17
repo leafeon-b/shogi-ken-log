@@ -9,7 +9,8 @@ export type DomainErrorCode =
   | "NOT_FOUND"
   | "FORBIDDEN"
   | "UNAUTHORIZED"
-  | "BAD_REQUEST";
+  | "BAD_REQUEST"
+  | "TOO_MANY_REQUESTS";
 
 export class DomainError extends Error {
   constructor(
@@ -46,5 +47,12 @@ export class BadRequestError extends DomainError {
   constructor(message: string) {
     super(message, "BAD_REQUEST");
     this.name = "BadRequestError";
+  }
+}
+
+export class TooManyRequestsError extends DomainError {
+  constructor(message = "Too many requests") {
+    super(message, "TOO_MANY_REQUESTS");
+    this.name = "TooManyRequestsError";
   }
 }
