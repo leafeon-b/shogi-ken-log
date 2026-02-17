@@ -1,5 +1,5 @@
 import type { CircleSessionParticipationRepository } from "@/server/domain/models/circle-session/circle-session-participation-repository";
-import type { CircleSessionId, UserId } from "@/server/domain/common/ids";
+import type { CircleId, CircleSessionId, UserId } from "@/server/domain/common/ids";
 import { prisma, type PrismaClientLike } from "@/server/infrastructure/db";
 import {
   mapCircleSessionParticipationFromPersistence,
@@ -110,6 +110,21 @@ export const createPrismaCircleSessionParticipationRepository = (
       where: {
         circleSessionId: persistedCircleSessionId,
         userId: persistedUserId,
+      },
+    });
+  },
+
+  async removeAllByCircleAndUser(
+    circleId: CircleId,
+    userId: UserId,
+  ): Promise<void> {
+    const persistedCircleId = toPersistenceId(circleId);
+    const persistedUserId = toPersistenceId(userId);
+
+    await client.circleSessionMembership.deleteMany({
+      where: {
+        userId: persistedUserId,
+        session: { circleId: persistedCircleId },
       },
     });
   },

@@ -75,13 +75,6 @@ export const createPrismaCircleParticipationRepository = (
     const persistedCircleId = toPersistenceId(circleId);
     const persistedUserId = toPersistenceId(userId);
 
-    await client.circleSessionMembership.deleteMany({
-      where: {
-        userId: persistedUserId,
-        session: { circleId: persistedCircleId },
-      },
-    });
-
     await client.circleMembership.deleteMany({
       where: {
         circleId: persistedCircleId,
