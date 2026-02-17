@@ -1,4 +1,8 @@
-import type { CircleSessionId, UserId } from "@/server/domain/common/ids";
+import type {
+  CircleId,
+  CircleSessionId,
+  UserId,
+} from "@/server/domain/common/ids";
 import type { CircleSessionParticipation } from "@/server/domain/models/circle-session/circle-session-participation";
 import type { CircleSessionRole } from "@/server/domain/services/authz/roles";
 
@@ -23,6 +27,10 @@ export type CircleSessionParticipationRepository = {
   ): Promise<boolean>;
   removeParticipation(
     circleSessionId: CircleSessionId,
+    userId: UserId,
+  ): Promise<void>;
+  removeAllByCircleAndUser(
+    circleId: CircleId,
     userId: UserId,
   ): Promise<void>;
 };
