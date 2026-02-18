@@ -404,7 +404,7 @@ describe("UnitOfWork 経路", () => {
   });
 
   test("recordMatch は unitOfWork を呼び出す", async () => {
-    const result = await uowService.recordMatch({
+    await uowService.recordMatch({
       actorId: userId("user-3"),
       ...baseMatchParams,
     });
@@ -425,7 +425,7 @@ describe("UnitOfWork 経路", () => {
     const existing = createMatch(baseMatchParams);
     vi.mocked(uowMatchRepository.findById).mockResolvedValue(existing);
 
-    const updated = await uowService.updateMatch({
+    await uowService.updateMatch({
       actorId: userId("user-3"),
       id: baseMatchParams.id,
       outcome: "DRAW",
@@ -446,7 +446,7 @@ describe("UnitOfWork 経路", () => {
     const existing = createMatch(baseMatchParams);
     vi.mocked(uowMatchRepository.findById).mockResolvedValue(existing);
 
-    const deleted = await uowService.deleteMatch({
+    await uowService.deleteMatch({
       actorId: userId("user-3"),
       id: baseMatchParams.id,
     });

@@ -2,7 +2,6 @@ import { describe, expect, test, vi } from "vitest";
 import { TRPCError } from "@trpc/server";
 import { toTrpcError, handleTrpcError } from "./errors";
 import {
-  DomainError,
   NotFoundError,
   ForbiddenError,
   UnauthorizedError,
