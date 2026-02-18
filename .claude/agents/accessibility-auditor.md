@@ -10,7 +10,6 @@ Assess:
 
 - WCAG 2.1 AA compliance
 - semantic HTML usage
-- ARIA correctness
 - keyboard navigation
 - contrast ratios
 - form error UX
