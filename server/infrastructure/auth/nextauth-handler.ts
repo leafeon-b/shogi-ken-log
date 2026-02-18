@@ -56,8 +56,9 @@ export const createAuthOptions = (deps: AuthDeps): AuthOptions => ({
           deps.loginRateLimiter.recordFailure(email);
           return null;
         }
-        const passwordHash =
-          await deps.userRepository.findPasswordHashById(user.id);
+        const passwordHash = await deps.userRepository.findPasswordHashById(
+          user.id,
+        );
         if (!passwordHash) {
           if (isDebug) {
             console.warn("[auth] credentials user missing password hash", {
@@ -106,13 +107,9 @@ export const createAuthOptions = (deps: AuthDeps): AuthOptions => ({
       if (token.iat) {
         try {
           const passwordChangedAt =
-            await deps.userRepository.findPasswordChangedAt(
-              userId(rawUserId),
-            );
+            await deps.userRepository.findPasswordChangedAt(userId(rawUserId));
           if (passwordChangedAt) {
-            const changedAtSec = Math.floor(
-              passwordChangedAt.getTime() / 1000,
-            );
+            const changedAtSec = Math.floor(passwordChangedAt.getTime() / 1000);
             if (changedAtSec > (token.iat as number)) {
               return {} as typeof token;
             }

@@ -170,9 +170,7 @@ export function MatchMatrixTable({
       <div className="rounded-2xl border border-border/60 bg-white/90 p-6 shadow-sm">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="text-sm font-semibold text-(--brand-ink)">
-              対局結果
-            </p>
+            <p className="text-sm font-semibold text-(--brand-ink)">対局結果</p>
             <p className="mt-2 text-xs text-(--brand-ink-muted)">
               ○=勝ち ●=負け △=引き分け 未=未記録
             </p>

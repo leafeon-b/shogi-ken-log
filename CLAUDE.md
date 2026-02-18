@@ -80,7 +80,10 @@ const data = await caller.users.me();
 
 ```tsx
 const ctx = await createContext();
-const canCreate = await ctx.accessService.canCreateCircleSession(ctx.actorId, circleId);
+const canCreate = await ctx.accessService.canCreateCircleSession(
+  ctx.actorId,
+  circleId,
+);
 ```
 
 - サービス層に直接アクセスし、tRPC の DTO マッピングを経由しない
