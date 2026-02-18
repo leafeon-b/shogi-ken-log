@@ -29,8 +29,5 @@ export type CircleSessionParticipationRepository = {
     circleSessionId: CircleSessionId,
     userId: UserId,
   ): Promise<void>;
-  removeAllByCircleAndUser(
-    circleId: CircleId,
-    userId: UserId,
-  ): Promise<void>;
+  removeAllByCircleAndUser(circleId: CircleId, userId: UserId): Promise<void>;
 };

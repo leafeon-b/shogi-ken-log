@@ -71,9 +71,8 @@ describe("DB障害時のセッション無効化チェーン", () => {
   test("session.user.id 未設定 → createGetSessionUserId が UnauthorizedError をスローする", async () => {
     getServerSessionMock.mockResolvedValue({ user: {} });
 
-    const { createGetSessionUserId } = await import(
-      "@/server/application/auth/session"
-    );
+    const { createGetSessionUserId } =
+      await import("@/server/application/auth/session");
     const getSessionUserId = createGetSessionUserId(nextAuthSessionService);
 
     await expect(getSessionUserId()).rejects.toThrow("Unauthorized");

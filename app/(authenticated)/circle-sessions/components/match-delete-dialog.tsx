@@ -8,7 +8,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { getMatchOutcome, type ActiveDialog, type PairMatchEntry } from "./match-utils";
+import {
+  getMatchOutcome,
+  type ActiveDialog,
+  type PairMatchEntry,
+} from "./match-utils";
 
 type MatchDeleteDialogProps = {
   activeDialog: ActiveDialog | null;

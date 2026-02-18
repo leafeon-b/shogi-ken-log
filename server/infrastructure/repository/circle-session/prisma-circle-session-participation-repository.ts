@@ -1,5 +1,9 @@
 import type { CircleSessionParticipationRepository } from "@/server/domain/models/circle-session/circle-session-participation-repository";
-import type { CircleId, CircleSessionId, UserId } from "@/server/domain/common/ids";
+import type {
+  CircleId,
+  CircleSessionId,
+  UserId,
+} from "@/server/domain/common/ids";
 import { prisma, type PrismaClientLike } from "@/server/infrastructure/db";
 import {
   mapCircleSessionParticipationFromPersistence,

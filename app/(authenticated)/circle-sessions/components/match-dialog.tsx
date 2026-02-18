@@ -8,7 +8,12 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import type { FormEvent } from "react";
-import { getMatchOutcome, type ActiveDialog, type PairMatchEntry, type RowOutcome } from "./match-utils";
+import {
+  getMatchOutcome,
+  type ActiveDialog,
+  type PairMatchEntry,
+  type RowOutcome,
+} from "./match-utils";
 
 type MatchDialogProps = {
   activeDialog: ActiveDialog | null;
