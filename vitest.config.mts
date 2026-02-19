@@ -5,6 +5,7 @@ export default defineConfig({
   plugins: [tsconfigPaths()],
   test: {
     environment: "node",
+    setupFiles: ["./vitest.setup.mts"],
     include: [
       "**/*.{test,spec}.ts",
       "**/*.{test,spec}.mts",
