@@ -471,7 +471,7 @@ export function CircleSessionDetailView({
                   onClick={handleDuplicate}
                 >
                   <Copy className="size-4" aria-hidden="true" />
-                  複製
+                  セッションの複製
                 </Button>
               ) : null}
               {detail.canDeleteCircleSession ? (
