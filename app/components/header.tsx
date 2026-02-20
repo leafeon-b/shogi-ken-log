@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import UserMenu from "./user-menu";
 
@@ -8,7 +9,14 @@ export default function Header() {
     <header className="border-b bg-muted px-4 py-3 flex items-center justify-between">
       <div className="flex items-center gap-3">
         <SidebarTrigger className="md:hidden" />
-        <span className="text-lg font-semibold">SKKT</span>
+        <Image
+          src="/logo.png"
+          alt="SKKT"
+          width={246}
+          height={55}
+          className="h-7 w-auto"
+          priority
+        />
       </div>
 
       <UserMenu />
