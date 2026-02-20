@@ -325,7 +325,7 @@ describe("UnitOfWork 経路", () => {
     updateParticipationRole: vi.fn(),
     areUsersParticipating: vi.fn(),
     removeParticipation: vi.fn(),
-    } satisfies CircleSessionParticipationRepository;
+  } satisfies CircleSessionParticipationRepository;
 
   const depsCircleSessionRepository = {
     findById: vi.fn(),
@@ -354,7 +354,7 @@ describe("UnitOfWork 経路", () => {
     updateParticipationRole: vi.fn(),
     areUsersParticipating: vi.fn(),
     removeParticipation: vi.fn(),
-    } satisfies CircleSessionParticipationRepository;
+  } satisfies CircleSessionParticipationRepository;
 
   const uowCircleSessionRepository = {
     findById: vi.fn(),
