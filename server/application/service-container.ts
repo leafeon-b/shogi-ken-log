@@ -23,6 +23,7 @@ import type { UserRepository } from "@/server/domain/models/user/user-repository
 import type { SignupRepository } from "@/server/domain/models/user/signup-repository";
 import type { CircleInviteLinkRepository } from "@/server/domain/models/circle/circle-invite-link-repository";
 import type { PasswordUtils } from "@/server/application/user/user-service";
+import type { HolidayProvider } from "@/server/application/common/holiday-provider";
 
 export type ServiceContainer = {
   circleService: ReturnType<typeof createCircleService>;
@@ -39,6 +40,7 @@ export type ServiceContainer = {
   matchHistoryService: ReturnType<typeof createMatchHistoryService>;
   signupService: ReturnType<typeof createSignupService>;
   circleInviteLinkService: ReturnType<typeof createCircleInviteLinkService>;
+  holidayProvider: HolidayProvider;
 };
 
 export type ServiceContainerDeps = {
@@ -53,6 +55,7 @@ export type ServiceContainerDeps = {
   signupRepository: SignupRepository;
   circleInviteLinkRepository: CircleInviteLinkRepository;
   passwordUtils: PasswordUtils;
+  holidayProvider: HolidayProvider;
   generateMatchHistoryId?: () => ReturnType<typeof matchHistoryId>;
   unitOfWork?: UnitOfWork;
 };
@@ -127,5 +130,6 @@ export const createServiceContainer = (
       circleParticipationRepository: deps.circleParticipationRepository,
       accessService,
     }),
+    holidayProvider: deps.holidayProvider,
   };
 };

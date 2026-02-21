@@ -69,6 +69,7 @@ const createTestContext = (
       redeemInviteLink: vi.fn(),
     },
     accessService: {} as Context["accessService"],
+    holidayProvider: {} as Context["holidayProvider"],
   };
 
   return { context, mocks: { circleParticipationService } };

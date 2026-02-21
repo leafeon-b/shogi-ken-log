@@ -108,17 +108,6 @@ const eslintConfig = defineConfig([
       "no-restricted-imports": "off",
     },
   },
-  // TODO: #455 — holiday provider の DI 化後に削除
-  {
-    files: [
-      "server/presentation/providers/home-provider.ts",
-      "server/presentation/providers/circle-overview-provider.ts",
-      "server/presentation/trpc/routers/holiday.ts",
-    ],
-    rules: {
-      "no-restricted-imports": "off",
-    },
-  },
   // infrastructure: no importing presentation, application
   {
     files: ["server/infrastructure/**/*.{ts,tsx}"],
@@ -134,12 +123,13 @@ const eslintConfig = defineConfig([
       ],
     },
   },
-  // infrastructure exception: application/common（port 定義 — RateLimiter, UnitOfWork）の import を許可
+  // infrastructure exception: application/common（port 定義 — RateLimiter, UnitOfWork, HolidayProvider）の import を許可
   {
     files: [
       "server/infrastructure/rate-limit/**/*.{ts,tsx}",
       "server/infrastructure/transaction/**/*.{ts,tsx}",
       "server/infrastructure/auth/**/*.{ts,tsx}",
+      "server/infrastructure/holiday/**/*.{ts,tsx}",
     ],
     rules: {
       "no-restricted-imports": [

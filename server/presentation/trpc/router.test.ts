@@ -85,6 +85,7 @@ const createContext = () => {
     signupService,
     circleInviteLinkService,
     accessService: {} as Context["accessService"],
+    holidayProvider: {} as Context["holidayProvider"],
   };
 
   return {

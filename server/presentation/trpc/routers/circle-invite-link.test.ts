@@ -74,6 +74,7 @@ const createTestContext = () => {
     },
     circleInviteLinkService,
     accessService: {} as Context["accessService"],
+    holidayProvider: {} as Context["holidayProvider"],
   };
 
   return { context, mocks: { circleInviteLinkService } };

@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { publicProcedure, router } from "@/server/presentation/trpc/trpc";
-import { getHolidayDateStrings } from "@/server/infrastructure/holiday/japanese-holiday-provider";
 
 const MAX_RANGE_MS = 5 * 365.25 * 24 * 60 * 60 * 1000; // ~5年
 
@@ -21,7 +20,7 @@ export const holidayRouter = router({
         ),
     )
     .output(z.array(z.string()))
-    .query(({ input }) => {
-      return getHolidayDateStrings(input.start, input.end);
+    .query(({ input, ctx }) => {
+      return ctx.holidayProvider.getHolidayDateStrings(input.start, input.end);
     }),
 });

@@ -100,6 +100,10 @@ describe("Service container", () => {
       signupRepository,
       circleInviteLinkRepository,
       passwordUtils: { hash: vi.fn(), verify: vi.fn() },
+      holidayProvider: {
+        getHolidayDateStrings: vi.fn(),
+        getHolidayDateStringsForRange: vi.fn(),
+      },
       generateMatchHistoryId: () => matchHistoryId("history-1"),
     });
 
@@ -113,6 +117,7 @@ describe("Service container", () => {
     expect(container.matchHistoryService).toBeDefined();
     expect(container.signupService).toBeDefined();
     expect(container.circleInviteLinkService).toBeDefined();
+    expect(container.holidayProvider).toBeDefined();
 
     circleRepository.findById.mockResolvedValueOnce(null);
     await expect(

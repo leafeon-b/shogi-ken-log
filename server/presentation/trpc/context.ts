@@ -18,8 +18,10 @@ import {
   hashPassword,
   verifyPassword,
 } from "@/server/infrastructure/auth/password";
+import { createJapaneseHolidayProvider } from "@/server/infrastructure/holiday/japanese-holiday-provider";
 
 const getSession = createGetSession(nextAuthSessionService);
+const japaneseHolidayProvider = createJapaneseHolidayProvider();
 
 const buildServiceContainer = (): ServiceContainer =>
   createServiceContainer({
@@ -35,6 +37,7 @@ const buildServiceContainer = (): ServiceContainer =>
     signupRepository: prismaSignupRepository,
     circleInviteLinkRepository: prismaCircleInviteLinkRepository,
     passwordUtils: { hash: hashPassword, verify: verifyPassword },
+    holidayProvider: japaneseHolidayProvider,
     unitOfWork: prismaUnitOfWork,
   });
 

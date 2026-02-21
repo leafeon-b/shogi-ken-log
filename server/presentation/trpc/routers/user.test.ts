@@ -71,6 +71,7 @@ const createTestContext = (actorIdValue: ReturnType<typeof userId> | null = user
       redeemInviteLink: vi.fn(),
     },
     accessService: {} as Context["accessService"],
+    holidayProvider: {} as Context["holidayProvider"],
   };
 
   return { context, mocks: { userService } };
