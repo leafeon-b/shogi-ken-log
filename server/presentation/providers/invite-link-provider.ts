@@ -1,6 +1,8 @@
-import { BadRequestError, NotFoundError } from "@/server/domain/common/errors";
+import { TRPCError } from "@trpc/server";
+import { BadRequestError } from "@/server/domain/common/errors";
 import { inviteLinkToken } from "@/server/domain/common/ids";
-import { createPublicContext } from "@/server/presentation/trpc/context";
+import { createContext } from "@/server/presentation/trpc/context";
+import { appRouter } from "@/server/presentation/trpc/router";
 
 export type InviteLinkPageData = {
   circleName: string;
@@ -20,15 +22,16 @@ export async function getInviteLinkPageData(
     throw e;
   }
 
-  const ctx = await createPublicContext();
+  const ctx = await createContext();
+  const caller = appRouter.createCaller(ctx);
 
   let info;
   try {
-    info = await ctx.circleInviteLinkService.getInviteLinkInfo({
+    info = await caller.circles.inviteLinks.getInfo({
       token: validatedToken,
     });
   } catch (e) {
-    if (e instanceof NotFoundError) return null;
+    if (e instanceof TRPCError && e.code === "NOT_FOUND") return null;
     throw e;
   }
 
