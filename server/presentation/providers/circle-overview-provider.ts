@@ -1,5 +1,4 @@
 import { formatDateTimeRange } from "@/lib/date-utils";
-import { getHolidayDateStringsForRange } from "@/server/infrastructure/holiday/japanese-holiday-provider";
 import { CircleRole } from "@/server/domain/services/authz/roles";
 import { NotFoundError } from "@/server/domain/common/errors";
 import { appRouter } from "@/server/presentation/trpc/router";
@@ -98,7 +97,7 @@ export async function getCircleOverviewViewModel(
       name: userNameById.get(participation.userId) ?? participation.userId,
       role: roleKeyByDto[participation.role] ?? "member",
     })),
-    holidayDates: getHolidayDateStringsForRange(),
+    holidayDates: ctx.holidayProvider.getHolidayDateStringsForRange(),
   };
 
   return overview;

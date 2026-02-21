@@ -1,4 +1,3 @@
-import { getHolidayDateStringsForRange } from "@/server/infrastructure/holiday/japanese-holiday-provider";
 import { appRouter } from "@/server/presentation/trpc/router";
 import { createContext } from "@/server/presentation/trpc/context";
 import type { HomeViewModel } from "@/server/presentation/view-models/home";
@@ -33,6 +32,6 @@ export async function getHomeViewModel(): Promise<HomeViewModel> {
       end: s.endsAt.toISOString(),
       url: `/circle-sessions/${s.circleSessionId}`,
     })),
-    holidayDates: getHolidayDateStringsForRange(),
+    holidayDates: ctx.holidayProvider.getHolidayDateStringsForRange(),
   };
 }
