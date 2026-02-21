@@ -10,10 +10,10 @@ import {
 } from "@/server/presentation/dto/circle-participation";
 import { toCircleParticipationDtos } from "@/server/presentation/mappers/circle-participation-mapper";
 import { handleTrpcError } from "@/server/presentation/trpc/errors";
-import { publicProcedure, router } from "@/server/presentation/trpc/trpc";
+import { protectedProcedure, router } from "@/server/presentation/trpc/trpc";
 
 export const circleParticipationRouter = router({
-  list: publicProcedure
+  list: protectedProcedure
     .input(circleParticipationListInputSchema)
     .output(circleParticipationDtoSchema.array())
     .query(({ ctx, input }) =>
@@ -27,7 +27,7 @@ export const circleParticipationRouter = router({
       }),
     ),
 
-  add: publicProcedure
+  add: protectedProcedure
     .input(circleParticipationCreateInputSchema)
     .output(z.void())
     .mutation(({ ctx, input }) =>
@@ -42,7 +42,7 @@ export const circleParticipationRouter = router({
       }),
     ),
 
-  updateRole: publicProcedure
+  updateRole: protectedProcedure
     .input(circleParticipationRoleUpdateInputSchema)
     .output(z.void())
     .mutation(({ ctx, input }) =>
@@ -57,7 +57,7 @@ export const circleParticipationRouter = router({
       }),
     ),
 
-  withdraw: publicProcedure
+  withdraw: protectedProcedure
     .input(circleWithdrawInputSchema)
     .output(z.void())
     .mutation(({ ctx, input }) =>
@@ -70,7 +70,7 @@ export const circleParticipationRouter = router({
       }),
     ),
 
-  remove: publicProcedure
+  remove: protectedProcedure
     .input(circleParticipationRemoveInputSchema)
     .output(z.void())
     .mutation(({ ctx, input }) =>
@@ -84,7 +84,7 @@ export const circleParticipationRouter = router({
       }),
     ),
 
-  transferOwnership: publicProcedure
+  transferOwnership: protectedProcedure
     .input(circleTransferOwnershipInputSchema)
     .output(z.void())
     .mutation(({ ctx, input }) =>

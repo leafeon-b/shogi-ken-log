@@ -12,14 +12,14 @@ import {
   toUserDtos,
 } from "@/server/presentation/mappers/user-mapper";
 import { handleTrpcError } from "@/server/presentation/trpc/errors";
-import { publicProcedure, router } from "@/server/presentation/trpc/trpc";
+import { protectedProcedure, router } from "@/server/presentation/trpc/trpc";
 import { userCircleRouter } from "@/server/presentation/trpc/routers/user-circle";
 import { userCircleSessionRouter } from "@/server/presentation/trpc/routers/user-circle-session";
 import { userId } from "@/server/domain/common/ids";
 import { z } from "zod";
 
 export const userRouter = router({
-  get: publicProcedure
+  get: protectedProcedure
     .input(userGetInputSchema)
     .output(userDtoSchema)
     .query(({ ctx, input }) =>
@@ -36,7 +36,7 @@ export const userRouter = router({
   circles: userCircleRouter,
   circleSessions: userCircleSessionRouter,
 
-  list: publicProcedure
+  list: protectedProcedure
     .input(userListInputSchema)
     .output(userDtoSchema.array())
     .query(({ ctx, input }) =>
@@ -49,7 +49,7 @@ export const userRouter = router({
       }),
     ),
 
-  me: publicProcedure.output(meDtoSchema).query(({ ctx }) =>
+  me: protectedProcedure.output(meDtoSchema).query(({ ctx }) =>
     handleTrpcError(async () => {
       const { user, hasPassword } = await ctx.userService.getMe(
         userId(ctx.actorId),
@@ -58,7 +58,7 @@ export const userRouter = router({
     }),
   ),
 
-  updateProfile: publicProcedure
+  updateProfile: protectedProcedure
     .input(updateProfileInputSchema)
     .output(z.void())
     .mutation(({ ctx, input }) =>
@@ -71,7 +71,7 @@ export const userRouter = router({
       }),
     ),
 
-  changePassword: publicProcedure
+  changePassword: protectedProcedure
     .input(changePasswordInputSchema)
     .output(z.void())
     .mutation(({ ctx, input }) =>

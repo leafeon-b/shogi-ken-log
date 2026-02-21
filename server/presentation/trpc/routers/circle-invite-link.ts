@@ -11,10 +11,14 @@ import {
   toCircleInviteLinkInfoDto,
 } from "@/server/presentation/mappers/circle-invite-link-mapper";
 import { handleTrpcError } from "@/server/presentation/trpc/errors";
-import { publicProcedure, router } from "@/server/presentation/trpc/trpc";
+import {
+  protectedProcedure,
+  publicProcedure,
+  router,
+} from "@/server/presentation/trpc/trpc";
 
 export const circleInviteLinkRouter = router({
-  create: publicProcedure
+  create: protectedProcedure
     .input(circleInviteLinkCreateInputSchema)
     .output(circleInviteLinkDtoSchema)
     .mutation(({ ctx, input }) =>
@@ -40,7 +44,7 @@ export const circleInviteLinkRouter = router({
       }),
     ),
 
-  redeem: publicProcedure
+  redeem: protectedProcedure
     .input(circleInviteLinkRedeemInputSchema)
     .output(circleInviteLinkRedeemResultDtoSchema)
     .mutation(({ ctx, input }) =>

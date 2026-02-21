@@ -5,10 +5,10 @@ import {
 } from "@/server/presentation/dto/user-circle-session-participation";
 import { toUserCircleSessionParticipationSummaryDtos } from "@/server/presentation/mappers/user-circle-session-participation-mapper";
 import { handleTrpcError } from "@/server/presentation/trpc/errors";
-import { publicProcedure, router } from "@/server/presentation/trpc/trpc";
+import { protectedProcedure, router } from "@/server/presentation/trpc/trpc";
 
 export const userCircleSessionParticipationRouter = router({
-  list: publicProcedure
+  list: protectedProcedure
     .input(userCircleSessionParticipationListInputSchema)
     .output(userCircleSessionParticipationSummaryDtoSchema.array())
     .query(({ ctx, input }) =>
