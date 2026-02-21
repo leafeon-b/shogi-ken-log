@@ -88,6 +88,28 @@ const eslintConfig = defineConfig([
       ],
     },
   },
+  // presentation/providers: createPublicContext は invite-link-provider 以外で使用禁止
+  // 認証付きコンテキストには createContext を使うこと
+  {
+    files: ["server/presentation/providers/**/*.ts"],
+    ignores: ["**/*.test.ts"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: ["@/server/infrastructure/**"],
+          paths: [
+            {
+              name: "@/server/presentation/trpc/context",
+              importNames: ["createPublicContext"],
+              message:
+                "Provider では createPublicContext ではなく createContext を使用してください。",
+            },
+          ],
+        },
+      ],
+    },
+  },
   // presentation exceptions: context.ts (DI composition root for tRPC)
   {
     files: ["server/presentation/trpc/context.ts"],
@@ -104,6 +126,18 @@ const eslintConfig = defineConfig([
     ],
     rules: {
       "no-restricted-imports": "off",
+    },
+  },
+  // TODO: #461 — invite-link-provider の DI 化後に削除
+  {
+    files: ["server/presentation/providers/invite-link-provider.ts"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: ["@/server/infrastructure/**"],
+        },
+      ],
     },
   },
   // infrastructure: no importing presentation, application
