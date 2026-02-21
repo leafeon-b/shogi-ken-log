@@ -12,10 +12,10 @@ import { circleParticipationRouter } from "@/server/presentation/trpc/routers/ci
 import { circleInviteLinkRouter } from "@/server/presentation/trpc/routers/circle-invite-link";
 import { toCircleDto } from "@/server/presentation/mappers/circle-mapper";
 import { handleTrpcError } from "@/server/presentation/trpc/errors";
-import { publicProcedure, router } from "@/server/presentation/trpc/trpc";
+import { protectedProcedure, router } from "@/server/presentation/trpc/trpc";
 
 export const circleRouter = router({
-  get: publicProcedure
+  get: protectedProcedure
     .input(circleGetInputSchema)
     .output(circleDtoSchema)
     .query(({ ctx, input }) =>
@@ -31,7 +31,7 @@ export const circleRouter = router({
       }),
     ),
 
-  create: publicProcedure
+  create: protectedProcedure
     .input(circleCreateInputSchema)
     .output(circleDtoSchema)
     .mutation(({ ctx, input }) =>
@@ -45,7 +45,7 @@ export const circleRouter = router({
       }),
     ),
 
-  rename: publicProcedure
+  rename: protectedProcedure
     .input(circleRenameInputSchema)
     .output(circleDtoSchema)
     .mutation(({ ctx, input }) =>
@@ -59,7 +59,7 @@ export const circleRouter = router({
       }),
     ),
 
-  delete: publicProcedure
+  delete: protectedProcedure
     .input(circleDeleteInputSchema)
     .output(z.void())
     .mutation(({ ctx, input }) =>

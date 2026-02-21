@@ -14,10 +14,10 @@ import {
 } from "@/server/presentation/mappers/match-mapper";
 import { handleTrpcError } from "@/server/presentation/trpc/errors";
 import { matchHistoryRouter } from "@/server/presentation/trpc/routers/match-history";
-import { publicProcedure, router } from "@/server/presentation/trpc/trpc";
+import { protectedProcedure, router } from "@/server/presentation/trpc/trpc";
 
 export const matchRouter = router({
-  list: publicProcedure
+  list: protectedProcedure
     .input(matchListInputSchema)
     .output(matchDtoSchema.array())
     .query(({ ctx, input }) =>
@@ -30,7 +30,7 @@ export const matchRouter = router({
       }),
     ),
 
-  get: publicProcedure
+  get: protectedProcedure
     .input(matchGetInputSchema)
     .output(matchDtoSchema)
     .query(({ ctx, input }) =>
@@ -46,7 +46,7 @@ export const matchRouter = router({
       }),
     ),
 
-  create: publicProcedure
+  create: protectedProcedure
     .input(matchCreateInputSchema)
     .output(matchDtoSchema)
     .mutation(({ ctx, input }) =>
@@ -63,7 +63,7 @@ export const matchRouter = router({
       }),
     ),
 
-  update: publicProcedure
+  update: protectedProcedure
     .input(matchUpdateInputSchema)
     .output(matchDtoSchema)
     .mutation(({ ctx, input }) =>
@@ -79,7 +79,7 @@ export const matchRouter = router({
       }),
     ),
 
-  delete: publicProcedure
+  delete: protectedProcedure
     .input(matchDeleteInputSchema)
     .output(matchDtoSchema)
     .mutation(({ ctx, input }) =>

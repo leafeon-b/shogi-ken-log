@@ -10,10 +10,10 @@ import {
 } from "@/server/presentation/dto/circle-session-participation";
 import { toCircleSessionParticipationDtos } from "@/server/presentation/mappers/circle-session-participation-mapper";
 import { handleTrpcError } from "@/server/presentation/trpc/errors";
-import { publicProcedure, router } from "@/server/presentation/trpc/trpc";
+import { protectedProcedure, router } from "@/server/presentation/trpc/trpc";
 
 export const circleSessionParticipationRouter = router({
-  list: publicProcedure
+  list: protectedProcedure
     .input(circleSessionParticipationListInputSchema)
     .output(circleSessionParticipationDtoSchema.array())
     .query(({ ctx, input }) =>
@@ -27,7 +27,7 @@ export const circleSessionParticipationRouter = router({
       }),
     ),
 
-  add: publicProcedure
+  add: protectedProcedure
     .input(circleSessionParticipationCreateInputSchema)
     .output(z.void())
     .mutation(({ ctx, input }) =>
@@ -42,7 +42,7 @@ export const circleSessionParticipationRouter = router({
       }),
     ),
 
-  updateRole: publicProcedure
+  updateRole: protectedProcedure
     .input(circleSessionParticipationRoleUpdateInputSchema)
     .output(z.void())
     .mutation(({ ctx, input }) =>
@@ -57,7 +57,7 @@ export const circleSessionParticipationRouter = router({
       }),
     ),
 
-  withdraw: publicProcedure
+  withdraw: protectedProcedure
     .input(circleSessionWithdrawInputSchema)
     .output(z.void())
     .mutation(({ ctx, input }) =>
@@ -70,7 +70,7 @@ export const circleSessionParticipationRouter = router({
       }),
     ),
 
-  remove: publicProcedure
+  remove: protectedProcedure
     .input(circleSessionParticipationRemoveInputSchema)
     .output(z.void())
     .mutation(({ ctx, input }) =>
@@ -84,7 +84,7 @@ export const circleSessionParticipationRouter = router({
       }),
     ),
 
-  transferOwnership: publicProcedure
+  transferOwnership: protectedProcedure
     .input(circleSessionTransferOwnershipInputSchema)
     .output(z.void())
     .mutation(({ ctx, input }) =>

@@ -15,10 +15,10 @@ import {
 } from "@/server/presentation/mappers/circle-session-mapper";
 import { circleSessionParticipationRouter } from "@/server/presentation/trpc/routers/circle-session-participation";
 import { handleTrpcError } from "@/server/presentation/trpc/errors";
-import { publicProcedure, router } from "@/server/presentation/trpc/trpc";
+import { protectedProcedure, router } from "@/server/presentation/trpc/trpc";
 
 export const circleSessionRouter = router({
-  list: publicProcedure
+  list: protectedProcedure
     .input(circleSessionListInputSchema)
     .output(circleSessionDtoSchema.array())
     .query(({ ctx, input }) =>
@@ -31,7 +31,7 @@ export const circleSessionRouter = router({
       }),
     ),
 
-  get: publicProcedure
+  get: protectedProcedure
     .input(circleSessionGetInputSchema)
     .output(circleSessionDtoSchema)
     .query(({ ctx, input }) =>
@@ -47,7 +47,7 @@ export const circleSessionRouter = router({
       }),
     ),
 
-  create: publicProcedure
+  create: protectedProcedure
     .input(circleSessionCreateInputSchema)
     .output(circleSessionDtoSchema)
     .mutation(({ ctx, input }) =>
@@ -66,7 +66,7 @@ export const circleSessionRouter = router({
       }),
     ),
 
-  update: publicProcedure
+  update: protectedProcedure
     .input(circleSessionUpdateInputSchema)
     .output(circleSessionDtoSchema)
     .mutation(({ ctx, input }) =>
@@ -87,7 +87,7 @@ export const circleSessionRouter = router({
       }),
     ),
 
-  delete: publicProcedure
+  delete: protectedProcedure
     .input(circleSessionDeleteInputSchema)
     .output(z.void())
     .mutation(({ ctx, input }) =>
