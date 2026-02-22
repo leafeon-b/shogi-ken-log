@@ -43,6 +43,7 @@ const createTestContext = (actorIdValue: ReturnType<typeof userId> | null = user
       deleteCircleSession: vi.fn(),
     },
     circleSessionParticipationService: {
+      countPastSessionsByUserId: vi.fn(),
       listParticipations: vi.fn(),
       listByUserId: vi.fn(),
       addParticipation: vi.fn(),

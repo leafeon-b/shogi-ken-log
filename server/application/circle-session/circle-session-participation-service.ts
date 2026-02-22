@@ -46,6 +46,23 @@ export type UserCircleSessionParticipationSummary = {
 export const createCircleSessionParticipationService = (
   deps: CircleSessionParticipationServiceDeps,
 ) => ({
+  async countPastSessionsByUserId(targetUserId: UserId): Promise<number> {
+    const participations =
+      await deps.circleSessionParticipationRepository.listByUserId(
+        targetUserId,
+      );
+    if (participations.length === 0) {
+      return 0;
+    }
+
+    const sessionIds = participations.map((p) => p.circleSessionId);
+    const sessions =
+      await deps.circleSessionRepository.findByIds(sessionIds);
+
+    const now = new Date();
+    return sessions.filter((s) => s.endsAt <= now).length;
+  },
+
   async listParticipations(params: {
     actorId: string;
     circleSessionId: CircleSessionId;
