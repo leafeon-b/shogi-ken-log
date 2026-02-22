@@ -4,12 +4,13 @@ import {
   mapMatchToDomain,
   mapMatchToPersistence,
 } from "@/server/infrastructure/mappers/match-mapper";
-import type { Match } from "@/server/domain/models/match/match";
+import type { Match, MatchWithCircle } from "@/server/domain/models/match/match";
 import type {
   CircleSessionId,
   MatchId,
   UserId,
 } from "@/server/domain/common/ids";
+import { circleId } from "@/server/domain/common/ids";
 import { toPersistenceId } from "@/server/infrastructure/common/id-utils";
 
 export const createPrismaMatchRepository = (
@@ -47,6 +48,34 @@ export const createPrismaMatchRepository = (
     });
 
     return matches.map(mapMatchToDomain);
+  },
+
+  async listByUserIdWithCircleSession(
+    userId: UserId,
+  ): Promise<MatchWithCircle[]> {
+    const matches = await client.match.findMany({
+      where: {
+        deletedAt: null,
+        OR: [
+          { player1Id: toPersistenceId(userId) },
+          { player2Id: toPersistenceId(userId) },
+        ],
+      },
+      include: {
+        session: {
+          include: {
+            circle: true,
+          },
+        },
+      },
+      orderBy: { createdAt: "asc" },
+    });
+
+    return matches.map((m) => ({
+      ...mapMatchToDomain(m),
+      circleId: circleId(m.session.circleId),
+      circleName: m.session.circle.name,
+    }));
   },
 
   async save(match: Match): Promise<void> {
