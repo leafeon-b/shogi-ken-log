@@ -41,7 +41,7 @@ export function HomeView({ viewModel }: { viewModel: HomeViewModel }) {
         {nextSession ? (
           <Link
             href={`/circle-sessions/${nextSession.circleSessionId}`}
-            className="rounded-2xl border border-border/60 bg-white/85 p-6 shadow-sm transition hover:border-border hover:bg-white hover:shadow-sm motion-safe:animate-[rise_0.7s_ease-out]"
+            className="block rounded-2xl border border-border/60 bg-white/85 p-6 shadow-sm transition hover:border-border hover:bg-white hover:shadow-sm motion-safe:animate-[rise_0.7s_ease-out]"
             style={{ animationDelay: "80ms" }}
           >
             <div className="flex items-center justify-between">
