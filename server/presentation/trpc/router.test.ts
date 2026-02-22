@@ -39,6 +39,7 @@ const createContext = () => {
     deleteCircleSession: vi.fn(),
   };
   const circleSessionParticipationService = {
+    countPastSessionsByUserId: vi.fn(),
     listParticipations: vi.fn(),
     listByUserId: vi.fn(),
     addParticipation: vi.fn(),
