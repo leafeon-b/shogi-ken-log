@@ -8,4 +8,11 @@ export type UserProfileViewModel = {
     losses: number;
     draws: number;
   };
+  circleMatchStatistics: {
+    circleId: string;
+    circleName: string;
+    wins: number;
+    losses: number;
+    draws: number;
+  }[];
 };
