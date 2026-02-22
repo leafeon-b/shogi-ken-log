@@ -51,15 +51,15 @@ export const createPrismaMatchRepository = (
     return matches.map(mapMatchToDomain);
   },
 
-  async listByUserIdWithCircle(
-    userId: UserId,
+  async listByPlayerIdWithCircle(
+    playerId: UserId,
   ): Promise<MatchWithCircle[]> {
     const matches = await client.match.findMany({
       where: {
         deletedAt: null,
         OR: [
-          { player1Id: toPersistenceId(userId) },
-          { player2Id: toPersistenceId(userId) },
+          { player1Id: toPersistenceId(playerId) },
+          { player2Id: toPersistenceId(playerId) },
         ],
       },
       include: {
