@@ -226,25 +226,56 @@ describe("UserStatisticsService", () => {
 
       const result = await service.getMatchStatisticsAll(TARGET_USER);
 
-      expect(result.byCircle).toEqual(
-        expect.arrayContaining([
-          {
-            circleId: CIRCLE_A,
-            circleName: "研究会A",
-            wins: 1,
-            losses: 0,
-            draws: 1,
-          },
-          {
-            circleId: CIRCLE_B,
-            circleName: "研究会B",
-            wins: 1,
-            losses: 1,
-            draws: 0,
-          },
-        ]),
-      );
-      expect(result.byCircle).toHaveLength(2);
+      expect(result.byCircle).toEqual([
+        {
+          circleId: CIRCLE_A,
+          circleName: "研究会A",
+          wins: 1,
+          losses: 0,
+          draws: 1,
+        },
+        {
+          circleId: CIRCLE_B,
+          circleName: "研究会B",
+          wins: 1,
+          losses: 1,
+          draws: 0,
+        },
+      ]);
+    });
+  });
+
+  describe("getMatchStatisticsAll - byCircle ソート", () => {
+    test("byCircleはcircleName昇順でソートされる", async () => {
+      const CIRCLE_C = circleId("circle-c");
+
+      matchRepository.listByPlayerIdWithCircle.mockResolvedValue([
+        // データは逆順（C → B → A）で登場
+        createTestMatchWithCircle({
+          outcome: "P1_WIN",
+          circleId: CIRCLE_C,
+          circleName: "研究会C",
+        }),
+        createTestMatchWithCircle({
+          outcome: "P1_WIN",
+          circleId: CIRCLE_B,
+          circleName: "研究会B",
+        }),
+        createTestMatchWithCircle({
+          outcome: "P1_WIN",
+          circleId: CIRCLE_A,
+          circleName: "研究会A",
+        }),
+      ]);
+
+      const result = await service.getMatchStatisticsAll(TARGET_USER);
+
+      // circleName昇順（A → B → C）で返される
+      expect(result.byCircle.map((c) => c.circleName)).toEqual([
+        "研究会A",
+        "研究会B",
+        "研究会C",
+      ]);
     });
   });
 
@@ -290,26 +321,23 @@ describe("UserStatisticsService", () => {
       // トータル: 勝ち1 + 負け1 + 引き分け1 = 3局（UNKNOWNは除外）
       expect(result.total).toEqual({ wins: 1, losses: 1, draws: 1 });
 
-      // 研究会別
-      expect(result.byCircle).toEqual(
-        expect.arrayContaining([
-          {
-            circleId: CIRCLE_A,
-            circleName: "研究会A",
-            wins: 1,
-            losses: 0,
-            draws: 1,
-          },
-          {
-            circleId: CIRCLE_B,
-            circleName: "研究会B",
-            wins: 0,
-            losses: 1,
-            draws: 0,
-          },
-        ]),
-      );
-      expect(result.byCircle).toHaveLength(2);
+      // 研究会別（circleName昇順）
+      expect(result.byCircle).toEqual([
+        {
+          circleId: CIRCLE_A,
+          circleName: "研究会A",
+          wins: 1,
+          losses: 0,
+          draws: 1,
+        },
+        {
+          circleId: CIRCLE_B,
+          circleName: "研究会B",
+          wins: 0,
+          losses: 1,
+          draws: 0,
+        },
+      ]);
 
       // DBクエリは1回のみ
       expect(
