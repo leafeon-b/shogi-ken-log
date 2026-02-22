@@ -50,10 +50,12 @@ export const createUserStatisticsService = (
       else entry.draws++;
     }
 
-    const byCircle = Array.from(circleMap.entries()).map(([cId, stats]) => ({
-      circleId: cId,
-      ...stats,
-    }));
+    const byCircle = Array.from(circleMap.entries())
+      .map(([cId, stats]) => ({
+        circleId: cId,
+        ...stats,
+      }))
+      .sort((a, b) => a.circleName.localeCompare(b.circleName, "ja"));
 
     return { total, byCircle };
   },
