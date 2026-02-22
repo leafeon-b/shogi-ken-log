@@ -3,6 +3,7 @@ import { createContext } from "@/server/presentation/trpc/context";
 import { NotFoundError } from "@/server/domain/common/errors";
 import type { UserProfileViewModel } from "@/server/presentation/view-models/user-profile";
 import { TRPCError } from "@trpc/server";
+import { userId as userIdBrand } from "@/server/domain/common/ids";
 
 export async function getUserProfileViewModel(
   userId: string,
@@ -20,9 +21,15 @@ export async function getUserProfileViewModel(
     throw error;
   }
 
+  const sessionParticipationCount =
+    await ctx.circleSessionParticipationService.countPastSessionsByUserId(
+      userIdBrand(userId),
+    );
+
   return {
     userId: user.id,
     name: user.name ?? "名前未設定",
     image: user.image ?? null,
+    sessionParticipationCount,
   };
 }
