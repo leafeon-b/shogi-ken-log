@@ -23,12 +23,14 @@ export async function getUserProfileViewModel(
 
   const brandedUserId = userIdBrand(userId);
 
-  const [sessionParticipationCount, matchStatistics] = await Promise.all([
-    ctx.circleSessionParticipationService.countPastSessionsByUserId(
-      brandedUserId,
-    ),
-    ctx.userStatisticsService.getMatchStatistics(brandedUserId),
-  ]);
+  const [sessionParticipationCount, matchStatistics, circleMatchStatistics] =
+    await Promise.all([
+      ctx.circleSessionParticipationService.countPastSessionsByUserId(
+        brandedUserId,
+      ),
+      ctx.userStatisticsService.getMatchStatistics(brandedUserId),
+      ctx.userStatisticsService.getMatchStatisticsByCircle(brandedUserId),
+    ]);
 
   return {
     userId: user.id,
@@ -36,5 +38,12 @@ export async function getUserProfileViewModel(
     image: user.image ?? null,
     sessionParticipationCount,
     matchStatistics,
+    circleMatchStatistics: circleMatchStatistics.map((s) => ({
+      circleId: s.circleId,
+      circleName: s.circleName,
+      wins: s.wins,
+      losses: s.losses,
+      draws: s.draws,
+    })),
   };
 }
