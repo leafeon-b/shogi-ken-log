@@ -20,7 +20,7 @@ export const createUserStatisticsService = (
     byCircle: CircleMatchStatistics[];
   }> {
     const matches =
-      await deps.matchRepository.listByUserIdWithCircle(targetUserId);
+      await deps.matchRepository.listByPlayerIdWithCircle(targetUserId);
 
     const total = { wins: 0, losses: 0, draws: 0 };
     const circleMap = new Map<
